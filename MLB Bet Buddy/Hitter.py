@@ -34,13 +34,13 @@ class Hitter(Player):
         pitcherFullName = stats['pitcher']['fullName']
         
         #Gather the offensive statistics and return them. Note: OBP stands for on base percentage, OPS stands for on base plus slugging.
-        gamesPlayed = stats['stat']['gamesPlayed']
-        plateAppearances = stats['stat']['plateAppearances']
-        totalHits = stats['stat']['hits']
-        battingAverage = stats['stat']['avg']
-        OBP = stats['stat']['obp']
-        OPS = stats['stat']['ops']
-        homeRuns = stats['stat']['homeRuns']
+        gamesPlayed = int(stats['stat']['gamesPlayed'])
+        plateAppearances = int(stats['stat']['plateAppearances'])
+        totalHits = int(stats['stat']['hits'])
+        battingAverage = float(stats['stat']['avg'])
+        OBP = float(stats['stat']['obp'])
+        OPS = float(stats['stat']['ops'])
+        homeRuns = float(stats['stat']['homeRuns'])
         
         #Stats are returned as a dictionary containing all of the information.
         return { 'hitterName': hitterFullName,
@@ -53,6 +53,38 @@ class Hitter(Player):
                  'OPS': OPS,
                  'homeRuns': homeRuns }
         
+    #Gets the general offensive statistics of a player within a certain date range.
+    def GetOffensiveStatistics(self, a_season, a_startDate, a_endDate):
+        #Create the team offensive statistics endpoint for an individual hitter.
+        individualHittingEndpoint = self.m_endpointObj.GetIndividualHittingEndpoint(self.m_playerID, a_season, a_startDate, a_endDate)
+        
+        #Access the created endpoint and store the data.
+        individualHittingData = self.m_endpointObj.AccessEndpointData(individualHittingEndpoint)
+        
+        #Making sure the hitter ID being used actually exists.
+        if 'people' not in individualHittingData:
+            return 0
+        
+        #Validate that the data could be found (in case an invalid date range is entered or the player did not play during a date range).
+        splits = individualHittingData['people'][0]['stats'][0]['splits']    
+        if not splits:
+            return 0
+        
+        #Sometimes a player may play on multiple teams due to in season trades, so there are splits for each individual team. The last split provided is cumulative stats (that's why -1).
+        cumulativeStats = splits[-1]['stat']
+        
+        #Gather all of the offensive statistics.
+        fullName = individualHittingData['people'][0]['fullName']
+        battingAverage = cumulativeStats['avg']
+        OBP = cumulativeStats['obp']
+        OPS = cumulativeStats['ops']
+        homeRuns = cumulativeStats['homeRuns']
+
+        return { 'fullName': fullName,
+                 'battingAverage': battingAverage,
+                 'OBP': OBP,
+                 'OPS': OPS,
+                 'homeRuns': homeRuns }
         
 
 

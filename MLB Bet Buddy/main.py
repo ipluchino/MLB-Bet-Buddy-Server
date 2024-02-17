@@ -88,7 +88,12 @@ print('Bo Bichette ID:', Player.FindPlayerID('Bo Bichette'))
 print('Fake Player ID:', Player.FindPlayerID('Totally Fake Player'))
 '''
 
-h = Hitter(Player.FindPlayerID('Gleyber Torres'))
-p = Pitcher(Player.FindPlayerID('Chris Sale'))
+h = Hitter(Player.FindPlayerID('Jake Burger'))
+p = Pitcher(Player.FindPlayerID('Martin Perez'))
 
 print(h.GetCareerStatsOffPitcher(p.GetPlayerID()))
+print('\n')
+
+print(h.GetOffensiveStatistics(2023, OPENING_DAY, CLOSING_DAY))
+
+

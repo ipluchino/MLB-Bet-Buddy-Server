@@ -164,7 +164,8 @@ class Team():
         teamHomerunPercentage = totalHomeruns / totalPlateAppearances
         
         #Note: OPS stands for on base plus slugging, and RPG stands for runs per game.
-        return { 'battingAverage': teamBattingAverage, 
+        return { 'teamName': self.m_teamName
+                 'battingAverage': teamBattingAverage, 
                  'OPS': teamOPS,
                  'RPG': teamRunsPerGame,
                  'strikeoutPercentage': teamStrikeoutPercentage,
