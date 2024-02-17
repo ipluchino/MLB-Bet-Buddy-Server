@@ -40,7 +40,7 @@ class Hitter(Player):
         battingAverage = float(stats['stat']['avg'])
         OBP = float(stats['stat']['obp'])
         OPS = float(stats['stat']['ops'])
-        homeRuns = float(stats['stat']['homeRuns'])
+        homeRuns = int(stats['stat']['homeRuns'])
         
         #Stats are returned as a dictionary containing all of the information.
         return { 'hitterName': hitterFullName,
