@@ -155,14 +155,15 @@ class Team():
         teamOPS = float(teamStats['ops'])
         
         #Calculate the strikeout rate of the team. High strikeout rate is good for NRFI since the ball is never put into play.
-        totalAtBats = float(teamStats['atBats'])
+        totalPlateAppearances = float(teamStats['plateAppearances'])
         totalStrikeouts = float(teamStats['strikeOuts'])
-        teamStrikeoutPercentage = totalStrikeouts / totalAtBats
+        teamStrikeoutPercentage = totalStrikeouts / totalPlateAppearances
         
         #Extract homerun rate of the team. Since homeruns instantly end a NRFI, a low team homerun rate is desired for NRFI.
         totalHomeruns = float(teamStats['homeRuns'])
-        teamHomerunPercentage = totalHomeruns / totalAtBats
+        teamHomerunPercentage = totalHomeruns / totalPlateAppearances
         
+        #Note: OPS stands for on base plus slugging, and RPG stands for runs per game.
         return { 'battingAverage': teamBattingAverage, 
                  'OPS': teamOPS,
                  'RPG': teamRunsPerGame,

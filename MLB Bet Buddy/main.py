@@ -3,6 +3,8 @@ from datetime import datetime
 from Team import Team
 from Game import Game
 from Player import Player
+from Hitter import Hitter
+from Pitcher import Pitcher
 
 #Temporarily opening day for 2023.
 OPENING_DAY = datetime.strptime('03/30/2023', '%m/%d/%Y')
@@ -49,6 +51,7 @@ print('Team offensive statistics for the Yankees for the entire 2023 season: \n'
 print(test.GetTeamOffensiveStatistics(2023, OPENING_DAY, CLOSING_DAY))
 '''
 
+'''
 #TESTING BOTH THE GAME AND TEAM CLASSES.
 g = Game(718232)
 
@@ -73,7 +76,9 @@ print('Did the home team score in the first inning?', g.DidTeamScoreFirstInning(
 print('Did the away team score in the first inning?', g.DidTeamScoreFirstInning(g.GetAwayTeamID()))
 print('Did the home pitcher,', g.GetHomeStartingPitcherName(), ', let up a run in the first inning?', g.DidPitcherLetUpRunFirstInning(g.GetHomeStartingPitcherID()))
 print('Did the away pitcher,', g.GetAwayStartingPitcherName(), ', let up a run in the first inning?', g.DidPitcherLetUpRunFirstInning(g.GetAwayStartingPitcherID()))
+'''
 
+'''
 print('\n')
 print('PLAYER ID LOOKUP TESTING:')
 print('Aaron Judge ID:', Player.FindPlayerID('Aaron Judge'))
@@ -81,4 +86,9 @@ print('Anthony Volpe ID:', Player.FindPlayerID('Anthony Volpe'))
 print('Gerrit Cole ID:', Player.FindPlayerID('Gerrit Cole'))
 print('Bo Bichette ID:', Player.FindPlayerID('Bo Bichette'))
 print('Fake Player ID:', Player.FindPlayerID('Totally Fake Player'))
+'''
 
+h = Hitter(Player.FindPlayerID('Gleyber Torres'))
+p = Pitcher(Player.FindPlayerID('Chris Sale'))
+
+print(h.GetCareerStatsOffPitcher(p.GetPlayerID()))
