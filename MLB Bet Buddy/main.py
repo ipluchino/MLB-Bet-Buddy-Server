@@ -88,12 +88,20 @@ print('Bo Bichette ID:', Player.FindPlayerID('Bo Bichette'))
 print('Fake Player ID:', Player.FindPlayerID('Totally Fake Player'))
 '''
 
-h = Hitter(Player.FindPlayerID('Jake Burger'))
-p = Pitcher(Player.FindPlayerID('Martin Perez'))
+#Note: Test player with only 2 at bats in 2023 is Alejo Lopez.
+
+h = Hitter(Player.FindPlayerID('Aaron Judge'))
+p = Pitcher(Player.FindPlayerID('Corbin Burnes'))
 
 print(h.GetCareerStatsOffPitcher(p.GetPlayerID()))
 print('\n')
 
+
+d1 = datetime.strptime('06/27/2023', '%m/%d/%Y')
+d2 = datetime.strptime('06/30/2023', '%m/%d/%Y')
 print(h.GetOffensiveStatistics(2023, OPENING_DAY, CLOSING_DAY))
+
+print('\n')
+print(h.GetLRSplits(2023))
 
 

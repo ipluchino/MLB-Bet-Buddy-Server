@@ -59,13 +59,13 @@ class Hitter(Player):
         individualHittingEndpoint = self.m_endpointObj.GetIndividualHittingEndpoint(self.m_playerID, a_season, a_startDate, a_endDate)
         
         #Access the created endpoint and store the data.
-        individualHittingData = self.m_endpointObj.AccessEndpointData(individualHittingEndpoint)
-        
-        #Making sure the hitter ID being used actually exists.
-        if 'people' not in individualHittingData:
+        individualHittingData = self.m_endpointObj.AccessEndpointData(individualHittingEndpoint)    
+
+        #Making sure the hitter ID being used actually exists and stats were returned by the API.
+        if 'people' not in individualHittingData or 'stats' not in individualHittingData['people'][0]:
             return 0
         
-        #Validate that the data could be found (in case an invalid date range is entered or the player did not play during a date range).
+        #Making sure the player has played within the given timeframe.
         splits = individualHittingData['people'][0]['stats'][0]['splits']    
         if not splits:
             return 0
@@ -75,16 +75,66 @@ class Hitter(Player):
         
         #Gather all of the offensive statistics.
         fullName = individualHittingData['people'][0]['fullName']
+        plateAppearances = cumulativeStats['plateAppearances']
+        hits = cumulativeStats['hits']
         battingAverage = cumulativeStats['avg']
         OBP = cumulativeStats['obp']
         OPS = cumulativeStats['ops']
         homeRuns = cumulativeStats['homeRuns']
 
         return { 'fullName': fullName,
+                 'plateAppearances': plateAppearances,
+                 'hits': hits,
                  'battingAverage': battingAverage,
                  'OBP': OBP,
                  'OPS': OPS,
                  'homeRuns': homeRuns }
+    
+    #Determines the offensive statistics against left handed pitchers and right handed pitchers in a specified season.
+    def GetLRSplits(self, a_season):
+        #Create the lefty/righty splits endpoint for hitters.
+        LRSplitsEndpoint = self.m_endpointObj.GetLRHitterSplitsEndpoint(self.m_playerID, a_season)
+        
+        #Access the created endpoint and store the data.
+        LRSplitsData = self.m_endpointObj.AccessEndpointData(LRSplitsEndpoint)
+        
+        #Make sure the hitter ID provided is valid and could be found. 0 is returned to indicate the player could not be found, and therefore it was not possible to find the lefty/righty splits.
+        if 'people' not in LRSplitsData:
+            return 0
+        
+        #Extract the split data as well as the number of splits that were returned by the endpoint.
+        #Important note: Not every player may have faced both types of pitchers yet at specific points in the provided season, or they may not have played at all in the provided season.
+        splits = LRSplitsData['people'][0]['stats'][0]['splits']
+        
+        #Loop through the possible splits. There can be 0, 1, or 2 depending on the player and season.
+        resultDictionary = {'fullName': LRSplitsData['people'][0]['fullName']}
+        for index in range(len(splits)):
+            splitName = splits[index]['split']['description']
+            
+            #Extracting the actual statistics for the split.
+            splitStats = splits[index]['stat']
+            plateAppearances = splitStats['plateAppearances']
+            hits = splitStats['hits']
+            battingAverage = splitStats['avg']
+            OBP = splitStats['obp']
+            OPS = splitStats['ops']
+            homeRuns = splitStats['homeRuns']
+            
+            #Building a dictionary for the individual split.
+            splitDictionary = { splitName: { 'plateAppearances': plateAppearances,
+                                             'hits': hits,
+                                             'battingAverage': battingAverage,
+                                             'OBP': OBP,
+                                             'OPS': OPS,
+                                             'homeRuns': homeRuns }
+                              }
+            
+            #Adding the individual split to the final result dictionary.
+            resultDictionary.update(splitDictionary)
+             
+        return resultDictionary
+    
+
         
 
 

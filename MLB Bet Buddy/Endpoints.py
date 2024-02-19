@@ -40,10 +40,16 @@ class Endpoints():
     
     #Endpoint to get the player ID of a player based on their name.
     ID_LOOKUP_URL = 'https://statsapi.mlb.com/api/v1/people/search?names={player_name}'
+    
+    #Endpoint to get the lefty/righty splits for a hitter.
+    LEFTY_RIGHTY_SPLITS_HITTTER_URL = 'https://statsapi.mlb.com/api/v1/people/{player_id}?hydrate=stats(group=[hitting],type=[statSplits],sitCodes=[vr,vl],season={season})'
+    
+    #Endpoint to get the lefty/righty splits for a pitcher.
+    LEFTY_RIGHTY_SPLITS_PITCHER_URL = 'https://statsapi.mlb.com/api/v1/people/{player_id}?hydrate=stats(group=[pitching],type=[statSplits],sitCodes=[vr,vl],season={season})'
 
     #CONSTRUCTOR
     def __init__(self):
-        #Create a session object to increase speed.
+        #Create a session object to increase API lookup speed.
         self.session = requests.Session()
     
     #Sends a request to the endpoint and simply returns the data.
@@ -101,9 +107,19 @@ class Endpoints():
     def GetCareerHittingNumbersEndpoint(self, a_hitterID, a_pitcherID):
         return self.CAREER_HITTING_NUMBERS_URL.format(hitter_id=a_hitterID, pitcher_id=a_pitcherID)
     
-    #Gets the endpoint URL to look up a player ID, given a player's name.
+    #Gets the endpoint URL to look up a player ID, given a player's name.f
     def GetPlayerIDLookupEndpoint(self, a_playerName):
         return self.ID_LOOKUP_URL.format(player_name=a_playerName)
+    
+    #Gets the endpoint URL to look up a hitter's lefty/righty splits for a season.
+    def GetLRHitterSplitsEndpoint(self, a_playerID, a_season):
+        return self.LEFTY_RIGHTY_SPLITS_HITTTER_URL.format(player_id=a_playerID, season=a_season)
+    
+    #Gets the endpoint URL to look up a hitter's lefty/righty splits for a season.
+    def GetLRPitcherSplitsEndpoint(self, a_playerID, a_season):
+        return self.LEFTY_RIGHTY_SPLITS_PITCHER_URL.format(player_id=a_playerID, season=a_season)
+    
+
     
     
     
