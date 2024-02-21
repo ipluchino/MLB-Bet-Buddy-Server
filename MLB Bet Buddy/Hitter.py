@@ -36,7 +36,7 @@ class Hitter(Player):
         #Gather the offensive statistics and return them. Note: OBP stands for on base percentage, OPS stands for on base plus slugging.
         gamesPlayed = int(stats['stat']['gamesPlayed'])
         plateAppearances = int(stats['stat']['plateAppearances'])
-        totalHits = int(stats['stat']['hits'])
+        hits = int(stats['stat']['hits'])
         battingAverage = float(stats['stat']['avg'])
         OBP = float(stats['stat']['obp'])
         OPS = float(stats['stat']['ops'])
@@ -47,7 +47,7 @@ class Hitter(Player):
                  'pitcherName': pitcherFullName,
                  'gamesPlayed': gamesPlayed,
                  'plateAppearances': plateAppearances,
-                 'totalHits': totalHits,
+                 'hits': hits,
                  'battingAverage': battingAverage,
                  'OBP': OBP,
                  'OPS': OPS,

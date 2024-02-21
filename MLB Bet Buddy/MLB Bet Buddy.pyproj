@@ -24,6 +24,7 @@
     <Compile Include="Endpoints.py" />
     <Compile Include="Game.py" />
     <Compile Include="Hitter.py" />
+    <Compile Include="LocalFactors.py" />
     <Compile Include="main.py" />
     <Compile Include="Pitcher.py" />
     <Compile Include="Player.py" />
