@@ -49,6 +49,9 @@ class Endpoints():
     
     #Endpoint to get the hourly weather of a city. Note: Uses Weather API not MLB API.
     WEATHER_URL = 'https://api.weatherapi.com/v1/forecast.json?key={API_key}&q={city}' 
+    
+    #Endpoint to get a list of all hitters in a specified season.
+    ALL_HITTERS_URL = 'https://statsapi.mlb.com/api/v1/stats?stats=season&group=hitting&season={season}&playerPool=ALL&offset={offset}'        
 
     #CONSTRUCTOR
     def __init__(self):
@@ -126,6 +129,9 @@ class Endpoints():
     def GetWeatherEndpoint(self, a_APIKey, a_city):
         return self.WEATHER_URL.format(API_key=a_APIKey, city=a_city)
     
+    #Gets the endpoint URL to get a full list of qualified hitters for a specified season.
+    def GetAllHittersEndpoint(self, a_season, a_offset):
+        return self.ALL_HITTERS_URL.format(season=a_season, offset=a_offset)
 
     
     

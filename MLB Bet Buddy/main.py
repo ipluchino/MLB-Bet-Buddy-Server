@@ -112,6 +112,14 @@ print(h.GetLRSplits(2023))
 print('\n')
 print('Aaron Judge\'s stats hitting against Tyler Wells')
 print(h.GetCareerStatsOffPitcher(p.GetPlayerID()))
+print('\n')
+
+allHitters = Hitter.GetAllHitters(2023)
+print('All hitters that need to be checked in the 2023 season. In total there are', len(allHitters), 'hitters that need to be checked.')
+for h in allHitters:
+    print(h)
+    #currentHitter = Hitter(h['playerID'])
+    #print(currentHitter.GetOffensiveStatistics(2023, d1, d2))
 
 '''
 #TESTING WEATHER GATHERING FOR ALL STADIUMS.

@@ -2,6 +2,7 @@
 
 from Endpoints import Endpoints
 from Player import Player
+import math
 
 class Hitter(Player):
     #CONSTRUCTOR - default hitter ID is Aaron Judge from the NYY.
@@ -134,6 +135,56 @@ class Hitter(Player):
              
         return resultDictionary
     
+    #Static method to return a list of all the qualified hitters of a season.
+    @staticmethod
+    def GetAllHitters(a_season):
+        #Create a temporary endpoint object.
+        tempEndpointObj = Endpoints()
+        
+        #Create the endpoint to obtain a list of all hitters and access the data from the endpoint.
+        allHittersEndpoint = tempEndpointObj.GetAllHittersEndpoint(a_season, 0)
+        allHittersData = tempEndpointObj.AccessEndpointData(allHittersEndpoint)
+        
+        #Obtain the total number of players that need to be recorded. 
+        #Note: Only 50 players are returned from the API at a time, and those 50 determined by an offset. The number of API calls is found by taking the total number of players and dividing by 50.
+        totalPlayers = allHittersData['stats'][0]['totalSplits']
+        totalAPICalls = math.ceil(totalPlayers/50)
+        
+        #Continue calling the API until all qualified players have been collected.
+        hittersList = []
+        for APICallNumber in range(totalAPICalls):
+            currentOffset = APICallNumber * 50
+            
+            #For each offset, create a new endpoint and access the data from that endpoint.
+            currentHittersEndpoint = tempEndpointObj.GetAllHittersEndpoint(a_season, currentOffset)
+            currentHittersData = tempEndpointObj.AccessEndpointData(currentHittersEndpoint)
+            
+            #Extract the list of all 50 players returned by the API.
+            hitters = currentHittersData['stats'][0]['splits']
+            
+            #Loop through each of the hitters to make sure they are qualified. If they are, add them to the result list.
+            for hitter in hitters:
+                gamesPlayed = int(hitter['stat']['gamesPlayed'])
+                plateAppearances = int(hitter['stat']['plateAppearances'])
+                
+                #Note: Qualified hitters have 3.1 plate appearances per game played. Also, ensure that the player has played at least 30 games so there are valid statistics.
+                qualifiedPlateAppearances = gamesPlayed * 3.1
+                if gamesPlayed >= 30 and plateAppearances >= qualifiedPlateAppearances:
+                    #If the hitter is qualified and has played a minimum of 30 games, add them to the result list.
+                    playerName = hitter['player']['fullName']
+                    playerID = hitter['player']['id']
+                    
+                    playerInfo = { 'playerName': playerName, 
+                                   'playerID': playerID,
+                                   'gamesPlayed': gamesPlayed,
+                                   'plateAppearances': plateAppearances }
+                    
+                    hittersList.append(playerInfo)
+
+        return hittersList
+        
+
+        
 
         
 
