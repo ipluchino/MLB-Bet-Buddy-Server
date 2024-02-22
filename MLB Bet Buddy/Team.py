@@ -134,8 +134,7 @@ class Team():
         
         #Access the created endpoint and store the data.
         teamOffenseData = self.m_endpointObj.AccessEndpointData(teamOffenseEndpoint)
-        
-        #Extract all of the statistics of interest.
+       
         teamSplits = teamOffenseData['stats'][0]['splits']
         
         #If the splits containing the statistics could not be found (such as the user entered an incorrect date or season) simply return all 0s for the requested statistics.
@@ -163,7 +162,6 @@ class Team():
         totalHomeruns = float(teamStats['homeRuns'])
         teamHomerunPercentage = totalHomeruns / totalPlateAppearances
         
-        #Note: OPS stands for on base plus slugging, and RPG stands for runs per game.
         return { 'teamName': self.m_teamName,
                  'battingAverage': teamBattingAverage, 
                  'OPS': teamOPS,

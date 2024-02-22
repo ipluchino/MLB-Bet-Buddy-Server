@@ -57,7 +57,8 @@ print(test.GetTeamOffensiveStatistics(2023, OPENING_DAY, CLOSING_DAY))
 g = Game(718253)
 
 print('Game ID:', g.GetGameID())
-print('Date:', g.GetGameDate(), '\n')
+print('Date:', g.GetGameDate())
+print('Game Time:', g.GetGameTime(), '\n')
 
 print('Home Team:', g.GetHomeTeamName())
 print('Home Starting Pitcher:', g.GetHomeStartingPitcherName())
@@ -72,6 +73,8 @@ print('Away Team Record:', awayTeam.GetRecord(g.GetGameDate(), 2023), '\n')
 print('Stadium:', g.GetStadium())
 ballparkFactors = LocalFactors()
 print('Ballpark Factor:', ballparkFactors.GetBallparkFactor(g.GetStadium()))
+print('Ballpark City:', ballparkFactors.GetCityForStadium(g.GetStadium()))
+print('Ballpark Weather:', ballparkFactors.GetWeather(g.GetStadium(), g.GetGameTime()))
 print('Game final?', g.IsGameFinal(), '\n')
 
 print('Was a run scored in the first inning?', g.DidYRFIOccur())
@@ -110,5 +113,10 @@ print('\n')
 print('Aaron Judge\'s stats hitting against Tyler Wells')
 print(h.GetCareerStatsOffPitcher(p.GetPlayerID()))
 
+'''
+#TESTING WEATHER GATHERING FOR ALL STADIUMS.
+localFactors = LocalFactors()
 
-
+for stadium in localFactors.BALLPARK_INFORMATION:
+    print(localFactors.GetWeather(stadium, '7:41 PM'))  
+'''

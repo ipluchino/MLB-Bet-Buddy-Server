@@ -46,6 +46,9 @@ class Endpoints():
     
     #Endpoint to get the lefty/righty splits for a pitcher.
     LEFTY_RIGHTY_SPLITS_PITCHER_URL = 'https://statsapi.mlb.com/api/v1/people/{player_id}?hydrate=stats(group=[pitching],type=[statSplits],sitCodes=[vr,vl],season={season})'
+    
+    #Endpoint to get the hourly weather of a city. Note: Uses Weather API not MLB API.
+    WEATHER_URL = 'https://api.weatherapi.com/v1/forecast.json?key={API_key}&q={city}' 
 
     #CONSTRUCTOR
     def __init__(self):
@@ -118,6 +121,10 @@ class Endpoints():
     #Gets the endpoint URL to look up a hitter's lefty/righty splits for a season.
     def GetLRPitcherSplitsEndpoint(self, a_playerID, a_season):
         return self.LEFTY_RIGHTY_SPLITS_PITCHER_URL.format(player_id=a_playerID, season=a_season)
+    
+    #Gets the endpoint URL to look up the weather at a specific city and time.
+    def GetWeatherEndpoint(self, a_APIKey, a_city):
+        return self.WEATHER_URL.format(API_key=a_APIKey, city=a_city)
     
 
     
