@@ -56,13 +56,13 @@ class Hitter(Player):
         
     #Gets the general offensive statistics of a player within a certain date range.
     def GetOffensiveStatistics(self, a_season, a_startDate, a_endDate):
-        #Create the team offensive statistics endpoint for an individual hitter.
+        #Create the offensive statistics endpoint for an individual hitter.
         individualHittingEndpoint = self.m_endpointObj.GetIndividualHittingEndpoint(self.m_playerID, a_season, a_startDate, a_endDate)
         
         #Access the created endpoint and store the data.
         individualHittingData = self.m_endpointObj.AccessEndpointData(individualHittingEndpoint)    
 
-        #Making sure the hitter ID being used actually exists and stats were returned by the API.
+        #Making sure the player ID being used actually exists and stats were returned by the API.
         if 'people' not in individualHittingData or 'stats' not in individualHittingData['people'][0]:
             return 0
         
