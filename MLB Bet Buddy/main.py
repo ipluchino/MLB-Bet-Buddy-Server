@@ -116,8 +116,15 @@ print('\n')
 
 #TESTING PITCHER STATISTICS.
 print('Gerrit Cole\'s statistics from opening day to closing day:')
-p2 = Pitcher(Player.FindPlayerID('Gerrit Cole'))
+p2 = Pitcher(Player.FindPlayerID('Michael King'))
 print(p2.GetPitchingStatistics(2023, OPENING_DAY, CLOSING_DAY))
+print('\n')
+
+print('Gerrit Cole hand information:')
+print(p2.GetHandInformation())
+print('\n')
+
+print(p2.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
 
 '''
 allHitters = Hitter.GetAllHitters(2023)

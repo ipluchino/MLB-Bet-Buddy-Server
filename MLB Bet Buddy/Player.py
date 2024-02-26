@@ -15,6 +15,25 @@ class Player():
     #Gets the player ID of the player this class is representing.
     def GetPlayerID(self):
         return self.m_playerID
+
+    #Gets the hand information for a player (bat hand and pitch hand).
+    def GetHandInformation(self):
+        #Create the endpoint to get general player information and access the endpoint.
+        generalInfoEndpoint = self.m_endpointObj.GetGeneralPlayerInfoEndpoint(self.m_playerID)
+        generalInfoData = self.m_endpointObj.AccessEndpointData(generalInfoEndpoint)
+        
+        #Make sure the player ID provided is valid and could be found. 
+        if 'people' not in generalInfoData:
+            return 0
+        
+        #Extract the bat hand and pitching hand, and return the information as a dictionary.
+        fullName = generalInfoData['people'][0]['fullName']
+        batHand = generalInfoData['people'][0]['batSide']['description']
+        pitchHand = generalInfoData['people'][0]['pitchHand']['description']
+
+        return { 'fullName': fullName,
+                 'batHand': batHand,
+                 'pitchHand': pitchHand }
     
     #Static function to get the ID of a player from their name alone.
     #Assistance Received: https://www.digitalocean.com/community/tutorials/python-static-method#using-staticmethod

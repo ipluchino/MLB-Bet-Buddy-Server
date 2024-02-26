@@ -14,6 +14,9 @@ class Endpoints():
     #Endpoint to find the offensive statistics for a team.
     TEAM_OFFENSE_URL = 'https://statsapi.mlb.com/api/v1/teams/{team_id}/stats?group=hitting&season={season}&sportIds=1&stats=byDateRange&startDate={start_date}&endDate={end_date}'
 
+    #Endpoint to get basic player information (such as batting hand and pitching hand).
+    GENERAL_PLAYER_INFO_URL = 'https://statsapi.mlb.com/api/v1/people/{player_id}'
+
     #Endpoint to find the offensive statistics for an individual player.
     INDIVIDUAL_HITTING_URL = 'https://statsapi.mlb.com/api/v1/people/{player_id}?sportId=1&hydrate=stats(group=[hitting],type=[byDateRange],startDate={start_date},endDate={end_date},season={season})' 
     
@@ -76,6 +79,10 @@ class Endpoints():
     def GetTeamOffensiveEndpoint(self, a_teamID, a_season, a_startDate, a_endDate):
         #Format the dates into the correct format before creating the endpoin
         return self.TEAM_OFFENSE_URL.format(team_id=a_teamID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
+    
+    #Gets the endpoint URL to get basic player information.
+    def GetGeneralPlayerInfoEndpoint(self, a_playerID):
+        return self.GENERAL_PLAYER_INFO_URL.format(player_id=a_playerID)
     
     #Gets the endpoint URL to analyze individual hitting statistics.
     def GetIndividualHittingEndpoint(self, a_playerID, a_season, a_startDate, a_endDate):

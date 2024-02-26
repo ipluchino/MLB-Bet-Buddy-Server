@@ -99,7 +99,7 @@ class Hitter(Player):
         #Access the created endpoint and store the data.
         LRSplitsData = self.m_endpointObj.AccessEndpointData(LRSplitsEndpoint)
         
-        #Make sure the hitter ID provided is valid and could be found. 0 is returned to indicate the player could not be found, and therefore it was not possible to find the lefty/righty splits.
+        #Make sure the player ID provided is valid and could be found. 0 is returned to indicate the player could not be found, and therefore it was not possible to find the lefty/righty splits.
         if 'people' not in LRSplitsData:
             return 0
         
