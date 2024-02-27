@@ -116,7 +116,7 @@ print('\n')
 
 #TESTING PITCHER STATISTICS.
 print('Gerrit Cole\'s statistics from opening day to closing day:')
-p2 = Pitcher(Player.FindPlayerID('Michael King'))
+p2 = Pitcher(Player.FindPlayerID('Gerrit Cole'))
 print(p2.GetPitchingStatistics(2023, OPENING_DAY, CLOSING_DAY))
 print('\n')
 

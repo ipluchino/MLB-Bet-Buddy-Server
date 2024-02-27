@@ -154,6 +154,30 @@ class Game():
     def GetScoringPlayIndices(self):
         return self.m_gameData['liveData']['plays']['scoringPlays']
     
+    #Displays all the inforrmation about the game in a neat format.
+    def PrintGameInfo(self):
+        #Basic game ID and time information.
+        print('Game ID:', self.m_gameID)
+        print('Date:', self.m_date)
+        print('Game Time:', self.m_time, '\n')
+
+        #Teams and probable pitchers.
+        print('Home Team:', self.m_homeTeamName)
+        print('Home Starting Pitcher:', self.m_homePitcherName)
+        print('Away Team:', self.m_awayTeamName)
+        print('Away Starting Pitcher:', self.m_awayPitcherName, '\n')
+
+        #Stadium information and game status.
+        print('Stadium:', self.m_stadium)
+        print('Game final?', self.m_isFinal, '\n')
+
+        #NRFI/YRFI information.
+        print('Was a run scored in the first inning?', self.DidYRFIOccur())
+        print('Did the home team score in the first inning?', self.DidTeamScoreFirstInning(self.m_homeTeamID))
+        print('Did the away team score in the first inning?', self.DidTeamScoreFirstInning(self.m_awayTeamID))
+        print('Did the home pitcher, ' + self.m_homePitcherName + ', let up a run in the first inning?', self.DidPitcherLetUpRunFirstInning(self.m_homePitcherID))
+        print('Did the away pitcher, ' + self.m_awayPitcherName + ', let up a run in the first inning?', self.DidPitcherLetUpRunFirstInning(self.m_awayPitcherID), '\n')
+
     #NRFI Functions
     #Determines whether or not a run was scored in the first run of the inning.
     def DidYRFIOccur(self):
