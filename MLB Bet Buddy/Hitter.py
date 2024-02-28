@@ -3,6 +3,7 @@
 from Endpoints import Endpoints
 from Player import Player
 import math
+from datetime import datetime, timedelta
 
 class Hitter(Player):
     #CONSTRUCTOR - default hitter ID is Aaron Judge from the NYY.
@@ -76,14 +77,16 @@ class Hitter(Player):
         
         #Gather all of the offensive statistics.
         fullName = individualHittingData['people'][0]['fullName']
-        plateAppearances = cumulativeStats['plateAppearances']
-        hits = cumulativeStats['hits']
-        battingAverage = cumulativeStats['avg']
-        OBP = cumulativeStats['obp']
-        OPS = cumulativeStats['ops']
-        homeRuns = cumulativeStats['homeRuns']
+        gamesPlayed = int(cumulativeStats['gamesPlayed'])
+        plateAppearances = int(cumulativeStats['plateAppearances'])
+        hits = int(cumulativeStats['hits'])
+        battingAverage = float(cumulativeStats['avg'])
+        OBP = float(cumulativeStats['obp'])
+        OPS = float(cumulativeStats['ops'])
+        homeRuns = int(cumulativeStats['homeRuns'])
 
         return { 'fullName': fullName,
+                 'gamesPlayed': gamesPlayed,
                  'plateAppearances': plateAppearances,
                  'hits': hits,
                  'battingAverage': battingAverage,
@@ -92,7 +95,7 @@ class Hitter(Player):
                  'homeRuns': homeRuns }
     
     #Determines the offensive statistics against left handed pitchers and right handed pitchers in a specified season.
-    def GetLRSplits(self, a_season):
+    def GetLRHittingSplits(self, a_season):
         #Create the lefty/righty splits endpoint for hitters.
         LRSplitsEndpoint = self.m_endpointObj.GetLRHitterSplitsEndpoint(self.m_playerID, a_season)
         
@@ -114,8 +117,8 @@ class Hitter(Player):
             
             #Extracting the actual statistics for the split.
             splitStats = splits[index]['stat']
-            plateAppearances = splitStats['plateAppearances']
-            hits = splitStats['hits']
+            plateAppearances = int(splitStats['plateAppearances'])
+            hits = int(splitStats['hits'])
             battingAverage = splitStats['avg']
             OBP = splitStats['obp']
             OPS = splitStats['ops']
@@ -135,6 +138,40 @@ class Hitter(Player):
              
         return resultDictionary
     
+    #Finds and returns a hitter's last 10 games offensive statistics, given a starting date to search from.
+    def Last10Stats(self, a_season, a_date):
+        #Will act as the ending date for the date range.
+        endDate = a_date       
+
+        #The starting date of the search will be a week away from the end just in case of double headers (which are rare, but occur when two games are played on the same day).
+        startDate = a_date - timedelta(days=7)
+
+        #If the player has not played 10 games in the last 3 weeks from the date, the data isn't recent enough and shouldn't be used.
+        maximumDate = a_date - timedelta(days=21)
+        
+        #Loop through each range of dates, decrementing the end date by 1 day each time until the closing date is reached.
+        while startDate > maximumDate:
+            hittingStatistics = self.GetOffensiveStatistics(a_season, startDate, endDate)
+            
+            #Make sure hitting statistics were found in the date range to avoid crashihng.
+            if hittingStatistics == 0:
+                startDate -= timedelta(days=1)
+                continue
+
+            gamesPlayed = hittingStatistics['gamesPlayed']
+            if gamesPlayed == 10:
+                #If 10 games played was found, add the date range used to the return dictionary and return it.
+                hittingStatistics['startDateRange'] = startDate.strftime('%m/%d/%Y')
+                hittingStatistics['endDateRange'] = endDate.strftime('%m/%d/%Y')
+                
+                return hittingStatistics
+
+            #Expand the range of dates to keep searching for the player's last 10 games.
+            startDate -= timedelta(days=1)
+            
+        #If the maximum date range was reached and the player hasn't played 10 games, return 0 to represent there was not enough data from the starting date.
+        return 0
+
     #Static method to return a list of all the qualified hitters of a season.
     @staticmethod
     def GetAllHitters(a_season):

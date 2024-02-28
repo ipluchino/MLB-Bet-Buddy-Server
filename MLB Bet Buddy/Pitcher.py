@@ -32,16 +32,16 @@ class Pitcher(Player):
         
         #Gather all of the necessary pitching statistics.
         fullName = individualPitchingData['people'][0]['fullName']
-        gamesStarted = cumulativeStats['gamesPlayed']
-        inningsPitched = cumulativeStats['inningsPitched']
-        wins = cumulativeStats['wins']
-        losses = cumulativeStats['losses']
+        gamesStarted = int(cumulativeStats['gamesPlayed'])
+        inningsPitched = int(cumulativeStats['inningsPitched'])
+        wins = int(cumulativeStats['wins'])
+        losses = int(cumulativeStats['losses'])
         #Note: ERA = Earned Run Average and WHIP = Walks and Hits per Innings Pitched. The lower these values, the better the pitcher.
-        ERA = cumulativeStats['era']          
-        WHIP = cumulativeStats['whip']         
+        ERA = float(cumulativeStats['era'])       
+        WHIP = float(cumulativeStats['whip'])         
         #Note: The stats below represent the average number strikeouts and homeruns if the pitcher were to pitch a full 9 innings. Higher strikeout rates are better, and lower homerun rates are better.
-        strikeoutsPer9Inn = cumulativeStats['strikeoutsPer9Inn']
-        homeRunsPer9Inn = cumulativeStats['homeRunsPer9']
+        strikeoutsPer9Inn = float(cumulativeStats['strikeoutsPer9Inn'])
+        homeRunsPer9Inn = float(cumulativeStats['homeRunsPer9'])
         
         return { 'fullName': fullName,
                  'gamesStarted': gamesStarted,

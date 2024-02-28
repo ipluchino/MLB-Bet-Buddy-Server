@@ -95,25 +95,28 @@ print('Bo Bichette ID:', Player.FindPlayerID('Bo Bichette'))
 print('Fake Player ID:', Player.FindPlayerID('Totally Fake Player'))
 '''
 
+'''
 #Note: Test player with only 2 at bats in 2023 is Alejo Lopez.
 
 h = Hitter(Player.FindPlayerID('Aaron Judge'))
 p = Pitcher(Player.FindPlayerID('Tyler Wells'))
 
-d1 = datetime.strptime('04/30/2023', '%m/%d/%Y')
-d2 = datetime.strptime('05/30/2023', '%m/%d/%Y')
+d1 = datetime.strptime('05/10/2023', '%m/%d/%Y')
+d2 = datetime.strptime('06/10/2023', '%m/%d/%Y')
 print('Aaron Judge\'s stats from', d1, 'TO', d2, ':')
 print(h.GetOffensiveStatistics(2023, d1, d2))
 
 print('\n')
 print('Aaron Judge\'s vsLeft and vsRight splits:')
-print(h.GetLRSplits(2023))
+print(h.GetLRHittingSplits(2023))
 
 print('\n')
 print('Aaron Judge\'s stats hitting against Tyler Wells')
 print(h.GetCareerStatsOffPitcher(p.GetPlayerID()))
 print('\n')
+'''
 
+'''
 #TESTING PITCHER STATISTICS.
 print('Gerrit Cole\'s statistics from opening day to closing day:')
 p2 = Pitcher(Player.FindPlayerID('Gerrit Cole'))
@@ -125,12 +128,13 @@ print(p2.GetHandInformation())
 print('\n')
 
 print(p2.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
+'''
 
 '''
 allHitters = Hitter.GetAllHitters(2023)
 print('All hitters that need to be checked in the 2023 season. In total there are', len(allHitters), 'hitters that need to be checked.')
 for h in allHitters:
-    print(h)
+    print(h)9
     #currentHitter = Hitter(h['playerID'])
     #print(currentHitter.GetOffensiveStatistics(2023, d1, d2))
 '''
@@ -142,3 +146,13 @@ localFactors = LocalFactors()
 for stadium in localFactors.BALLPARK_INFORMATION:
     print(localFactors.GetWeather(stadium, '7:41 PM'))  
 '''
+
+#LAST 10 GAMES TESTING.
+date = datetime.strptime('06/10/2023', '%m/%d/%Y')
+
+allHitters = Hitter.GetAllHitters(2023)
+print(len(allHitters))
+
+for hitter in allHitters:
+    currentHitter = Hitter(hitter['playerID'])
+    print(currentHitter.Last10Stats(2023, date))
