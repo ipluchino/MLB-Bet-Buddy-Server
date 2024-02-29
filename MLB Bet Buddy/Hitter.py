@@ -106,7 +106,6 @@ class Hitter(Player):
         if 'people' not in LRSplitsData:
             return 0
         
-        #Extract the split data as well as the number of splits that were returned by the endpoint.
         #Important note: Not every player may have faced both types of pitchers yet at specific points in the provided season, or they may not have played at all in the provided season.
         splits = LRSplitsData['people'][0]['stats'][0]['splits']
         
@@ -115,14 +114,14 @@ class Hitter(Player):
         for index in range(len(splits)):
             splitName = splits[index]['split']['description']
             
-            #Extracting the actual statistics for the split.
+            #Extracting the actual statistics for the individual split.
             splitStats = splits[index]['stat']
             plateAppearances = int(splitStats['plateAppearances'])
             hits = int(splitStats['hits'])
-            battingAverage = splitStats['avg']
-            OBP = splitStats['obp']
-            OPS = splitStats['ops']
-            homeRuns = splitStats['homeRuns']
+            battingAverage = float(splitStats['avg'])
+            OBP = float(splitStats['obp'])
+            OPS = float(splitStats['ops'])
+            homeRuns = float(splitStats['homeRuns'])
             
             #Building a dictionary for the individual split.
             splitDictionary = { splitName: { 'plateAppearances': plateAppearances,

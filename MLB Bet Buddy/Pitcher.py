@@ -32,8 +32,8 @@ class Pitcher(Player):
         
         #Gather all of the necessary pitching statistics.
         fullName = individualPitchingData['people'][0]['fullName']
-        gamesStarted = int(cumulativeStats['gamesPlayed'])
-        inningsPitched = int(cumulativeStats['inningsPitched'])
+        gamesPlayed = int(cumulativeStats['gamesPlayed'])
+        inningsPitched = float(cumulativeStats['inningsPitched'])
         wins = int(cumulativeStats['wins'])
         losses = int(cumulativeStats['losses'])
         #Note: ERA = Earned Run Average and WHIP = Walks and Hits per Innings Pitched. The lower these values, the better the pitcher.
@@ -44,7 +44,7 @@ class Pitcher(Player):
         homeRunsPer9Inn = float(cumulativeStats['homeRunsPer9'])
         
         return { 'fullName': fullName,
-                 'gamesStarted': gamesStarted,
+                 'gamesPlayed': gamesPlayed,
                  'inningsPitched': inningsPitched,
                  'wins': wins,
                  'losses': losses,
@@ -52,6 +52,45 @@ class Pitcher(Player):
                  'WHIP': WHIP,
                  'strikeoutsPer9': strikeoutsPer9Inn,
                  'homeRunsPer9': homeRunsPer9Inn }
+    
+    #Determines the pitching statistics against left handed hitters and right handed hitters in a specified season.
+    def GetLRPitchingSplits(self, a_season):
+        #Create the lefty/righty splits endpoint for pitchers.
+        LRSplitsEndpoint = self.m_endpointObj.GetLRPitcherSplitsEndpoint(self.m_playerID, a_season)
+        
+        #Access the created endpoint and store the data.
+        LRSplitsData = self.m_endpointObj.AccessEndpointData(LRSplitsEndpoint)
+        
+        #Make sure the player ID provided is valid and could be found. 0 is returned to indicate the player could not be found.
+        if 'people' not in LRSplitsData:
+            return 0
+        
+        #Extract the split data.
+        splits = LRSplitsData['people'][0]['stats'][0]['splits']
+        
+        #Loop through the possible splits. There can be 0, 1, or 2 depending on the player and season but practically all pitchers will have 2.
+        resultDictionary = {'fullName': LRSplitsData['people'][0]['fullName']}
+        for index in range(len(splits)):
+            splitName = splits[index]['split']['description']
+            
+            #Extracting the actual statistics for the individual split.
+            splitStats = splits[index]['stat']
+            battersFaced = int(splitStats['battersFaced'])
+            BAA = float(splitStats['avg'])
+            strikeoutsPer9Inn = float(splitStats['strikeoutsPer9Inn'])
+            homeRunsPer9Inn = float(splitStats['homeRunsPer9'])
+            
+            #Building a dictionary for the individual split.
+            splitDictionary = { splitName: { 'battersFaced': battersFaced,
+                                             'battingAverageAgainst': BAA,
+                                             'strikeoutsPer9': strikeoutsPer9Inn,
+                                             'homeRunsPer9': homeRunsPer9Inn }
+                              }
+            
+            #Adding the individual split to the final result dictionary.
+            resultDictionary.update(splitDictionary)
+        
+        return resultDictionary
 
     #Calculates the percentage of a pitcher's game where they let up a run in the 1st inning.
     def CalculateYRFIPercentage(self, a_season, a_startDate, a_endDate):

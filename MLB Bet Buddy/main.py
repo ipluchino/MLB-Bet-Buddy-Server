@@ -116,7 +116,7 @@ print(h.GetCareerStatsOffPitcher(p.GetPlayerID()))
 print('\n')
 '''
 
-'''
+
 #TESTING PITCHER STATISTICS.
 print('Gerrit Cole\'s statistics from opening day to closing day:')
 p2 = Pitcher(Player.FindPlayerID('Gerrit Cole'))
@@ -127,8 +127,11 @@ print('Gerrit Cole hand information:')
 print(p2.GetHandInformation())
 print('\n')
 
-print(p2.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
-'''
+print('Gerrit Cole LR Splits:')
+print(p2.GetLRPitchingSplits(2023))
+
+#print(p2.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
+
 
 '''
 allHitters = Hitter.GetAllHitters(2023)
@@ -147,6 +150,7 @@ for stadium in localFactors.BALLPARK_INFORMATION:
     print(localFactors.GetWeather(stadium, '7:41 PM'))  
 '''
 
+'''
 #LAST 10 GAMES TESTING.
 date = datetime.strptime('06/10/2023', '%m/%d/%Y')
 
@@ -156,3 +160,4 @@ print(len(allHitters))
 for hitter in allHitters:
     currentHitter = Hitter(hitter['playerID'])
     print(currentHitter.Last10Stats(2023, date))
+'''
