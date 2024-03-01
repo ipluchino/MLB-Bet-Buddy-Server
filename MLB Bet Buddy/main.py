@@ -116,7 +116,7 @@ print(h.GetCareerStatsOffPitcher(p.GetPlayerID()))
 print('\n')
 '''
 
-
+'''
 #TESTING PITCHER STATISTICS.
 print('Gerrit Cole\'s statistics from opening day to closing day:')
 p2 = Pitcher(Player.FindPlayerID('Gerrit Cole'))
@@ -131,7 +131,7 @@ print('Gerrit Cole LR Splits:')
 print(p2.GetLRPitchingSplits(2023))
 
 #print(p2.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
-
+'''
 
 '''
 allHitters = Hitter.GetAllHitters(2023)
@@ -161,3 +161,15 @@ for hitter in allHitters:
     currentHitter = Hitter(hitter['playerID'])
     print(currentHitter.Last10Stats(2023, date))
 '''
+
+#TESTING TEAM YRFI PERCENTAGE
+date = datetime.strptime('06/10/2023', '%m/%d/%Y')
+#for team in Team.MLB_TEAM_IDS:
+#    teamObj = Team(team['id'])
+#    YRFIRate = teamObj.CalculateYRFIPercentage(2023, OPENING_DAY, date)
+#    print(teamObj.GetTeamName(), YRFIRate)
+
+team = Team(147)
+print(team.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
+
+

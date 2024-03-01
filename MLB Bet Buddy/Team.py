@@ -1,6 +1,7 @@
 #TEAM CLASS. Handles everything regarding an MLB team.
 
 from Endpoints import Endpoints
+from Game import Game
 
 class Team():
     #All MLB teams and their respective IDs associated with the MLB API.
@@ -168,8 +169,68 @@ class Team():
                  'RPG': teamRunsPerGame,
                  'strikeoutPercentage': teamStrikeoutPercentage,
                  'homerunPercentage': teamHomerunPercentage }
+    
+    #Calculates the percentage that an individual team scores a run in the 1st inning of their games.
+    def CalculateYRFIPercentage(self, a_season, a_startDate, a_endDate):
+        #Create the team game log endpoint.
+        teamGameLogEndpoint = self.m_endpointObj.GetTeamGameLogEndpoint(self.m_teamID, a_season, a_startDate, a_endDate)
         
+        #Access the data from the endpoint.
+        teamGameLogData = self.m_endpointObj.AccessEndpointData(teamGameLogEndpoint)
         
+        #Make sure there were no errors in the dates/season provided.
+        if 'dates' not in teamGameLogData or int(teamGameLogData['totalGames']) == 0:
+            return 0
+        
+        #Extract a list of game IDs that need to be checked from the returned data.
+        gameList = teamGameLogData['dates']
+        gameIDs = self.ExtractGameIDs(gameList)
+        
+        #Loop through each of the valid games within the date range.
+        gameCount = len(gameIDs)
+        YRFICount = 0
+        for game in gameIDs:
+            gameID = game['gameID']
+            gameObj = Game(gameID)
+            
+            #If a run was scored in the 1st inning of the game by the team, increment the YRFI count.
+            if gameObj.DidTeamScoreFirstInning(self.m_teamID):
+                print('Yes', gameObj.GetGameDate())
+                YRFICount += 1
+            else:
+                print('No', gameObj.GetGameDate())
+
+        #The YRFI rate represents the percentage of games a team scores in the 1st inning of their games. Lower YRFI rates are better for NRFI. 
+        YRFIRate = YRFICount / gameCount            
+
+        return YRFIRate
+    
+    #Helper function to extract a list of all game IDs from a list of games returned by the MLB API.
+    def ExtractGameIDs(self, a_gameList):
+        resultList = []        
+
+        #Loop through each date that a game occurred.
+        for date in a_gameList:
+            #Loop through each game that happened on that day (to account for double headers).
+            totalGames = date['games']
+            for game in totalGames:
+                #Extract information about each game.
+                gameDate = game['officialDate']
+                gameStatus = game['status']['detailedState']
+                gameID = game['gamePk']                
+
+                #Append the game to the result list only if the game has been completed (ignore any games that were postponed before they started).
+                if gameStatus != 'Final' and gameStatus != 'Completed Early':
+                    continue
+                
+                #Also skip games that started, but were paused and resumed on a later date to avoid duplicates.
+                if 'resumeDate' in game:
+                    continue
+                
+                resultList.append({ 'gameID': gameID, 'gameDate': gameDate })
+                
+        return resultList
+
         
 
         
