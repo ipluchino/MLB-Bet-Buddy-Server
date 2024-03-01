@@ -52,6 +52,19 @@ class Team():
             self.m_teamID = 147
             self.m_teamName = 'New York Yankees'
             
+    #Creates a Team object from the name of the MLB team, instead of its ID.
+    @staticmethod
+    def CreateFromName(a_teamName):
+        teamObj = Team()
+        
+        #Determine the team ID from the provided name and set the team object to the correct team ID.
+        teamID = teamObj.IDFromName(a_teamName)
+        
+        #Note: If the user enters an invalid team name, it will default to the New York Yankees.
+        teamObj.SetTeam(teamID)
+        
+        return teamObj
+
     #Validates that a provided ID is legitimate.
     def ValidateTeamID(self, a_teamID):
         #Loop through each team and check if the ID matches one of the teams in the list.
@@ -69,7 +82,17 @@ class Team():
             if team['id'] == a_teamID:
                 return team['name']
             
-        #Otherwise, the ID is not valid, and there is no name.
+        #Otherwise, the ID is not valid, and there is no associated name.
+        return 'Unknown'
+    
+    #Gets the ID of a team given its name.
+    def IDFromName(self, a_teamName):
+        #Loop through each team and check if the name matches one from in the list.
+        for team in self.MLB_TEAM_IDS:
+            if team['name'] == a_teamName:
+                return team['id']
+            
+        #Otherwise, the name is not valid, and there is no associated ID.
         return 'Unknown'
 
     #Getters

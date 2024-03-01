@@ -169,7 +169,8 @@ date = datetime.strptime('06/10/2023', '%m/%d/%Y')
 #    YRFIRate = teamObj.CalculateYRFIPercentage(2023, OPENING_DAY, date)
 #    print(teamObj.GetTeamName(), YRFIRate)
 
-team = Team(147)
+team = Team.CreateFromName('Toronto Blue Jays')
+print(team.GetTeamName(), team.GetTeamID())
 print(team.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
 
 
