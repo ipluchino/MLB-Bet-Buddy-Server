@@ -6,6 +6,7 @@ from Player import Player
 from Hitter import Hitter
 from Pitcher import Pitcher
 from LocalFactors import LocalFactors
+from BetPredictor import BetPredictor
 
 #Temporarily opening day for 2023.
 OPENING_DAY = datetime.strptime('03/30/2023', '%m/%d/%Y')
@@ -162,6 +163,7 @@ for hitter in allHitters:
     print(currentHitter.Last10Stats(2023, date))
 '''
 
+'''
 #TESTING TEAM YRFI PERCENTAGE
 date = datetime.strptime('06/10/2023', '%m/%d/%Y')
 #for team in Team.MLB_TEAM_IDS:
@@ -172,5 +174,13 @@ date = datetime.strptime('06/10/2023', '%m/%d/%Y')
 team = Team.CreateFromName('Toronto Blue Jays')
 print(team.GetTeamName(), team.GetTeamID())
 print(team.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
+'''
 
+bp = BetPredictor()
+date = datetime.strptime('07/19/2023', '%m/%d/%Y')
+
+schedule = bp.CreateSchedule(date, 2023)
+schedule.to_excel('schedule.xlsx')
+
+print(schedule)
 

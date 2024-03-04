@@ -45,7 +45,7 @@ class Game():
         gameInformation = self.m_gameData['gameData']
         
         #Setting the exact date and time of the game. Note: The time of game is LOCAL time.
-        self.m_date = datetime.strptime(gameInformation['datetime']['dateTime'], '%Y-%m-%dT%H:%M:%SZ')
+        self.m_date = gameInformation['datetime']['officialDate']
         self.m_time = gameInformation['datetime']['time'] + ' ' + gameInformation['datetime']['ampm']
 
         #Setting the state of the game - whether the game is final or not (sometimes games can be postponed or cancelled due to rain - this is important for game tracking).
@@ -68,28 +68,28 @@ class Game():
         probablePitchersData = gameInformation['probablePitchers']
         
         #Set the probable pitchers, if they exist. If the starting pitcher hasn't be announced or determined yet, the data will not exist. T.B.D. stands for to be determined.
+        #Handling the case where neither starting pitcher has been announced yet.
         if not probablePitchersData:
             self.m_homePitcherName = 'T.B.D.'
             self.m_homePitcherID = 0
             self.m_awayPitcherName = 'T.B.D.'
             self.m_awayPitcherID = 0
         else:
-            homeProbablePitcherData = probablePitchersData['home']
-            awayProbablePitcherData = probablePitchersData['away']
-            
             #Setting the home team's starting pitcher, if it exists.
-            if not homeProbablePitcherData:
+            if not 'home' in probablePitchersData:
                 self.m_homePitcherName = 'T.B.D.'
                 self.m_homePitcherID = 0
             else:
+                homeProbablePitcherData = probablePitchersData['home']
                 self.m_homePitcherName = homeProbablePitcherData['fullName']
                 self.m_homePitcherID = homeProbablePitcherData['id']
             
             #Setting the away team's starting pitcher, if it exists.
-            if not awayProbablePitcherData:
-                self.m_awayPitcherName = 'T.B.D.'
-                self.m_awayPitcherID = 0
+            if not 'away' in probablePitchersData:
+                self.m_homePitcherName = 'T.B.D.'
+                self.m_homePitcherID = 0
             else:
+                awayProbablePitcherData = probablePitchersData['away']
                 self.m_awayPitcherName = awayProbablePitcherData['fullName']
                 self.m_awayPitcherID = awayProbablePitcherData['id']
 
