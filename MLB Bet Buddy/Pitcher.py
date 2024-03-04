@@ -20,12 +20,12 @@ class Pitcher(Player):
 
         #Making sure the player ID being used actually exists and stats were returned by the API.
         if 'people' not in individualPitchingData or 'stats' not in individualPitchingData['people'][0]:
-            return 0
+            return {}
         
         #Making sure the player has played within the given timeframe.
         splits = individualPitchingData['people'][0]['stats'][0]['splits']    
         if not splits:
-            return 0
+            return {}
 
         #Sometimes a player may play on multiple teams due to in season trades, so there are splits for each individual team. The last split provided is cumulative stats (that's why -1).
         cumulativeStats = splits[-1]['stat']
@@ -63,7 +63,7 @@ class Pitcher(Player):
         
         #Make sure the player ID provided is valid and could be found. 0 is returned to indicate the player could not be found.
         if 'people' not in LRSplitsData:
-            return 0
+            return {}
         
         #Extract the split data.
         splits = LRSplitsData['people'][0]['stats'][0]['splits']

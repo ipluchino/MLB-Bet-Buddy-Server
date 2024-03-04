@@ -22,13 +22,13 @@ class Hitter(Player):
         
         #Make sure the hitter ID provided is valid and could be found. 0 is returned to indicate no career stats could be found.
         if 'people' not in careerHittingStatistics:
-            return 0
+            return {}
         
         #Also make sure that the pitcher ID provided is valid and the hitter has career statistics against them. 0 is returned to indicate no career stats could be found.
         splits = careerHittingStatistics['people'][0]['stats'][0]['splits']
         if not splits:
             #Either the pitcher ID is invalid, or the hitter has never faced the pitcher so there will be no statistics returned from the MLB API.
-            return 0
+            return {}
         
         #If both the hitter and pitcher exists, extract the career hitting statistics the hitter has against the pitcher.
         stats = splits[0]
@@ -65,12 +65,12 @@ class Hitter(Player):
 
         #Making sure the player ID being used actually exists and stats were returned by the API.
         if 'people' not in individualHittingData or 'stats' not in individualHittingData['people'][0]:
-            return 0
+            return {}
         
         #Making sure the player has played within the given timeframe.
         splits = individualHittingData['people'][0]['stats'][0]['splits']    
         if not splits:
-            return 0
+            return {}
         
         #Sometimes a player may play on multiple teams due to in season trades, so there are splits for each individual team. The last split provided is cumulative stats (that's why -1).
         cumulativeStats = splits[-1]['stat']
@@ -104,7 +104,7 @@ class Hitter(Player):
         
         #Make sure the player ID provided is valid and could be found. 0 is returned to indicate the player could not be found, and therefore it was not possible to find the lefty/righty splits.
         if 'people' not in LRSplitsData:
-            return 0
+            return {}
         
         #Important note: Not every player may have faced both types of pitchers yet at specific points in the provided season, or they may not have played at all in the provided season.
         splits = LRSplitsData['people'][0]['stats'][0]['splits']
@@ -168,8 +168,8 @@ class Hitter(Player):
             #Expand the range of dates to keep searching for the player's last 10 games.
             startDate -= timedelta(days=1)
             
-        #If the maximum date range was reached and the player hasn't played 10 games, return 0 to represent there was not enough data from the starting date.
-        return 0
+        #If the maximum date range was reached and the player hasn't played 10 games, return an empty dictionary to represent there was not enough data from the starting date.
+        return {}
 
     #Static method to return a list of all the qualified hitters of a season.
     @staticmethod

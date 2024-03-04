@@ -24,7 +24,7 @@ class Player():
         
         #Make sure the player ID provided is valid and could be found. 
         if 'people' not in generalInfoData:
-            return 0
+            return {}
         
         #Extract the bat hand and pitching hand, and return the information as a dictionary.
         fullName = generalInfoData['people'][0]['fullName']
