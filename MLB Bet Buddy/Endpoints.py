@@ -64,8 +64,12 @@ class Endpoints():
     #Sends a request to the endpoint and simply returns the data.
     def AccessEndpointData(self, a_URL):
         response = self.session.get(a_URL)
-        data = response.json()
-        return data
+        
+        try:
+            data = response.json()
+            return data
+        except:
+            print(response.text)
     
     #Converts a datetime object into the correct string format.
     def FormatDate(self, a_dateObj):

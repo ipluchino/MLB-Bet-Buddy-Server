@@ -122,7 +122,7 @@ class Team():
         
         #If there are no standings present (such as if the date or season entered is not valid, default to 0-0 record).
         if not standingsData:
-            return (0, 0)
+            return '0-0'
         
         #Otherwise, find the standings for the specified team.
         record = self.FindRecord(standingsData)
@@ -147,10 +147,10 @@ class Team():
                     wins = teamRecord['leagueRecord']['wins']
                     losses = teamRecord['leagueRecord']['losses']
                     
-                    return (wins, losses)
+                    return str(wins) + '-' + str(losses)
                     
         #At this point, a record could not be found, so return a default record of 0 wins and 0 losses.
-        return (0, 0)
+        return '0-0'
 
     def GetTeamOffensiveStatistics(self, a_season, a_startDate, a_endDate):
         #Create the team offensive statistics endpoint.
@@ -158,12 +158,12 @@ class Team():
         
         #Access the created endpoint and store the data.
         teamOffenseData = self.m_endpointObj.AccessEndpointData(teamOffenseEndpoint)
-       
+        
         teamSplits = teamOffenseData['stats'][0]['splits']
         
         #If the splits containing the statistics could not be found (such as the user entered an incorrect date or season) simply return all 0s for the requested statistics.
         if not teamSplits:
-            return { 'battingAverage': 0.000, 'OPS': 0.000, 'RPG': 0.000, 'strikeoutPercentage': 0.000, 'homerunPercentage': 0.000 }
+            return {}
         
         #teamStats contains all of the actual statistics.
         teamStats = teamSplits[0]['stat']
@@ -224,6 +224,10 @@ class Team():
                 print('No', gameObj.GetGameDate())
 
         #The YRFI rate represents the percentage of games a team scores in the 1st inning of their games. Lower YRFI rates are better for NRFI. 
+        #Make sure a game has been played to avoid division by 0 error.
+        if gameCount == 0:
+            return 0
+
         YRFIRate = YRFICount / gameCount            
 
         return YRFIRate

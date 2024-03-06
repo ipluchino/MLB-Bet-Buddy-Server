@@ -176,11 +176,15 @@ print(team.GetTeamName(), team.GetTeamID())
 print(team.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
 '''
 
-bp = BetPredictor()
-date = datetime.strptime('07/19/2023', '%m/%d/%Y')
+#bp = BetPredictor()
+#date = datetime.strptime('10/01/2023', '%m/%d/%Y')
 
-schedule = bp.CreateSchedule(date, 2023)
-schedule.to_excel('schedule.xlsx')
+#schedule = bp.CreateSchedule(date, 2023)
+#schedule.to_excel('schedule.xlsx')
 
-print(schedule)
+#NRFI = bp.CreateNRFIPredictions(schedule, OPENING_DAY, 2023)
+#NRFI.to_excel('NRFI.xlsx')
 
+t = Team(142)
+print(t.GetTeamName())
+print(t.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))

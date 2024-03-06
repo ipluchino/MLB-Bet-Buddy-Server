@@ -130,10 +130,10 @@ class Pitcher(Player):
             
             #Determine if the pitcher let up a run in the 1st inning for that game.
             if gameObj.DidPitcherLetUpRunFirstInning(self.m_playerID):
-                print('Yes', gameObj.GetGameDate())
+            #    print('Yes', gameObj.GetGameDate())
                 YRFICount += 1
-            else:
-                print('No', gameObj.GetGameDate())
+            #else:
+            #    print('No', gameObj.GetGameDate())
 
         #The YRFI rate represents the percentage of games a pitcher let up a run in the 1st inning in their starts. Lower YRFI rates are better for NRFI.            
         YRFIRate = YRFICount / totalGamesStarted
