@@ -135,7 +135,11 @@ class Pitcher(Player):
             #else:
             #    print('No', gameObj.GetGameDate())
 
-        #The YRFI rate represents the percentage of games a pitcher let up a run in the 1st inning in their starts. Lower YRFI rates are better for NRFI.            
+        #The YRFI rate represents the percentage of games a pitcher let up a run in the 1st inning in their starts. Lower YRFI rates are better for NRFI.
+        #Make sure a game has been played to avoid division by 0 error.
+        if totalGamesStarted == 0:
+            return 0
+        
         YRFIRate = YRFICount / totalGamesStarted
 
         return YRFIRate

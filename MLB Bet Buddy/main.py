@@ -1,5 +1,5 @@
 from Endpoints import Endpoints
-from datetime import datetime
+from datetime import datetime, timedelta
 from Team import Team
 from Game import Game
 from Player import Player
@@ -176,15 +176,24 @@ print(team.GetTeamName(), team.GetTeamID())
 print(team.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
 '''
 
-#bp = BetPredictor()
-#date = datetime.strptime('10/01/2023', '%m/%d/%Y')
+'''
+date = datetime.strptime('06/12/2023', '%m/%d/%Y')
+while True:
+    bp = BetPredictor()
 
-#schedule = bp.CreateSchedule(date, 2023)
-#schedule.to_excel('schedule.xlsx')
+    schedule = bp.CreateSchedule(date, 2023)
+    #schedule.to_excel('schedule.xlsx')
+    schedule.to_excel('schedule_' + date.strftime('%m-%d-%Y') +'.xlsx')
 
-#NRFI = bp.CreateNRFIPredictions(schedule, OPENING_DAY, 2023)
-#NRFI.to_excel('NRFI.xlsx')
+    NRFI = bp.CreateNRFIPredictions(schedule, OPENING_DAY, 2023)
+    #NRFI.to_excel('NRFI.xlsx')
+    NRFI.to_excel('NRFI_' + date.strftime('%m-%d-%Y') +'.xlsx')
+    
+    date += timedelta(days=1)
 
-t = Team(142)
+'''
+
+t = Team(147)
 print(t.GetTeamName())
-print(t.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
+print(t.CalculateYRFIPercentage(2024, datetime.strptime('03/28/2024', '%m/%d/%Y'), datetime.strptime('03/28/2024', '%m/%d/%Y')))
+
