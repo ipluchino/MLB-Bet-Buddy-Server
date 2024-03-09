@@ -204,8 +204,8 @@ date = datetime.strptime('09/18/2023', '%m/%d/%Y')
 schedule = bp.CreateSchedule(date, 2023)
 schedule.to_excel('schedule_' + date.strftime('%m-%d-%Y') +'.xlsx')
 
-NRFI = bp.CreateNRFIPredictions(schedule, OPENING_DAY, 2023)
-NRFI.to_excel('NRFI_' + date.strftime('%m-%d-%Y') +'.xlsx')
+#NRFI = bp.CreateNRFIPredictions(schedule, OPENING_DAY, 2023)
+#NRFI.to_excel('NRFI_' + date.strftime('%m-%d-%Y') +'.xlsx')
 
-#hitting = bp.CreateHittingPredictions(schedule, OPENING_DAY, date, 2023)
-#hitting.to_excel('hitting_' + date.strftime('%m-%d-%Y') +'.xlsx')
+hitting = bp.CreateHittingPredictions(schedule, OPENING_DAY, date, 2023)
+hitting.to_excel('hitting_' + date.strftime('%m-%d-%Y') +'.xlsx')
