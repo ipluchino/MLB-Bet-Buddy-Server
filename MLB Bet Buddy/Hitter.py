@@ -153,7 +153,7 @@ class Hitter(Player):
             hittingStatistics = self.GetOffensiveStatistics(a_season, startDate, endDate)
             
             #Make sure hitting statistics were found in the date range to avoid crashihng.
-            if hittingStatistics == 0:
+            if hittingStatistics == {}:
                 startDate -= timedelta(days=1)
                 continue
 
@@ -209,9 +209,13 @@ class Hitter(Player):
                     #If the hitter is qualified and has played a minimum of 30 games, add them to the result list.
                     playerName = hitter['player']['fullName']
                     playerID = hitter['player']['id']
+                    teamName = hitter['team']['name']
+                    teamID = hitter['team']['id']
                     
                     playerInfo = { 'playerName': playerName, 
                                    'playerID': playerID,
+                                   'teamName': teamName,
+                                   'teamID': teamID,
                                    'gamesPlayed': gamesPlayed,
                                    'plateAppearances': plateAppearances }
                     

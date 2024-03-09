@@ -192,8 +192,17 @@ while True:
     date += timedelta(days=1)
 
 '''
-
+'''
 t = Team(147)
 print(t.GetTeamName())
 print(t.CalculateYRFIPercentage(2024, datetime.strptime('03/28/2024', '%m/%d/%Y'), datetime.strptime('03/28/2024', '%m/%d/%Y')))
+'''
+
+bp = BetPredictor()
+date = datetime.strptime('09/12/2023', '%m/%d/%Y')
+schedule = bp.CreateSchedule(date, 2023)
+schedule.to_excel('schedule_' + date.strftime('%m-%d-%Y') +'.xlsx')
+
+hitting = bp.CreateHittingPredictions(schedule, OPENING_DAY, date, 2023)
+hitting.to_excel('hitting_' + date.strftime('%m-%d-%Y') +'.xlsx')
 

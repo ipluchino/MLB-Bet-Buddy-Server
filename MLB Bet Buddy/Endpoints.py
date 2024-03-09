@@ -54,7 +54,7 @@ class Endpoints():
     WEATHER_URL = 'https://api.weatherapi.com/v1/forecast.json?key={API_key}&q={city}' 
     
     #Endpoint to get a list of all hitters in a specified season.
-    ALL_HITTERS_URL = 'https://statsapi.mlb.com/api/v1/stats?stats=season&group=hitting&season={season}&playerPool=ALL&offset={offset}'        
+    ALL_HITTERS_URL = 'https://statsapi.mlb.com/api/v1/stats?stats=season&group=hitting&season={season}&playerPool=QUALIFIED&offset={offset}'        
 
     #CONSTRUCTOR
     def __init__(self):
