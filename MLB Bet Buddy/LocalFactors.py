@@ -98,12 +98,14 @@ class LocalFactors():
         region = weatherData['location']['region']
         temperatureF = hourlyForecast['temp_f']
         weatherCondition = hourlyForecast['condition']['text'].strip()
+        weatherCode = int(hourlyForecast['condition']['code'])
         windSpeed = hourlyForecast['wind_mph']
         
         return { 'cityName': cityName,
                  'region': region,
                  'temperatureF': temperatureF,
                  'weatherCondition': weatherCondition,
+                 'weatherCode': weatherCode,
                  'windSpeed': windSpeed }
         
     #Helper function to convert a time to its closest 24 hour time hour. Example: 7:07 PM --> 15.

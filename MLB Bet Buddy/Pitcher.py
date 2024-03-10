@@ -32,7 +32,7 @@ class Pitcher(Player):
         
         #Gather all of the necessary pitching statistics.
         fullName = individualPitchingData['people'][0]['fullName']
-        gamesPlayed = int(cumulativeStats['gamesPlayed'])
+        gamesStarted = int(cumulativeStats['gamesStarted'])
         inningsPitched = float(cumulativeStats['inningsPitched'])
         wins = int(cumulativeStats['wins'])
         losses = int(cumulativeStats['losses'])
@@ -44,7 +44,7 @@ class Pitcher(Player):
         homeRunsPer9Inn = float(cumulativeStats['homeRunsPer9'])
         
         return { 'fullName': fullName,
-                 'gamesPlayed': gamesPlayed,
+                 'gamesStarted': gamesStarted,
                  'inningsPitched': inningsPitched,
                  'wins': wins,
                  'losses': losses,
