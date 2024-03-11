@@ -138,12 +138,16 @@ class LocalFactors():
         return timeObj.hour
     
     #Determines the weather impact factor based on the weather classification code.
-    def CalculateWeatherFactor(self, weatherCode):
-        if weatherCode in self.LOW_WEATHER_IMPACT_CODES:
+    def CalculateWeatherFactor(self, a_weatherCode, a_stadium):
+        #Games that are played at stadiums with a roof are not impacted by the outside weather.
+        if self.HasRoof(a_stadium) == True or self.HasRoof(a_stadium) == 'Unknown':
+            return self.NO_WEATHER_IMPACT_WEIGHT
+        
+        if a_weatherCode in self.LOW_WEATHER_IMPACT_CODES:
             return self.LOW_WEATHER_IMPACT_WEIGHT
-        elif weatherCode in self.MODERATE_WEATHER_IMPACT_CODES:
+        elif a_weatherCode in self.MODERATE_WEATHER_IMPACT_CODES:
             return self.MODERATE_WEATHER_IMPACT_WEIGHT
-        elif weatherCode in self.HIGH_WEATHER_IMPACT_CODES:
+        elif a_weatherCode in self.HIGH_WEATHER_IMPACT_CODES:
             return self.HIGH_WEATHER_IMPACT_WEIGHT
         else:
             #If the code was not in any of the above lists of codes, the weather does not have any impact on the bet predictions.
