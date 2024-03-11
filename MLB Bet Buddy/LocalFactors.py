@@ -4,6 +4,7 @@ from Endpoints import Endpoints
 from datetime import datetime, timedelta
 
 class LocalFactors():
+    #CONSTANTS
     #API key for the Weather API
     WEATHER_API_KEY = 'Example Weather API Key'
     
@@ -41,6 +42,22 @@ class LocalFactors():
         'Petco Park': { 'homeTeam': 'San Diego Padres', 'ballparkFactor': 95, 'city': 'San Diego', 'hasRoof': False },
         'T-Mobile Park': { 'homeTeam': 'Seattle Mariners', 'ballparkFactor': 92, 'city': 'Seattle', 'hasRoof': True }
     }
+    
+    #Represents the weather description codes and their associated impacts.
+    LOW_WEATHER_IMPACT_CODES = []
+    
+    MODERATE_WEATHER_IMPACT_CODES = []
+    
+    HIGH_WEATHER_IMPACT_CODES = []
+    
+    #Weights of each weather impact classification.
+    NO_WEATHER_IMPACT_WEIGHT = 'Omitted'
+    
+    LOW_WEATHER_IMPACT_WEIGHT = 'Omitted'
+    
+    MODERATE_WEATHER_IMPACT_WEIGHT = 'Omitted'
+    
+    HIGH_WEATHER_IMPACT_WEIGHT = 'Omitted'
     
     #CONSTRUCTOR
     def __init__(self):
@@ -119,6 +136,15 @@ class LocalFactors():
             timeObj += timedelta(hours=1)
 
         return timeObj.hour
-        
-            
-
+    
+    #Determines the weather impact factor based on the weather classification code.
+    def CalculateWeatherFactor(self, weatherCode):
+        if weatherCode in self.LOW_WEATHER_IMPACT_CODES:
+            return self.LOW_WEATHER_IMPACT_WEIGHT
+        elif weatherCode in self.MODERATE_WEATHER_IMPACT_CODES:
+            return self.MODERATE_WEATHER_IMPACT_WEIGHT
+        elif weatherCode in self.HIGH_WEATHER_IMPACT_CODES:
+            return self.HIGH_WEATHER_IMPACT_WEIGHT
+        else:
+            #If the code was not in any of the above lists of codes, the weather does not have any impact on the bet predictions.
+            return self.NO_WEATHER_IMPACT_WEIGHT

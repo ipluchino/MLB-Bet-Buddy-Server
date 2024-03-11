@@ -176,8 +176,8 @@ print(team.GetTeamName(), team.GetTeamID())
 print(team.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
 '''
 
-'''
-date = datetime.strptime('06/12/2023', '%m/%d/%Y')
+
+date = datetime.strptime('06/01/2023', '%m/%d/%Y')
 while True:
     bp = BetPredictor()
 
@@ -191,23 +191,29 @@ while True:
     
     date += timedelta(days=1)
 
-'''
+
 '''
 t = Team(147)
 print(t.GetTeamName())
 print(t.CalculateYRFIPercentage(2024, datetime.strptime('03/28/2024', '%m/%d/%Y'), datetime.strptime('03/28/2024', '%m/%d/%Y')))
 '''
 
-bp = BetPredictor()
-date = datetime.strptime('07/01/2023', '%m/%d/%Y')
-schedule = bp.CreateSchedule(date, 2023)
-schedule.to_excel('schedule_' + date.strftime('%m-%d-%Y') +'.xlsx')
 
-NRFI = bp.CreateNRFIPredictions(schedule, OPENING_DAY, 2023)
-NRFI.to_excel('NRFI_' + date.strftime('%m-%d-%Y') +'.xlsx')
+#bp = BetPredictor()
+#date = datetime.strptime('06/09/2023', '%m/%d/%Y')
+#schedule = bp.CreateSchedule(date, 2023)
+#schedule.to_excel('schedule_' + date.strftime('%m-%d-%Y') +'.xlsx')
 
-hitting = bp.CreateHittingPredictions(schedule, OPENING_DAY, date, 2023)
-hitting.to_excel('hitting_' + date.strftime('%m-%d-%Y') +'.xlsx')
+#NRFI = bp.CreateNRFIPredictions(schedule, OPENING_DAY, 2023)
+#NRFI.to_excel('NRFI_' + date.strftime('%m-%d-%Y') +'.xlsx')
+
+#hitting = bp.CreateHittingPredictions(schedule, OPENING_DAY, date, 2023)
+#hitting.to_excel('hitting_' + date.strftime('%m-%d-%Y') +'.xlsx')
 
 #p = Pitcher(641656)
 #print(p.GetPitchingStatistics(2023, OPENING_DAY, datetime.strptime('07/01/2023', '%m/%d/%Y')))
+
+
+#Testing accuracy checker.
+#bp = BetPredictor()
+#print(bp.AccuracyTestNRFI())
