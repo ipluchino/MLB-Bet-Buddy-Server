@@ -86,8 +86,8 @@ class Game():
             
             #Setting the away team's starting pitcher, if it exists.
             if not 'away' in probablePitchersData or not 'fullName' in probablePitchersData['away'] or not 'id' in probablePitchersData['away']:
-                self.m_homePitcherName = 'T.B.D.'
-                self.m_homePitcherID = 0
+                self.m_awayPitcherName = 'T.B.D.'
+                self.m_awayPitcherID = 0
             else:
                 awayProbablePitcherData = probablePitchersData['away']
                 self.m_awayPitcherName = awayProbablePitcherData['fullName']

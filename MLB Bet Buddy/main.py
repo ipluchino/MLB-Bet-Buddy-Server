@@ -177,7 +177,7 @@ print(team.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
 '''
 
 '''
-date = datetime.strptime('06/01/2023', '%m/%d/%Y')
+date = datetime.strptime('07/10/2023', '%m/%d/%Y')
 while True:
     bp = BetPredictor()
 
