@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import requests
+import time
 
 class Endpoints():
     #All API endpoint links that will be used in the project. Variable portions of the URL are within curly brackets {}. 
@@ -65,11 +66,15 @@ class Endpoints():
     def AccessEndpointData(self, a_URL):
         response = self.session.get(a_URL)
         
+        #Occassionaly there is a rare error by the MLB API. It is fixed by simply waiting a short time, then trying again.
         try:
             data = response.json()
             return data
         except:
             print(response.text)
+            time.sleep(10)
+            return self.AccessEndpoint(a_URL)
+            
     
     #Converts a datetime object into the correct string format.
     def FormatDate(self, a_dateObj):

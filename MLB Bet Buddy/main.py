@@ -177,7 +177,7 @@ print(team.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
 '''
 
 '''
-date = datetime.strptime('07/10/2023', '%m/%d/%Y')
+date = datetime.strptime('08/07/2023', '%m/%d/%Y')
 while True:
     bp = BetPredictor()
 
@@ -200,7 +200,7 @@ print(t.CalculateYRFIPercentage(2024, datetime.strptime('03/28/2024', '%m/%d/%Y'
 
 
 #bp = BetPredictor()
-#date = datetime.strptime('06/09/2023', '%m/%d/%Y')
+#date = datetime.strptime('08/07/2023', '%m/%d/%Y')
 #schedule = bp.CreateSchedule(date, 2023)
 #schedule.to_excel('schedule_' + date.strftime('%m-%d-%Y') +'.xlsx')
 
@@ -216,4 +216,5 @@ print(t.CalculateYRFIPercentage(2024, datetime.strptime('03/28/2024', '%m/%d/%Y'
 
 #Testing accuracy checker.
 bp = BetPredictor()
-print(bp.AccuracyTestNRFI(3))
+#print(bp.AccuracyTestNRFI(1))
+print(bp.OptimizeNRFIWeights(0.2, 1, 5, 40))
