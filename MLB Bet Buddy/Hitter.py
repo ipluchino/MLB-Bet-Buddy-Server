@@ -6,6 +6,21 @@ import math
 from datetime import datetime, timedelta
 
 class Hitter(Player):
+    #CONSTANTS
+    #Minimum batting average required for each classification of hitting.
+    ON_FIRE_BA_MINIMUM = 'Omitted'
+    HOT_BA_MINIMUM = 'Omitted'
+    AVERAGE_BA_MINIMUM = 'Omitted'
+    COOL_BA_MINIMUM = 'Omitted'
+    ICE_COLD_BA_MINIMUM = 'Omitted'
+
+    #Weights for each classification of hitting.
+    ON_FIRE_WEIGHT = 'Omitted'
+    HOT_WEIGHT = 'Omitted'
+    AVERAGE_WEIGHT = 'Omitted'
+    COOL_WEIGHT = 'Omitted'
+    ICE_COLD_WEIGHT = 'Omitted'
+
     #CONSTRUCTOR - default hitter ID is Aaron Judge from the NYY.
     #Assistance: https://www.geeksforgeeks.org/calling-a-super-class-constructor-in-python/
     def __init__(self, a_hitterID = 592450):
@@ -170,7 +185,21 @@ class Hitter(Player):
             
         #If the maximum date range was reached and the player hasn't played 10 games, return an empty dictionary to represent there was not enough data from the starting date.
         return {}
-
+    
+    #Classify a batting average into one of five categories and assign its weight (used for creating hitting predictions).
+    def ClassifyHitting(self, a_BA):
+        #Determine the classification for the hitter based on their batting average.
+        if a_BA >= self.ON_FIRE_BA_MINIMUM:
+            return 'On Fire', self.ON_FIRE_WEIGHT
+        elif a_BA >= self.HOT_BA_MINIMUM:
+            return 'Hot', self.HOT_WEIGHT
+        elif a_BA >= self.AVERAGE_BA_MINIMUM:
+            return 'Average', self.AVERAGE_WEIGHT
+        elif a_BA >= self.COOL_BA_MINIMUM:
+            return 'Cool', self.COOL_WEIGHT
+        else:
+            return 'Ice Cold', self.ICE_COLD_WEIGHT
+            
     #Static method to return a list of all the qualified hitters of a season.
     @staticmethod
     def GetAllHitters(a_season):

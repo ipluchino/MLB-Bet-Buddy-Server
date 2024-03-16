@@ -34,10 +34,10 @@ class Endpoints():
     STANDINGS_URL = 'https://statsapi.mlb.com/api/v1/standings?standingsTypes=regularSeason&leagueId=103,104&date={date}&season={season}'
 
     #Endpoint to gather the game log of a hitter.
-    HITTING_GAME_LOG_URL = 'https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=gameLog&group=hitting&season={season}&startDate={start_date}&endDate={end_date}'
+    HITTING_GAME_LOG_URL = 'https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=gameLog&group=hitting&season={season}&startDate={start_date}'
 
     #Endpoint to gather the game log of a pitcher.
-    PITCHING_GAME_LOG_URL = 'https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=gameLog&group=pitching&season={season}&startDate={start_date}&endDate={end_date}'
+    PITCHING_GAME_LOG_URL = 'https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=gameLog&group=pitching&season={season}&startDate={start_date}'
     
     #Endpoint to get a hitter's career numbers off of a specific pitcher.
     CAREER_HITTING_NUMBERS_URL = 'https://statsapi.mlb.com/api/v1/people?personIds={hitter_id}&hydrate=stats(group=[hitting],type=[vsPlayerTotal],opposingPlayerId={pitcher_id},sportId=1)'
@@ -116,14 +116,14 @@ class Endpoints():
         return self.STANDINGS_URL.format(date=self.FormatDate(a_date), season=a_season)
     
     #Gets the endpoint URL to analyze the game log for a specific pitcher.
-    def GetPitchingGameLogEndpoint(self, a_playerID, a_season, a_startDate, a_endDate):
+    def GetPitchingGameLogEndpoint(self, a_playerID, a_season, a_startDate):
         #Format the dates into the correct format before creating the endpoint.
-        return self.PITCHING_GAME_LOG_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
+        return self.PITCHING_GAME_LOG_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate))
     
     #Gets the endpoint URL to analyze the game log for a specific hitter.
-    def GetHittingGameLogEndpoint(self, a_playerID, a_season, a_startDate, a_endDate):
+    def GetHittingGameLogEndpoint(self, a_playerID, a_season, a_startDate):
         #Format the dates into the correct format before creating the endpoint.
-        return self.HITTING_GAME_LOG_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
+        return self.HITTING_GAME_LOG_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate))
 
     #Gets the endpoint URL to analyze a hitter's career numbers off of a certain pitcher.
     def GetCareerHittingNumbersEndpoint(self, a_hitterID, a_pitcherID):

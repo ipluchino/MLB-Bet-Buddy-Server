@@ -199,22 +199,37 @@ print(t.CalculateYRFIPercentage(2024, datetime.strptime('03/28/2024', '%m/%d/%Y'
 '''
 
 
-#bp = BetPredictor()
-#date = datetime.strptime('08/07/2023', '%m/%d/%Y')
-#schedule = bp.CreateSchedule(date, 2023)
-#schedule.to_excel('schedule_' + date.strftime('%m-%d-%Y') +'.xlsx')
+bp = BetPredictor()
+date = datetime.strptime('07/07/2023', '%m/%d/%Y')
+schedule = bp.CreateSchedule(date, 2023)
+schedule.to_excel('schedule_' + date.strftime('%m-%d-%Y') +'.xlsx')
 
 #NRFI = bp.CreateNRFIPredictions(schedule, OPENING_DAY, 2023)
 #NRFI.to_excel('NRFI_' + date.strftime('%m-%d-%Y') +'.xlsx')
 
-#hitting = bp.CreateHittingPredictions(schedule, OPENING_DAY, date, 2023)
-#hitting.to_excel('hitting_' + date.strftime('%m-%d-%Y') +'.xlsx')
+hitting = bp.CreateHittingPredictions(schedule, OPENING_DAY, date, 2023)
+hitting.to_excel('hitting_' + date.strftime('%m-%d-%Y') +'.xlsx')
 
 #p = Pitcher(641656)
 #print(p.GetPitchingStatistics(2023, OPENING_DAY, datetime.strptime('07/01/2023', '%m/%d/%Y')))
 
+'''
+#Testing factor calculations
+h = Hitter(Player.FindPlayerID('Luis Arraez'))
+x = h.Last10Stats(2023, date)
+y = h.GetCareerStatsOffPitcher(Player.FindPlayerID('Tyler Wells'))
+print(x)
+print(y)
+
+description, factor = bp.CalculateHotColdFactor(x)
+print(description, factor)
+
+description, factor = bp.CalculateCareerStatsFactor(y)
+print(description, factor)
+'''
 
 #Testing accuracy checker.
-bp = BetPredictor()
+#bp = BetPredictor()
 #print(bp.AccuracyTestNRFI(1))
-print(bp.OptimizeNRFIWeights(0.2, 1, 5, 40))
+#print(bp.OptimizeNRFIWeights(0.2, 1, 5, 40))
+
