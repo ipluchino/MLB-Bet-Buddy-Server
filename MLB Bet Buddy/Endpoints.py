@@ -75,7 +75,6 @@ class Endpoints():
             time.sleep(10)
             return self.AccessEndpoint(a_URL)
             
-    
     #Converts a datetime object into the correct string format.
     def FormatDate(self, a_dateObj):
         return a_dateObj.strftime('%m/%d/%Y')

@@ -199,7 +199,58 @@ class Hitter(Player):
             return 'Cool', self.COOL_WEIGHT
         else:
             return 'Ice Cold', self.ICE_COLD_WEIGHT
-            
+        
+    #Checks to see if a game was played on the provided date, and returns whether or not a hitter achieved certain beting goals during that game.
+    def HittingBetReview(self, a_gameDate):
+        #Extract the season year from the game date.
+        gameDatetimeObj = datetime.strptime(a_gameDate, '%m/%d/%Y')
+        season = gameDatetimeObj.year
+        
+        #Create the endpoint to access a hitter's game log, and access the data from that endpoint.
+        hitterGameLogEndpoint = self.m_endpointObj.GetHittingGameLogEndpoint(self.m_playerID, season, gameDatetimeObj)
+        hitterGameLogData = self.m_endpointObj.AccessEndpointData(hitterGameLogEndpoint)
+        
+        #Make sure the game log exists for the hitter.
+        if 'stats' not in hitterGameLogData or not hitterGameLogData['stats'] or not hitterGameLogData['stats'][0]['splits']:
+            return {}
+        
+        #Extract the first game in the hitter's game log. This will always be the game closest to the provided date to this function.
+        gameLog = hitterGameLogData['stats'][0]['splits']
+        firstGame = gameLog[0]
+        
+        #Check the date of the closest game.
+        firstGameDate = datetime.strptime(firstGame['date'], '%Y-%m-%d').strftime('%m/%d/%Y')
+        
+        #If the dates do not match with what is provided to this function, then the player did not play that day (the player may have had an off-day).
+        if firstGameDate != a_gameDate:
+            return {}
+        
+        #Otherwise, the player did play on the specified date. Extract their stats from that day. 
+        stats = firstGame['stat']
+        summary = stats['summary']
+        hits = int(stats['hits'])
+        runsScored = int(stats['runs'])
+        RBIs = int(stats['rbi'])
+        HitsPlusRunsPlusRBIs = hits + runsScored + RBIs
+        
+        #Check to see if the hitter accomplished certain bet goals on that day. Note: HRR = Hits, Runs, and RBIs combined.
+        atLeast1Hit = hits >= 1
+        atLeast2Hits = hits >= 2
+        atLeast2HHR = HitsPlusRunsPlusRBIs >= 2
+        atLeast3HHR = HitsPlusRunsPlusRBIs >= 3
+        
+        #Compile all results into a single dictionary, and return it.
+        betReviewDictionary = { 'summary': summary,
+                                'hits': hits,
+                                'runsScored': runsScored,
+                                'RBIs': RBIs,
+                                'atLeast1Hit': atLeast1Hit,
+                                'atLeast2Hits': atLeast2Hits,
+                                'atLeast2HRR': atLeast2HHR,
+                                'atLeast3HRR': atLeast3HHR }
+
+        return betReviewDictionary        
+
     #Static method to return a list of all the qualified hitters of a season.
     @staticmethod
     def GetAllHitters(a_season):
@@ -251,17 +302,3 @@ class Hitter(Player):
                     hittersList.append(playerInfo)
 
         return hittersList
-        
-
-        
-
-        
-
-
-
-        
-
-
-
-
-
