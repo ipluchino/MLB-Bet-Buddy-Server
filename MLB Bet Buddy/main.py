@@ -177,7 +177,7 @@ print(team.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
 '''
 
 '''
-date = datetime.strptime('07/02/2023', '%m/%d/%Y')
+date = datetime.strptime('08/05/2023', '%m/%d/%Y')
 while True:
     bp = BetPredictor()
 
@@ -237,7 +237,7 @@ print(description, factor)
 #print(bp.OptimizeNRFIWeights(0.2, 1, 5, 40))
 
 bp = BetPredictor()
-print(bp.AccuracyTestHitting(10))
+print(bp.AccuracyTestHitting(5))
 
 #x = Hitter(Player.FindPlayerID('Anthony Volpe'))
 #print(x.HittingBetReview('08/11/2023'))
