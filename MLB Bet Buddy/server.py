@@ -194,6 +194,10 @@ async def viewTable(a_tableName):
             #Extract information about the individual column, and append it to the row's data. 
             columnName = column.name
             
+            #Skip the id column.
+            if columnName == 'id':
+                continue
+            
             #Note: The column name is fixed from spaces to underscores, since the variables in the database model class has underscores, not spaces.
             columnValue = getattr(row, ConvertColumnName(columnName))
             
@@ -201,7 +205,7 @@ async def viewTable(a_tableName):
             
         #Append the row to the overall table information.
         tableInformation.append(data_row)
-      
+
     return jsonify(tableInformation), 200
 
 #Helper function for the view route, used to get the class definition for a table.
@@ -233,8 +237,57 @@ def ConvertColumnName(a_columnName):
     
     return modifiedColumnName
 
+#Moves all of the data in one of the database tables, to another. Used from moving data from a "Today" table to an "Archive" table.
+async def MoveDataToArchive(a_sourceTable, a_destinationTable):
+    #Create a session connection to the database.
+    session = Session()
+    
+    #Query the database for the source data.
+    data = session.query(a_sourceTable).all()
+    
+    #Make sure data was returned before trying to move anything.
+    if not data:
+        return
+    
+    #Loop through each row of the source table.
+    tableColumns = a_sourceTable.__table__.columns
+    for sourceRow in data:
+        destinationRow = a_destinationTable()
+        
+        #Loop through each column of each row.
+        for sourceColumn in tableColumns:
+            sourceColumnName = sourceColumn.name
+            
+            #Allow SQLAlchemy to automatically handle the id column.
+            if sourceColumnName == 'id':
+                continue
+            
+            #Attempt to copy the data from the source table row to the destination table row. 
+            try:
+                columnValue = getattr(sourceRow, ConvertColumnName(sourceColumnName))
+                setattr(destinationRow, ConvertColumnName(sourceColumnName), columnValue)
+            except Exception as error:
+                print(error)
+                print('Error moving data - column mismatch! Could not move the data from the source table to the destination table.')
+                return
+            
+        #Add the newly created desination row to the destination table.
+        session.add(destinationRow)
+        session.commit()
+        
+    session.close()
+    
+#Deletes the contents of a database table.
+async def DeleteData(a_table):
+    #Create a session connection to the database.
+    session = Session()
+
+    #Delete the contents of the provided table.
+    session.query(a_table).delete()
+    session.commit()        
+    session.close()
+
 #Make sure that the tables are created if they do not already exist.
 Base.metadata.create_all(engine)
 
 app.run()
-
