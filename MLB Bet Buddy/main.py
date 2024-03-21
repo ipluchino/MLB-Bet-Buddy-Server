@@ -7,6 +7,7 @@ from Hitter import Hitter
 from Pitcher import Pitcher
 from LocalFactors import LocalFactors
 from BetPredictor import BetPredictor
+from server import OPENING_DAY_2023
 
 #Temporarily opening day for 2023.
 OPENING_DAY = datetime.strptime('03/30/2023', '%m/%d/%Y')
@@ -236,8 +237,53 @@ print(description, factor)
 #print(bp.AccuracyTestNRFI(1))
 #print(bp.OptimizeNRFIWeights(0.2, 1, 5, 40))
 
-bp = BetPredictor()
-print(bp.AccuracyTestHitting(5))
+#bp = BetPredictor()
+#print(bp.AccuracyTestHitting(5))
 
 #x = Hitter(Player.FindPlayerID('Anthony Volpe'))
 #print(x.HittingBetReview('08/11/2023'))
+
+'''
+#2024 TESTING - WEIRD OPENING DAY
+x = Team.CreateFromName('Los Angeles Dodgers')
+y = Team()
+OPENING_DAY_2024 = datetime.strptime('03/20/2024', '%m/%d/%Y')
+d2 = datetime.strptime('03/28/2024', '%m/%d/%Y')
+
+print(x.GetRecord(d2, 2024))
+print(y.GetRecord(d2, 2024))
+
+print(x.GetTeamOffensiveStatistics(2024, OPENING_DAY_2024, d2))
+print(y.GetTeamOffensiveStatistics(2024, OPENING_DAY_2024, d2))
+
+print(x.CalculateYRFIPercentage(2024, OPENING_DAY_2024, d2))
+print(y.CalculateYRFIPercentage(2024, OPENING_DAY_2024, d2))
+
+p1 = Hitter(Player.FindPlayerID('Anthony Volpe'))
+p2 = Hitter(Player.FindPlayerID('Fernando Tatis Jr.'))
+
+print(p1.GetLRHittingSplits(2024))
+print(p2.GetLRHittingSplits(2024))
+print()
+
+print(p1.Last10Stats(2024, d2))
+print(p2.Last10Stats(2024, d2))
+print()
+
+p3 = Pitcher(Player.FindPlayerID('Clarke Schmidt'))
+p4 = Pitcher(Player.FindPlayerID('Joe Musgrove'))
+
+print(p3.GetLRPitchingSplits(2024))
+print(p4.GetLRPitchingSplits(2024))
+print()
+
+print(p3.GetPitchingStatistics(2024, OPENING_DAY_2024, d2))
+print(p4.GetPitchingStatistics(2024, OPENING_DAY_2024, d2))
+print()
+
+
+
+print(p3.CalculateYRFIPercentage(2024, OPENING_DAY_2024, d2))
+print(p4.CalculateYRFIPercentage(2024, OPENING_DAY_2024, d2))
+print()
+'''

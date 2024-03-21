@@ -13,6 +13,13 @@ from BetPredictor import BetPredictor
 #CONSTANTS
 TABLE_NAMES = ['TodaySchedule', 'ArchiveSchedule', 'TodayNRFI', 'ArchiveNRFI', 'TodayHitting', 'ArchiveHitting']
 
+OPENING_DAY_2023 = datetime.strptime('03/30/2023', '%m/%d/%Y')
+CLOSING_DAY_2023 = datetime.strptime('10/01/2023', '%m/%d/%Y')
+
+CURRENT_OPENING_DAY = OPENING_DAY_2023
+CURRENT_CLOSING_DAY = CLOSING_DAY_2023
+CURRENT_SEASON = 2023
+
 #QUART AND SQLALCHEMY SETUP.
 app = Quart(__name__)                                           #Quart server object.
 Base = declarative_base()                                       #Base model database class from SQLAlchemy.
@@ -290,4 +297,5 @@ async def DeleteData(a_table):
 #Make sure that the tables are created if they do not already exist.
 Base.metadata.create_all(engine)
 
+#Start the server.
 app.run()

@@ -2,6 +2,7 @@
 
 from Endpoints import Endpoints
 from Game import Game
+from datetime import datetime
 
 class Team():
     #All MLB teams and their respective IDs associated with the MLB API.
@@ -159,13 +160,12 @@ class Team():
         #Access the created endpoint and store the data.
         teamOffenseData = self.m_endpointObj.AccessEndpointData(teamOffenseEndpoint)
         
-        teamSplits = teamOffenseData['stats'][0]['splits']
-        
-        #If the splits containing the statistics could not be found (such as the user entered an incorrect date or season) simply return all 0s for the requested statistics.
-        if not teamSplits:
+        #If the splits containing the statistics could not be found (such as the user entered an incorrect date or season) simply return an empty dictionary.
+        if not 'stats' in teamOffenseData or not teamOffenseData['stats'][0]['splits']:
             return {}
         
         #teamStats contains all of the actual statistics.
+        teamSplits = teamOffenseData['stats'][0]['splits']
         teamStats = teamSplits[0]['stat']
         
         #Extract the total number of games played as well as the total number of runs scored to find overall runs per game.
@@ -207,8 +207,8 @@ class Team():
         
         #Extract a list of game IDs that need to be checked from the returned data.
         gameList = teamGameLogData['dates']
-        gameIDs = self.ExtractGameIDs(gameList)
-        
+        gameIDs = self.ExtractGameIDs(gameList)       
+
         #Loop through each of the valid games within the date range.
         gameCount = len(gameIDs)
         YRFICount = 0
@@ -243,9 +243,21 @@ class Team():
             for game in totalGames:
                 #Extract information about each game.
                 gameDate = game['officialDate']
+                gameDateObj = datetime.strptime(gameDate, '%Y-%m-%d')
                 gameStatus = game['status']['detailedState']
                 gameID = game['gamePk']                
-
+                
+                #Special case - opening day for 2024 technically started early with the Dodgers and Padres in Korea.
+                if gameDateObj.year == 2024:
+                    #If the team being analyzed is either of those special teams, include the two special games in their YRFI calculation, and skip the other spring training games.
+                    if self.m_teamID == 119 or self.m_teamID == 135:
+                        if gameDateObj < datetime.strptime('03/20/2024', '%m/%d/%Y') or (gameDateObj > datetime.strptime('03/21/2024', '%m/%d/%Y') and gameDateObj < datetime.strptime('03/28/2024', '%m/%d/%Y')):
+                            continue
+                    #Every other team did not play - so ignore spring training games for them (which happen before March 28th, 2024).
+                    else:
+                        if gameDateObj < datetime.strptime('03/28/2024', '%m/%d/%Y'):
+                            continue
+                        
                 #Append the game to the result list only if the game has been completed (ignore any games that were postponed before they started).
                 if gameStatus != 'Final' and gameStatus != 'Completed Early':
                     continue
