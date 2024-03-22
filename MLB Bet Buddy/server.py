@@ -9,6 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 import pandas as pd
 from BetPredictor import BetPredictor
+import threading
 
 #CONSTANTS
 TABLE_NAMES = ['TodaySchedule', 'ArchiveSchedule', 'TodayNRFI', 'ArchiveNRFI', 'TodayHitting', 'ArchiveHitting']
@@ -215,6 +216,65 @@ async def viewTable(a_tableName):
 
     return jsonify(tableInformation), 200
 
+#Route to trigger an update for bet predictions for a new day.
+@app.route('/update', methods=['GET'])
+async def TriggerUpdate():
+    date = datetime.strptime('04/12/2023', '%m/%d/%Y')
+    
+    #Asynchronously create and update the bet predictions for a new day. I
+    #t is done asynchronously so the server does not freeze up.
+    await asyncio.to_thread(UpdateBetPredictions, CURRENT_OPENING_DAY, date, CURRENT_SEASON)
+
+    return jsonify({'result': 'Bet update successfully completed'}), 200 
+
+#Helper function for the update route. Creates all of the bet prediction dataframes and then stores them in the database.
+def UpdateBetPredictions(a_openingDayDate, a_date, a_season):
+    bp = BetPredictor()
+    
+    #Create all three bet prediction tables.
+    print('Creating Schedule table')
+    scheduleDataFrame = bp.CreateSchedule(a_date, a_season)
+    print('Creating NRFI table')
+    NRFIDataFrame = bp.CreateNRFIPredictions(scheduleDataFrame, a_openingDayDate, a_season)
+    print('Creating Hitting table')
+    hittingDataFrame = bp.CreateHittingPredictions(scheduleDataFrame, a_openingDayDate, a_date, a_season)
+    print('All done creating tables')
+         
+    #Update the database with the newly created bet predictions.
+    UpdateTableInDatabase(scheduleDataFrame, TodayScheduleTable, ArchiveScheduleTable)   
+    UpdateTableInDatabase(NRFIDataFrame, TodayNRFITable, ArchiveNRFITable)    
+    UpdateTableInDatabase(hittingDataFrame, TodayHittingTable, ArchiveHittingTable)    
+
+def UpdateTableInDatabase(a_dataFrame, a_todayTable, a_archiveTable):
+    #First, move the data from the today table to its archive table.
+    MoveDataToArchive(a_todayTable, a_archiveTable)
+    
+    #Next, clear the data in the today table.
+    DeleteData(a_todayTable)
+    
+    #Then, insert the newly created data into the today table.
+    session = Session()
+    
+    #Loop through each row of the provided dataframe.
+    for index, row in a_dataFrame.iterrows():
+        data_dict = {}
+        #Loop through each column of each row, and create a dictionary representing its data.
+        for column in a_todayTable.__table__.columns:
+            columnName = column.name
+
+            #Skip the id column, since it is automatically handled by SQLAlchemy.
+            if column.name == 'id':
+                continue
+
+            data_dict[ConvertColumnName(column.name)] = row[column.name]
+    
+        #Unpack the dictionary because it sends each key/value pair as an argument to the constructor.
+        data = a_todayTable(**data_dict)
+        session.add(data)
+    
+    session.commit()
+    session.close()
+
 #Helper function for the view route, used to get the class definition for a table.
 def GetTableClassDefinition(a_tableName):
     if a_tableName == 'TodaySchedule':
@@ -245,7 +305,7 @@ def ConvertColumnName(a_columnName):
     return modifiedColumnName
 
 #Moves all of the data in one of the database tables, to another. Used from moving data from a "Today" table to an "Archive" table.
-async def MoveDataToArchive(a_sourceTable, a_destinationTable):
+def MoveDataToArchive(a_sourceTable, a_destinationTable):
     #Create a session connection to the database.
     session = Session()
     
@@ -285,7 +345,7 @@ async def MoveDataToArchive(a_sourceTable, a_destinationTable):
     session.close()
     
 #Deletes the contents of a database table.
-async def DeleteData(a_table):
+def DeleteData(a_table):
     #Create a session connection to the database.
     session = Session()
 
