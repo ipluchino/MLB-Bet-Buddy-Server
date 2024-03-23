@@ -236,6 +236,10 @@ async def ViewTableSpecificDate(a_tableName, a_dateStr):
     session = Session()
     data =  session.query(tableClassDefinition).filter(tableClassDefinition.Date == formattedDateString).all()
     session.close()
+    
+    #Make sure there is data in the returned database query.
+    if not data:
+        return jsonify([]), 200
 
     #Loop through each row of the returned data from the database.
     tableColumns = tableClassDefinition.__table__.columns
