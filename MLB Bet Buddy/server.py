@@ -171,10 +171,10 @@ class ArchiveHittingTable(HittingBaseModel, Base):
 #SERVER ROUTES
 #Route to view data from any of the tables. Data is returned in a JSON format.
 @app.route('/view/<a_tableName>', methods=['GET'])
-async def viewTable(a_tableName):
+async def ViewTable(a_tableName):
     #First make sure that the table name is valid. If it isn't, return a 404 error.
     if a_tableName not in TABLE_NAMES:
-        return jsonify({'error': 'Invalid Table Name'}), 404 
+        return jsonify({'error': 'Invalid table name.'}), 404 
 
     #Create a session connection to the database.
     session = Session()
@@ -188,15 +188,15 @@ async def viewTable(a_tableName):
     
     #Make sure there is data in the table.
     if not data:
-        return jsonify({}), 200
+        return jsonify([]), 200
     
-    #Loop through each row of the table in the database.
+    #Loop through each row of the returned data from the database.
     tableColumns = tableClassDefinition.__table__.columns
-    tableInformation = []
+    result = []
     for row in data:
         data_row = {}
         
-        #Loop through each column for each row.
+        #Loop through each column of each row.
         #Assistance: https://stackoverflow.com/questions/37369686/how-can-i-use-a-string-to-to-represent-an-sqlalchemy-object-attribute
         for column in tableColumns:
             #Extract information about the individual column, and append it to the row's data. 
@@ -211,15 +211,62 @@ async def viewTable(a_tableName):
             
             data_row[columnName] = columnValue        
             
-        #Append the row to the overall table information.
-        tableInformation.append(data_row)
+        #Append the row to the overall result.
+        result.append(data_row)
 
-    return jsonify(tableInformation), 200
+    return jsonify(result), 200
 
+#Route to view information in the database on a specific date --> Mostly used with the archive tables to view specific past bet predictions.
+@app.route('/view/<a_tableName>/<a_dateStr>', methods=['GET'])
+async def ViewTableSpecificDate(a_tableName, a_dateStr):
+    #First make sure that the table name is valid. If it isn't, return a 404 error.
+    if a_tableName not in TABLE_NAMES:
+        return jsonify({'error': 'Invalid table name.'}), 404 
+    
+    #Next, make sure the request has the date in a valid format. The format expected is: MM-DD-YYYY. Example: 05/15/2023
+    try:
+        #If it is valid, make sure to convert it into the correct format. Dates are stored in the database in the format MM/DD/YYYY
+        dateTimeObj = datetime.strptime(a_dateStr, '%m-%d-%Y')
+        formattedDateString = datetime.strftime(dateTimeObj, '%m/%d/%Y')
+    except:
+        return jsonify({'error': 'Invalid Date Format. Please use the format MM-DD-YYYY. Example: 05/15/2023'}), 400
+    
+    #If the date is in the correct format, query the database for records with that date.
+    tableClassDefinition = GetTableClassDefinition(a_tableName)
+    session = Session()
+    data =  session.query(tableClassDefinition).filter(tableClassDefinition.Date == formattedDateString).all()
+    session.close()
+
+    #Loop through each row of the returned data from the database.
+    tableColumns = tableClassDefinition.__table__.columns
+    result = []
+    for row in data:
+        data_row = {}
+        
+        #Loop through each column of each row. 
+        for column in tableColumns:
+            #Extract information about the individual column, and append it to the row's data. 
+            columnName = column.name
+            
+            #Skip the id column.
+            if columnName == 'id':
+                continue
+            
+            #Note: The column name is fixed from spaces to underscores, since the variables in the database model class has underscores, not spaces.
+            columnValue = getattr(row, ConvertColumnName(columnName))
+            print(columnValue)
+            
+            data_row[columnName] = columnValue        
+            
+        #Append the row to the overall result.
+        result.append(data_row)
+
+    return jsonify(result), 200
+    
 #Route to trigger an update for bet predictions for a new day.
 @app.route('/update', methods=['GET'])
 async def TriggerUpdate():
-    date = datetime.strptime('04/12/2023', '%m/%d/%Y')
+    date = datetime.strptime('05/15/2023', '%m/%d/%Y')
     
     #Asynchronously create and update the bet predictions for a new day. I
     #t is done asynchronously so the server does not freeze up.
