@@ -15,7 +15,10 @@ import threading
 TABLE_NAMES = ['TodaySchedule', 'ArchiveSchedule', 'TodayNRFI', 'ArchiveNRFI', 'TodayHitting', 'ArchiveHitting']
 
 OPENING_DAY_2023 = datetime.strptime('03/30/2023', '%m/%d/%Y')
+OPENING_DAY_2024 = datetime.strptime('03/20/2024', '%m/%d/%Y')
+
 CLOSING_DAY_2023 = datetime.strptime('10/01/2023', '%m/%d/%Y')
+CLOSING_DAY_2024 = datetime.strptime('09/29/2024', '%m/%d/%Y')
 
 CURRENT_OPENING_DAY = OPENING_DAY_2023
 CURRENT_CLOSING_DAY = CLOSING_DAY_2023
@@ -270,26 +273,27 @@ async def ViewTableSpecificDate(a_tableName, a_dateStr):
 #Route to trigger an update for bet predictions for a new day.
 @app.route('/update', methods=['GET'])
 async def TriggerUpdate():
-    date = datetime.strptime('05/15/2023', '%m/%d/%Y')
-    
-    #Asynchronously create and update the bet predictions for a new day. I
-    #t is done asynchronously so the server does not freeze up.
+    #date = datetime.datetime.now()
+    date = datetime.strptime('05/15/2023','%m/%d/%Y')    
+
+    #Asynchronously create and update the bet predictions for a new day.
+    #It is done asynchronously in the background so that the server does not freeze up while the bet predictions are being created.
     await asyncio.to_thread(UpdateBetPredictions, CURRENT_OPENING_DAY, date, CURRENT_SEASON)
 
-    return jsonify({'result': 'Bet update successfully completed'}), 200 
+    return jsonify({'result': 'Bet update successfully completed.'}), 200 
 
 #Helper function for the update route. Creates all of the bet prediction dataframes and then stores them in the database.
 def UpdateBetPredictions(a_openingDayDate, a_date, a_season):
     bp = BetPredictor()
     
     #Create all three bet prediction tables.
-    print('Creating Schedule table')
+    print('Creating Schedule table.')
     scheduleDataFrame = bp.CreateSchedule(a_date, a_season)
-    print('Creating NRFI table')
+    print('Creating NRFI table.')
     NRFIDataFrame = bp.CreateNRFIPredictions(scheduleDataFrame, a_openingDayDate, a_season)
-    print('Creating Hitting table')
+    print('Creating Hitting table.')
     hittingDataFrame = bp.CreateHittingPredictions(scheduleDataFrame, a_openingDayDate, a_date, a_season)
-    print('All done creating tables')
+    print('All done creating tables, updating them into the database.')
          
     #Update the database with the newly created bet predictions.
     UpdateTableInDatabase(scheduleDataFrame, TodayScheduleTable, ArchiveScheduleTable)   
