@@ -155,7 +155,7 @@ class Hitter(Player):
     #Finds and returns a hitter's last 10 games offensive statistics, given a starting date to search from.
     def Last10Stats(self, a_season, a_date):
         #Will act as the ending date for the date range.
-        endDate = a_date
+        endDate = a_date - timedelta(days=1)
 
         #The starting date of the search will be a week away from the end just in case of double headers (which are rare, but occur when two games are played on the same day).
         startDate = a_date - timedelta(days=7)

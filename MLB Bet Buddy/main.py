@@ -7,10 +7,10 @@ from Hitter import Hitter
 from Pitcher import Pitcher
 from LocalFactors import LocalFactors
 from BetPredictor import BetPredictor
-from server import OPENING_DAY_2023
 
 #Temporarily opening day for 2023.
-OPENING_DAY = datetime.strptime('03/30/2023', '%m/%d/%Y')
+#OPENING_DAY = datetime.strptime('03/30/2023', '%m/%d/%Y')
+OPENING_DAY = datetime.strptime('04/07/2022', '%m/%d/%Y')
 CLOSING_DAY = datetime.strptime('10/01/2023', '%m/%d/%Y')
 SEASON = 2023
 
@@ -177,24 +177,21 @@ print(team.GetTeamName(), team.GetTeamID())
 print(team.CalculateYRFIPercentage(2023, OPENING_DAY, CLOSING_DAY))
 '''
 
-'''
-date = datetime.strptime('08/05/2023', '%m/%d/%Y')
+date = datetime.strptime('07/29/2022', '%m/%d/%Y')
 while True:
     bp = BetPredictor()
 
-    schedule = bp.CreateSchedule(date, 2023)
-    #schedule.to_excel('schedule.xlsx')
+    schedule = bp.CreateSchedule(date, 2022)
     schedule.to_excel('schedule_' + date.strftime('%m-%d-%Y') +'.xlsx')
 
-    #NRFI = bp.CreateNRFIPredictions(schedule, OPENING_DAY, 2023)
-    #NRFI.to_excel('NRFI.xlsx')
-    #NRFI.to_excel('NRFI_' + date.strftime('%m-%d-%Y') +'.xlsx')
+    NRFI = bp.CreateNRFIPredictions(schedule, OPENING_DAY, 2022)
+    NRFI.to_excel('NRFI_' + date.strftime('%m-%d-%Y') +'.xlsx')
     
-    hitting = bp.CreateHittingPredictions(schedule, OPENING_DAY, date, 2023)
+    hitting = bp.CreateHittingPredictions(schedule, OPENING_DAY, date, 2022)
     hitting.to_excel('hitting_' + date.strftime('%m-%d-%Y') +'.xlsx')
     
     date += timedelta(days=1)
-'''
+
 
 '''
 t = Team(147)
@@ -204,7 +201,7 @@ print(t.CalculateYRFIPercentage(2024, datetime.strptime('03/28/2024', '%m/%d/%Y'
 
 
 #bp = BetPredictor()
-#date = datetime.strptime('07/08/2023', '%m/%d/%Y')
+#date = datetime.strptime('09/12/2023', '%m/%d/%Y')
 #schedule = bp.CreateSchedule(date, 2023)
 #schedule.to_excel('schedule_' + date.strftime('%m-%d-%Y') +'.xlsx')
 

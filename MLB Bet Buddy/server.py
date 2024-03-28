@@ -35,7 +35,8 @@ Session = sessionmaker(bind=engine)                             #Session to crea
 class ScheduleBaseModel():
     id = Column('id', Integer, primary_key=True)
     Game_ID = Column('Game ID', Integer)
-    Date = Column('Date', String)	
+    Date = Column('Date', String)
+    DateTime_String = Column('DateTime String', String)
     Time = Column('Time', String)	
     Home_Team_Name = Column('Home Team Name', String)	
     Home_Team_ID = Column('Home Team ID', Integer)	
@@ -67,6 +68,7 @@ class NRFIBaseModel():
     id = Column('id', Integer, primary_key=True)
     Game_ID = Column('Game ID', Integer)	
     Date = Column('Date', String)
+    DateTime_String = Column('DateTime String', String)
     Home_Pitcher_Name = Column('Home Pitcher Name', String)
     Home_Pitcher_ID = Column('Home Pitcher ID', Integer)
     Home_Pitcher_Games_Started = Column('Home Pitcher Games Started', Integer)
@@ -125,6 +127,7 @@ class HittingBaseModel():
     id = Column('id', Integer, primary_key=True)
     Game_ID = Column('Game ID', Integer)	
     Date = Column('Date', String)
+    DateTime_String = Column('DateTime String', String)
     Hitter_Name = Column('Hitter Name', String)	
     Hitter_ID = Column('Hitter ID', Integer)	
     Hitter_Team_Name = Column('Hitter Team Name', String)	
@@ -413,4 +416,4 @@ def DeleteData(a_table):
 Base.metadata.create_all(engine)
 
 #Start the server.
-app.run()
+#app.run()

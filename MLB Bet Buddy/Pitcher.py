@@ -75,10 +75,20 @@ class Pitcher(Player):
             
             #Extracting the actual statistics for the individual split.
             splitStats = splits[index]['stat']
+            
             battersFaced = int(splitStats['battersFaced'])
             BAA = float(splitStats['avg'])
-            strikeoutsPer9Inn = float(splitStats['strikeoutsPer9Inn'])
-            homeRunsPer9Inn = float(splitStats['homeRunsPer9'])
+            
+            #The following stats may be missing in very limited sample sizes.
+            if splitStats['strikeoutsPer9Inn'] == '-.--':
+                strikeoutsPer9Inn = 0.00
+            else:
+                strikeoutsPer9Inn = float(splitStats['strikeoutsPer9Inn'])
+                
+            if splitStats['homeRunsPer9'] == '-.--':
+                homeRunsPer9Inn = 0.00
+            else:
+                homeRunsPer9Inn = float(splitStats['homeRunsPer9'])
             
             #Building a dictionary for the individual split.
             splitDictionary = { splitName: { 'battersFaced': battersFaced,

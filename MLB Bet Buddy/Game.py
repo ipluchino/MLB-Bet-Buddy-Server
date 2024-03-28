@@ -47,6 +47,7 @@ class Game():
         #Setting the exact date and time of the game. Note: The time of game is LOCAL time.
         self.m_date = gameInformation['datetime']['officialDate']
         self.m_time = gameInformation['datetime']['time'] + ' ' + gameInformation['datetime']['ampm']
+        self.m_dateTimeString = gameInformation['datetime']['dateTime']
 
         #Setting the state of the game - whether the game is final or not (sometimes games can be postponed or cancelled due to rain - this is important for game tracking).
         gameState = gameInformation['status']['detailedState']
@@ -102,9 +103,13 @@ class Game():
     def GetGameDate(self):
         return self.m_date
     
-    #Gets the time the game was played at (ex: 1:05 PM).
+    #Gets the local time the game was played at (ex: 1:05 PM).
     def GetGameTime(self):
         return self.m_time
+    
+    #Gets the dateTime string of when the game was played, in the UTC timezone.
+    def GetGameDateTimeString(self):
+        return self.m_dateTimeString
 
     #Determines whether or not the game is final, meaning it has ended.
     def IsGameFinal(self):

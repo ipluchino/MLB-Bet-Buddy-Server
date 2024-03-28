@@ -218,10 +218,7 @@ class Team():
             
             #If a run was scored in the 1st inning of the game by the team, increment the YRFI count.
             if gameObj.DidTeamScoreFirstInning(self.m_teamID):
-                print('Yes', gameObj.GetGameDate())
                 YRFICount += 1
-            else:
-                print('No', gameObj.GetGameDate())
 
         #The YRFI rate represents the percentage of games a team scores in the 1st inning of their games. Lower YRFI rates are better for NRFI. 
         #Make sure a game has been played to avoid division by 0 error.
