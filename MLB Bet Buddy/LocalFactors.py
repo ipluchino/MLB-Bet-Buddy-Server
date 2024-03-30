@@ -30,13 +30,13 @@ class LocalFactors():
         'Guaranteed Rate Field': { 'homeTeam': 'Chicago White Sox', 'ballparkFactor': 100, 'city': 'Chicago', 'hasRoof': False },
         'Busch Stadium': { 'homeTeam': 'St. Louis Cardinals', 'ballparkFactor': 99, 'city': 'Saint Louis', 'hasRoof': False },
         'Dodger Stadium': { 'homeTeam': 'Los Angeles Dodgers', 'ballparkFactor': 99, 'city': 'Los Angeles', 'hasRoof': False },
-        'Yankee Stadium': { 'homeTeam': 'New York Yankees', 'ballparkFactor': 98, 'city': 'New York', 'hasRoof': False },
+        'Yankee Stadium': { 'homeTeam': 'New York Yankees', 'ballparkFactor': 98, 'city': 'Bronx', 'hasRoof': False },
         'loanDepot park': { 'homeTeam': 'Miami Marlins', 'ballparkFactor': 98, 'city': 'Miami', 'hasRoof': True },
         'Oracle Park': { 'homeTeam': 'San Francisco Giants', 'ballparkFactor': 97, 'city': 'San Francisco', 'hasRoof': False },
         'Comerica Park': { 'homeTeam': 'Detroit Tigers', 'ballparkFactor': 97, 'city': 'Detroit', 'hasRoof': False },
         'Progressive Field': { 'homeTeam': 'Cleveland Guardians', 'ballparkFactor': 97, 'city': 'Cleveland', 'hasRoof': False },
         'American Family Field': { 'homeTeam': 'Milwaukee Brewers', 'ballparkFactor': 97, 'city': 'Milwaukee', 'hasRoof': True },
-        'Citi Field': { 'homeTeam': 'New York Mets', 'ballparkFactor': 96, 'city': 'New York', 'hasRoof': False },
+        'Citi Field': { 'homeTeam': 'New York Mets', 'ballparkFactor': 96, 'city': 'Queens', 'hasRoof': False },
         'Tropicana Field': { 'homeTeam': 'Tampa Bay Rays', 'ballparkFactor': 96, 'city': 'Saint Petersburg Florida', 'hasRoof': False },
         'Oakland Coliseum': {'homeTeam': 'Oakland Athletics', 'ballparkFactor': 96, 'city': 'Oakland', 'hasRoof': False },
         'Petco Park': { 'homeTeam': 'San Diego Padres', 'ballparkFactor': 95, 'city': 'San Diego', 'hasRoof': False },
@@ -102,6 +102,7 @@ class LocalFactors():
         
         #Create the endpoint for the Weather API and access it's data.
         weatherEndpoint = self.m_endpointObj.GetWeatherEndpoint(self.WEATHER_API_KEY, stadiumCity)
+        print(weatherEndpoint)
         weatherData = self.m_endpointObj.AccessEndpointData(weatherEndpoint)
         
         #Extract the hourly forecast data from the data returned from the Weather API. Note: The hourly forecast is split into 24 individual hours based on a 24-hour clock.

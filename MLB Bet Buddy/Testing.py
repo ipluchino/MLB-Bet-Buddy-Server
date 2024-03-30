@@ -50,17 +50,45 @@ print('Gerrit Cole\'s lefty/righty splits for the', SEASON, 'season are:', pitch
 print('TESTING THE HITTER CLASS')
 hitter = Hitter(Player.FindPlayerID('Austin Hays'))
 print('Austin Hays\' offensive statistics through', DATE_STRING, 'are:', hitter.GetOffensiveStatistics(SEASON, OPENING_DAY, DATE), '\n')
+
 careerStats = hitter.GetCareerStatsOffPitcher(pitcher.GetPlayerID())
 print('Austin Hays\' career stats against Gerrit Cole are:', careerStats, '\n')
 print('Austin Hays is \"', hitter.ClassifyHitting(careerStats['battingAverage'])[0], '\" based on his career stats against Gerrit Cole.', '\n')
+
 L10Stats = hitter.Last10Stats(SEASON, DATE)
 print('Austin Hays\' last 10 games stats starting from', DATE_STRING, 'are:', L10Stats, '\n')
 print('Austin Hays is \"', hitter.ClassifyHitting(L10Stats['battingAverage'])[0], '\" based on his last 10 games stats starting from', DATE_STRING + '.', '\n')
 print('Austin Hays\' lefty/righty splits for the', SEASON, 'season are:', hitter.GetLRHittingSplits(SEASON), '\n')
+
 qualifiedHitters = Hitter.GetAllHitters(SEASON)
 print('In total, there were', len(qualifiedHitters), 'qualified hitters in the', SEASON, 'season.', '\n')
 
 #Testing the LocalFactors class.
+print('TESTING THE LOCALFACTORS CLASS')
+localFactors = LocalFactors()
+stadium = 'Coors Field'
+
+print('The ballpark factor at', stadium, 'is:', localFactors.GetBallparkFactor(stadium), '\n')
+print('The home team that plays at', stadium, 'is:', localFactors.GetHomeTeamForStadium(stadium), '\n')
+print('The city that', stadium, 'is in is:', localFactors.GetCityForStadium(stadium), '\n')
+print('Does', stadium, 'have a roof?', localFactors.HasRoof(stadium), '\n')
+
+localTime = '1:00 PM'
+#print('The weather information at', localTime, 'at', stadium, 'is:', localFactors.GetWeather(stadium, localTime), '\n')
 
 #Testing the BetPredictor class.
+'''
+date = datetime.strptime('03/29/2024', '%m/%d/%Y')
+OPENING_DAY = datetime.strptime('03/20/2024', '%m/%d/%Y')
 
+bp = BetPredictor()
+
+schedule = bp.CreateSchedule(date, 2024)
+schedule.to_excel('schedule_' + date.strftime('%m-%d-%Y') +'.xlsx')
+
+NRFI = bp.CreateNRFIPredictions(schedule, OPENING_DAY, 2024)
+NRFI.to_excel('NRFI_' + date.strftime('%m-%d-%Y') +'.xlsx')
+    
+hitting = bp.CreateHittingPredictions(schedule, OPENING_DAY, date, 2024)
+hitting.to_excel('hitting_' + date.strftime('%m-%d-%Y') +'.xlsx')
+'''
