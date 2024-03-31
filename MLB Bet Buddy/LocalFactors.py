@@ -102,7 +102,6 @@ class LocalFactors():
         
         #Create the endpoint for the Weather API and access it's data.
         weatherEndpoint = self.m_endpointObj.GetWeatherEndpoint(self.WEATHER_API_KEY, stadiumCity)
-        print(weatherEndpoint)
         weatherData = self.m_endpointObj.AccessEndpointData(weatherEndpoint)
         
         #Extract the hourly forecast data from the data returned from the Weather API. Note: The hourly forecast is split into 24 individual hours based on a 24-hour clock.

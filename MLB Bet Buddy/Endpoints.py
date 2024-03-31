@@ -64,14 +64,14 @@ class Endpoints():
     
     #Sends a request to the endpoint and simply returns the data.
     def AccessEndpointData(self, a_URL):
-        response = self.session.get(a_URL)
-        
         #Occassionaly there is a rare error by the MLB API. It is fixed by simply waiting a short time, then trying again.
         try:
+            response = self.session.get(a_URL)
             data = response.json()
             return data
-        except:
-            print(response.text)
+        except Exception as e:
+            print(e)
+            #Sleep for 10 seconds before trying to access the endpoint again.
             time.sleep(10)
             return self.AccessEndpoint(a_URL)
             

@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>055e22a7-3fe5-4df8-921c-159a0c8f2e92</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Testing.py</StartupFile>
+    <StartupFile>Server.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -30,7 +30,7 @@
     <Compile Include="main.py" />
     <Compile Include="Pitcher.py" />
     <Compile Include="Player.py" />
-    <Compile Include="server.py" />
+    <Compile Include="Server.py" />
     <Compile Include="Team.py" />
     <Compile Include="Testing.py" />
   </ItemGroup>
