@@ -1,6 +1,5 @@
 #SERVER file. Handles everything related to the server and database access.
 
-from re import A
 from quart import Quart, jsonify
 import asyncio
 from sqlalchemy import create_engine, Column, Integer, String, Float
@@ -9,7 +8,6 @@ from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 import pandas as pd
 from BetPredictor import BetPredictor
-import threading
 
 #CONSTANTS
 TABLE_NAMES = ['TodaySchedule', 'ArchiveSchedule', 'TodayNRFI', 'ArchiveNRFI', 'TodayHitting', 'ArchiveHitting']
@@ -416,4 +414,4 @@ def DeleteData(a_table):
 Base.metadata.create_all(engine)
 
 #Start the server.
-app.run()
+app.run(host='Omitted', port='Omitted')
