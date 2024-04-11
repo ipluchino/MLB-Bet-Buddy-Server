@@ -64,99 +64,259 @@ class Endpoints():
     
     #Sends a request to the endpoint and simply returns the data.
     def AccessEndpointData(self, a_URL):
-        #Occassionaly there is a rare error by the MLB API. It is fixed by simply waiting a short time, then trying again.
+        """Sends a get request to the provided endpoint URL and returns the JSON data in the response.
+        
+        Args:
+            a_URL (string): The URL to send a get request to.
+
+        Returns:
+            A dictionary representing the JSON data returned from accessing the provided endpoint URL.
+        """       
+        #Attempt to make a request to the endpoint.
         try:
             response = self.session.get(a_URL)
             data = response.json()
             return data
+        #Occassionaly there is a rare error by the MLB API. It is fixed by simply waiting a short time, then trying again.
         except Exception as e:
-            print(e)
-            #Sleep for 10 seconds before trying to access the endpoint again.
             time.sleep(10)
             return self.AccessEndpoint(a_URL)
             
     #Converts a datetime object into the correct string format.
     def FormatDate(self, a_dateObj):
+        """Converts a datetime object into the correct string format.
+
+        Args:
+            a_dateObj (datetime): The datetime object to convert to a string. 
+
+        Returns:
+            A string representing the formatted date in the format mm/dd/yyyy.
+        """
         return a_dateObj.strftime('%m/%d/%Y')
 
     #Gets the endpoint URL to analyze a specific game.
     def GetGameAnalysisEndpoint(self, a_gameID):
+        """Gets the endpoint URL to analyze a specific game.
+
+        Args:
+            a_gameID (int): The game ID used by the MLB API to represent an individual game.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve an MLB game's information.
+        """
         return self.GAME_ANALYSIS_URL.format(game_id=a_gameID)
     
     #Gets the endpoint URL to analyze team offensive statistics.
     def GetTeamOffensiveEndpoint(self, a_teamID, a_season, a_startDate, a_endDate):
-        #Format the dates into the correct format before creating the endpoin
+        """Gets the endpoint URL to analyze team offensive statistics.
+
+        Args:
+            a_teamID: The team ID used by the MLB API to represent the team.
+            a_season (int): The season to get the statistics from.
+            a_startDate (datetime): The date representing the start of the date range to extract the stats from.
+            a_endDate (datetime): The date representing the end of the date range to extract the stats from.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve the team's offensive statistics.
+        """
+        #Format the dates into the correct format before creating the endpoint.
         return self.TEAM_OFFENSE_URL.format(team_id=a_teamID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
     
     #Gets the endpoint URL to get basic player information.
     def GetGeneralPlayerInfoEndpoint(self, a_playerID):
+        """Gets the endpoint URL to get basic player information.
+
+        Args:
+            a_playerID (int): The player ID used by the MLB API to represent the player.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve the player information.
+        """
         return self.GENERAL_PLAYER_INFO_URL.format(player_id=a_playerID)
     
     #Gets the endpoint URL to analyze individual hitting statistics.
     def GetIndividualHittingEndpoint(self, a_playerID, a_season, a_startDate, a_endDate):
+        """Gets the endpoint URL to analyze individual hitting statistics.
+
+        Args:
+            a_playerID (int): The player ID used by the MLB API to represent the hitter. 
+            a_season (int): The season to get the statistics from.
+            a_startDate (datetime): The date representing the start of the date range to extract the stats from.
+            a_endDate (datetime): The date representing the end of the date range to extract the stats from.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve the hitting statistics.
+        """
         #Format the dates into the correct format before creating the endpoint.
         return self.INDIVIDUAL_HITTING_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
 
     #Gets the endpoint URL to analyze individual pitching statistics.
     def GetIndividualPitchingEndpoint(self, a_playerID, a_season, a_startDate, a_endDate):
+        """Gets the endpoint URL to analyze individual pitching statistics.
+      
+        Args:
+            a_playerID (int): The player ID used by the MLB API to represent the pitcher. 
+            a_season (int): The season to get the statistics from.
+            a_startDate (datetime): The date representing the start of the date range to extract the stats from.
+            a_endDate (datetime): The date representing the end of the date range to extract the stats from.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve the pitching statistics.
+        """
         #Format the dates into the correct format before creating the endpoint.
         return self.INDIVIDUAL_PITCHING_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
     
     #Gets the endpoint URL to analyze the schedule for a given day(s).
     def GetTodayScheduleEndpoint(self, a_startDate, a_endDate):
+        """Gets the endpoint URL to analyze the schedule for a given day(s).
+
+        If the start date is not the same as the end date, the schedule of every day in that date range is returned. If the dates are the same, the schedule for that day 
+        only is returned.
+        
+        Args:
+            a_startDate (datetime): The date representing the start of the schedules to be returned.
+            a_endDate (datetime): The date representing the end of the schedule to be returned.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve a single or multiple schedules. 
+        """
         return self.TODAY_SCHEDULE_URL.format(start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
     
     #Gets the endpoint URL to analyze a game log for a team in a specific date range.
     def GetTeamGameLogEndpoint(self, a_teamID, a_season, a_startDate, a_endDate):
+        """Gets the endpoint URL to analyze a game log for a team in a specific date range.
+
+        Args:
+            a_teamID (int): The team ID used by the MLB API to represent the team.
+            a_season (int): The season to get the game log from.
+            a_startDate (datetime): The date representing the start of game log.
+            a_endDate (datetime): The date representing the end of the game log.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve a team's game log.
+        """
         return self.TEAM_GAME_LOG_URL.format(team_id=a_teamID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
         
     #Gets the endpoint URL to analyze the standings on a specific date (used for obtaining team records).
     def GetStandingsEndpoint(self, a_date, a_season):
+        """Gets the endpoint URL to analyze the standings on a specific date (used for obtaining team records).
+
+        Args:
+            a_date (datetime): The specific date to get the standings from.
+            a_season (int): The season to get the standings from.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve the standings.
+        """
         return self.STANDINGS_URL.format(date=self.FormatDate(a_date), season=a_season)
     
     #Gets the endpoint URL to analyze the game log for a specific pitcher.
     def GetPitchingGameLogEndpoint(self, a_playerID, a_season, a_startDate, a_endDate):
+        """Gets the endpoint URL to analyze the game log for a specific pitcher.
+
+        Args:
+            a_playerID (int): The player ID used by the MLB API to represent the pitcher. 
+            a_season (int): The season to get the game log from.
+            a_startDate (datetime): The date representing the start of game log.
+            a_endDate (datetime): The date representing the end of the game log.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve a pitcher's game log.
+        """
         #Format the dates into the correct format before creating the endpoint.
         return self.PITCHING_GAME_LOG_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
     
     #Gets the endpoint URL to analyze the game log for a specific hitter.
     def GetHittingGameLogEndpoint(self, a_playerID, a_season, a_startDate):
+        """Gets the endpoint URL to analyze the game log for a specific hitter.
+
+        Args:
+            a_playerID (int): The player ID used by the MLB API to represent the hitter. 
+            a_season (int): The season to get the game log from.
+            a_startDate (datetime): The date representing the start of game log.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve a hitter's game log.
+        """
         #Format the dates into the correct format before creating the endpoint.
         return self.HITTING_GAME_LOG_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate))
 
-    #Gets the endpoint URL to analyze a hitter's career numbers off of a certain pitcher.
+    #Gets the endpoint URL to analyze a hitter's career numbers off of a specific pitcher.
     def GetCareerHittingNumbersEndpoint(self, a_hitterID, a_pitcherID):
+        """Gets the endpoint URL to analyze a hitter's career numbers off of a specific pitcher.
+
+        Args:
+            a_hitterID (int): The player ID used by the MLB API to represent the hitter. 
+            a_pitcherID (int): The player ID used by the MLB API to represent the pitcher.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve a hitter's career numbers off of a specific pitcher. 
+        """
         return self.CAREER_HITTING_NUMBERS_URL.format(hitter_id=a_hitterID, pitcher_id=a_pitcherID)
     
-    #Gets the endpoint URL to look up a player ID, given a player's name.f
+    #Gets the endpoint URL to look up a player ID, given a player's name.
     def GetPlayerIDLookupEndpoint(self, a_playerName):
+        """Gets the endpoint URL to look up a player ID, given a player's name.
+
+        Args:
+            a_playerName (string): The name of a player being searched for.
+
+        Returns:
+            A string representing the URL endpoint required to search for a player's MLB API player ID.
+        """
         return self.ID_LOOKUP_URL.format(player_name=a_playerName)
     
     #Gets the endpoint URL to look up a hitter's lefty/righty splits for a season.
     def GetLRHitterSplitsEndpoint(self, a_playerID, a_season):
+        """Gets the endpoint URL to look up a hitter's lefty/righty splits for a season.
+
+        Args:
+            a_playerID (int): The player ID used by the MLB API to represent the hitter.
+            a_season (int): The season to get the splits from.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve the L/R hitting splits.
+        """
         return self.LEFTY_RIGHTY_SPLITS_HITTTER_URL.format(player_id=a_playerID, season=a_season)
     
     #Gets the endpoint URL to look up a hitter's lefty/righty splits for a season.
     def GetLRPitcherSplitsEndpoint(self, a_playerID, a_season):
+        """Gets the endpoint URL to look up a hitter's lefty/righty splits for a season.
+        
+        Args:
+            a_playerID (int): The player ID used by the MLB API to represent the pitcher.
+            a_season (int): The season to get the splits from.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve the L/R pitching splits.
+        """
         return self.LEFTY_RIGHTY_SPLITS_PITCHER_URL.format(player_id=a_playerID, season=a_season)
     
     #Gets the endpoint URL to look up the weather at a specific city and time.
     def GetWeatherEndpoint(self, a_APIKey, a_city):
+        """Gets the endpoint URL to look up the weather at a specific city and time.
+        
+        Args:
+            a_APIKey (string): The API key used to access the Weather API. API link:  
+            a_city (string): The city to get the weather at.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve the weather.
+        """
         return self.WEATHER_URL.format(API_key=a_APIKey, city=a_city)
     
-    #Gets the endpoint URL to get a full list of qualified hitters for a specified season.
+    #Gets the endpoint URL to get a full list of qualified hitters for a specific season.
     def GetAllHittersEndpoint(self, a_season, a_offset):
+        """Gets the endpoint URL to get a full list of qualified hitters for a specific season.
+
+        An offset is required to this function because the data returned from the created endpoint can only return a maximum of 50 qualified players at a time, and there will almost 
+        always be more than 50 qualified hitters in any season.
+        
+        Args:
+            a_season (int): The season to get the qualified hitters from.
+            a_offset (int): The offset related to which index to start the list from.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve the qualified hitter list.
+        """
         return self.ALL_HITTERS_URL.format(season=a_season, offset=a_offset)
-
-    
-    
-    
-    
-    
-
-
-    
-
-
-
-
