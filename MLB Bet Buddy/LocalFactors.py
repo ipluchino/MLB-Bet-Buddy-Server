@@ -66,6 +66,14 @@ class LocalFactors():
 
     #Gets the ballpark factor for a stadium, if it exists.
     def GetBallparkFactor(self, a_stadiumName):
+        """Gets the ballpark factor for a stadium, if it exists.
+        
+        Args:
+            a_stadiumName (string): A string representing the stadium name.
+
+        Returns:
+            An integer representing the ballpark factor for that stadium.
+        """
         if a_stadiumName in self.BALLPARK_INFORMATION:
             return self.BALLPARK_INFORMATION[a_stadiumName]['ballparkFactor']
         else:
@@ -73,6 +81,13 @@ class LocalFactors():
         
     #Gets the home team for a stadium, if it exists.
     def GetHomeTeamForStadium(self, a_stadiumName):
+        """Gets the home team for a stadium, if it exists.
+        Args:
+            a_stadiumName (string): A string representing the stadium name.
+
+        Returns:
+            A string representing a stadium's home team.
+        """
         if a_stadiumName in self.BALLPARK_INFORMATION:
             return self.BALLPARK_INFORMATION[a_stadiumName]['homeTeam']
         else:
@@ -80,6 +95,13 @@ class LocalFactors():
         
     #Gets the city that a stadium resides in, if it exists.
     def GetCityForStadium(self, a_stadiumName):
+        """Gets the city for a stadium, if it exists.
+        Args:
+            a_stadiumName (string): A string representing the stadium name.
+
+        Returns:
+            A string representing the city a stadium resides in.
+        """
         if a_stadiumName in self.BALLPARK_INFORMATION:
             return self.BALLPARK_INFORMATION[a_stadiumName]['city']
         else:
@@ -87,6 +109,16 @@ class LocalFactors():
         
     #Determines whether or not a stadium has a roof or not - useful since weather does not impact stadiums that have roofs.
     def HasRoof(self, a_stadiumName):
+        """Checks if a stadium has a roof.
+        
+        Some stadiums have a roof, meaning that weather will not have an impact on games being played at those stadiums.
+        
+        Args:
+            a_stadiumName (string): A string representing the stadium name.
+
+        Returns:
+            A boolean, true if the stadium has a roof, false otherwise.
+        """
         if a_stadiumName in self.BALLPARK_INFORMATION:
             return self.BALLPARK_INFORMATION[a_stadiumName]['hasRoof']
         else:
@@ -94,6 +126,21 @@ class LocalFactors():
 
     #Gets the weather at a stadium given a stadium name and a time.
     def GetWeather(self, a_stadiumName, a_timeOfGame):
+        """Gets the weather at a stadium, at a specified time.
+
+        This function is used to get the weather at a provided stadium and time of day. First, the time is converted
+        into a 24-hour format. Then, the Weather API is used to find the hourly forecast of the city the stadium
+        resides in, and the 24-hour time is used to find the expected weather at the start of the game. The weather
+        information is returned as a dictionary.
+
+        Args:
+            a_stadiumName (string): A string representing the stadium name.
+            a_timeOfGame (string): A string representing the time of game in the format HH:MM am/pm. Example: "7:07 PM"
+
+        Returns: 
+            A dictionary representing all the weather information expected at a given stadium and time of day. 
+            The information returned includes the temperature, weather description, weather code, and wind speed.
+        """
         #Make sure the stadium exists.
         if a_stadiumName not in self.BALLPARK_INFORMATION:
             return 'Unknown'
@@ -128,6 +175,17 @@ class LocalFactors():
     #Helper function to convert a time to its closest 24 hour time hour. Example: 7:07 PM --> 15.
     #Assistance: https://stackoverflow.com/questions/67686033/adding-hours-and-days-to-the-python-datetime
     def ConvertTime(self, a_timeToConvert):
+        """Helper function to convert a time to its closest 24 hour time hour.
+
+        Args:
+            a_timeToConvert (string): The time to be converted into its 24-hour time hour. Example: "7:07 PM".
+
+        Returns:
+            An integer representing the hour only of the time. Example: 7:07 PM --> 15.
+            
+        Assistance:
+            https://stackoverflow.com/questions/67686033/adding-hours-and-days-to-the-python-datetime
+        """
         #Convert the string time to a datetime object.
         timeObj = datetime.strptime(a_timeToConvert, '%I:%M %p')
         
@@ -139,6 +197,19 @@ class LocalFactors():
     
     #Determines the weather impact factor based on the weather classification code.
     def CalculateWeatherFactor(self, a_weatherCode, a_stadium):
+        """Calculates the weather impact factor.
+        
+        The weather impact factor is determined based on the weather code (a code representing the type of weather 
+        occurring at the stadium), and whether the stadium has a roof. If the stadium has a roof, there will 
+        not be a weather impact.
+        
+        Args:
+            a_weatherCode (int): The code representing the type of weather occurring at the stadium 
+            a_stadium (string): A string representing the stadium name.
+
+        Returns:
+            A float, representing the weather impact factor (between 0 and 1).
+        """
         #Games that are played at stadiums with a roof are not impacted by the outside weather.
         if self.HasRoof(a_stadium) == True or self.HasRoof(a_stadium) == 'Unknown':
             return self.NO_WEATHER_IMPACT_WEIGHT
@@ -150,5 +221,5 @@ class LocalFactors():
         elif a_weatherCode in self.HIGH_WEATHER_IMPACT_CODES:
             return self.HIGH_WEATHER_IMPACT_WEIGHT
         else:
-            #If the code was not in any of the above lists of codes, the weather does not have any impact on the bet predictions.
+            #If the weather code could not be found in any of the above lists, there will be no weather impact by default.
             return self.NO_WEATHER_IMPACT_WEIGHT

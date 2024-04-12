@@ -275,7 +275,7 @@ async def ViewTableSpecificDate(a_tableName, a_dateStr):
 @app.route('/update', methods=['GET'])
 async def TriggerUpdate():
     #date = datetime.datetime.now()
-    date = datetime.strptime('07/30/2023','%m/%d/%Y')    
+    date = datetime.strptime('08/04/2023','%m/%d/%Y')    
 
     #Asynchronously create and update the bet predictions for a new day.
     #It is done asynchronously in the background so that the server does not freeze up while the bet predictions are being created.

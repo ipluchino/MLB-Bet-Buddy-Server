@@ -170,8 +170,8 @@ class Endpoints():
     def GetTodayScheduleEndpoint(self, a_startDate, a_endDate):
         """Gets the endpoint URL to analyze the schedule for a given day(s).
 
-        If the start date is not the same as the end date, the schedule of every day in that date range is returned. If the dates are the same, the schedule for that day 
-        only is returned.
+        If the start date is not the same as the end date, the schedule of every day in that date range is returned. If the dates are the same, 
+        the schedule for that day only is returned.
         
         Args:
             a_startDate (datetime): The date representing the start of the schedules to be returned.
@@ -309,8 +309,8 @@ class Endpoints():
     def GetAllHittersEndpoint(self, a_season, a_offset):
         """Gets the endpoint URL to get a full list of qualified hitters for a specific season.
 
-        An offset is required to this function because the data returned from the created endpoint can only return a maximum of 50 qualified players at a time, and there will almost 
-        always be more than 50 qualified hitters in any season.
+        An offset is required to this function because the data returned from the created endpoint can only return a maximum of 50 
+        qualified players at a time, and there will almost always be more than 50 qualified hitters in any season.
         
         Args:
             a_season (int): The season to get the qualified hitters from.
