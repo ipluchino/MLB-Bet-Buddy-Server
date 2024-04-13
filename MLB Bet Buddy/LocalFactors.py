@@ -128,7 +128,7 @@ class LocalFactors():
     def GetWeather(self, a_stadiumName, a_timeOfGame):
         """Gets the weather at a stadium, at a specified time.
 
-        This function is used to get the weather at a provided stadium and time of day. First, the time is converted
+        This method is used to get the weather at a provided stadium and time of day. First, the time is converted
         into a 24-hour format. Then, the Weather API is used to find the hourly forecast of the city the stadium
         resides in, and the 24-hour time is used to find the expected weather at the start of the game. The weather
         information is returned as a dictionary.
@@ -175,7 +175,7 @@ class LocalFactors():
     #Helper function to convert a time to its closest 24 hour time hour. Example: 7:07 PM --> 15.
     #Assistance: https://stackoverflow.com/questions/67686033/adding-hours-and-days-to-the-python-datetime
     def ConvertTime(self, a_timeToConvert):
-        """Helper function to convert a time to its closest 24 hour time hour.
+        """Helper method to convert a time to its closest 24 hour time hour.
 
         Args:
             a_timeToConvert (string): The time to be converted into its 24-hour time hour. Example: "7:07 PM".

@@ -309,7 +309,7 @@ class Endpoints():
     def GetAllHittersEndpoint(self, a_season, a_offset):
         """Gets the endpoint URL to get a full list of qualified hitters for a specific season.
 
-        An offset is required to this function because the data returned from the created endpoint can only return a maximum of 50 
+        An offset is required to this method because the data returned from the created endpoint can only return a maximum of 50 
         qualified players at a time, and there will almost always be more than 50 qualified hitters in any season.
         
         Args:
