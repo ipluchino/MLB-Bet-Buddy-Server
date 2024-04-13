@@ -14,10 +14,23 @@ class Player():
     #Getters
     #Gets the player ID of the player this class is representing.
     def GetPlayerID(self):
+        """Gets the player ID of the player this class is representing.
+        Returns:
+            An integer, representing the player's ID used by the MLB API.
+        """
         return self.m_playerID
 
     #Gets the hand information for a player (bat hand and pitch hand).
     def GetHandInformation(self):
+        """Gets the hand information for a player.
+
+        This method obtains the dominant hand that a player hits and pitches from. The bat hand, or the side the 
+        player goes up to bat, can be right, left, or switch (the player hits from both sides depending on the 
+        pitcher). The pitch hand can only be left or right.
+
+        Returns:
+            A dictionary containing the hand information for the player.
+        """
         #Create the endpoint to get general player information and access the endpoint.
         generalInfoEndpoint = self.m_endpointObj.GetGeneralPlayerInfoEndpoint(self.m_playerID)
         generalInfoData = self.m_endpointObj.AccessEndpointData(generalInfoEndpoint)
@@ -39,6 +52,17 @@ class Player():
     #Assistance Received: https://www.digitalocean.com/community/tutorials/python-static-method#using-staticmethod
     @staticmethod
     def FindPlayerID(a_playerFullName):
+        """Searches for a player ID based on a player's full name.
+
+        This method is used to obtain a player's ID that's used for the MLB API, based on a full name. In the case
+        where the full name is shared between two players, the most recent player with that name is returned.
+
+        Args:
+            a_playerFullName (string): An MLB player full name.
+
+        Returns:
+            An integer, representing the player's ID.
+        """
         #Create a temporary endpoint object.
         tempEndpointObj = Endpoints()
         
@@ -56,14 +80,3 @@ class Player():
         
         #Always opt to return the first of the people found in case there are multiple people found (extremely rare).
         return peopleFound[0]['id']
-
-        
-
-       
-        
-        
-    
-
-
-
-
