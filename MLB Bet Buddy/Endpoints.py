@@ -65,13 +65,17 @@ class Endpoints():
     #Sends a request to the endpoint and simply returns the data.
     def AccessEndpointData(self, a_URL):
         """Sends a get request to the provided endpoint URL and returns the JSON data in the response.
-        
+
+        This method is used throughout the entire project to retrieve data from both the MLB API and Weather API. All 
+        data is returned in a JSON format. Before returning, this function makes sure that the data was successfully 
+        retrieved. If there are any errors, the function sleeps for 10 seconds and tries to access the API again.
+
         Args:
             a_URL (string): The URL to send a get request to.
 
         Returns:
             A dictionary representing the JSON data returned from accessing the provided endpoint URL.
-        """       
+        """    
         #Attempt to make a request to the endpoint.
         try:
             response = self.session.get(a_URL)
@@ -111,7 +115,7 @@ class Endpoints():
         """Gets the endpoint URL to analyze team offensive statistics.
 
         Args:
-            a_teamID: The team ID used by the MLB API to represent the team.
+            a_teamID (int): The team ID used by the MLB API to represent the team.
             a_season (int): The season to get the statistics from.
             a_startDate (datetime): The date representing the start of the date range to extract the stats from.
             a_endDate (datetime): The date representing the end of the date range to extract the stats from.

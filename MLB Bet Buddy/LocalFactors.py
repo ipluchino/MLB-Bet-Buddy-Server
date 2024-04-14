@@ -111,8 +111,6 @@ class LocalFactors():
     def HasRoof(self, a_stadiumName):
         """Checks if a stadium has a roof.
         
-        Some stadiums have a roof, meaning that weather will not have an impact on games being played at those stadiums.
-        
         Args:
             a_stadiumName (string): A string representing the stadium name.
 
