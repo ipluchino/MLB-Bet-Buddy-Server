@@ -34,7 +34,7 @@ class Game():
                 #By default set the game ID to the Yankees opening day game and reset the game data.
                 self.m_gameID = 718781
                 self.SetGameEndpointInformation()
-        #If this else block si reached, the provided game ID was completely invalid and the API returned an error. 
+        #If this else block is reached, the provided game ID was completely invalid and the API returned an error. 
         else:
             #By default set the game ID to the Yankees opening day game and reset the game data.
             self.m_gameID = 718781
@@ -94,7 +94,7 @@ class Game():
                 self.m_awayPitcherName = awayProbablePitcherData['fullName']
                 self.m_awayPitcherID = awayProbablePitcherData['id']
 
-    #Getter functions.
+    #Basic Getter functions.
     #Gets the ID of the game.
     def GetGameID(self):
         return self.m_gameID
@@ -150,6 +150,14 @@ class Game():
     #Gets the ID of the starting pitcher for the away team.
     def GetAwayStartingPitcherID(self):
         return self.m_awayPitcherID
+    
+    #Basic Setters
+    def SetNewGame(self, a_gameID):
+        self.m_gameID = a_gameID
+        
+        #Re-update the member variables to represent the new game.
+        self.SetGameEndpointInformation()
+        self.SetBasicInformation()
     
     #Gets all of the individual plays from a game (every at-bat result).
     def GetAllPlays(self):

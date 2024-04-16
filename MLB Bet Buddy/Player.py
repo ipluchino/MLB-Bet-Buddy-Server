@@ -20,6 +20,18 @@ class Player():
         """
         return self.m_playerID
 
+    #Setters
+    def SetPlayer(self, a_playerID):
+        """Sets the instance of the the class to a new player.
+        
+        Args:
+            a_playerID (int): The player ID used by the MLB API to represent the player.
+
+        Returns:
+            Nothing.
+        """
+        self.m_playerID = a_playerID
+
     #Gets the hand information for a player (bat hand and pitch hand).
     def GetHandInformation(self):
         """Gets the hand information for a player.

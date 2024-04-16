@@ -165,7 +165,7 @@ class Team():
         """Gets the record for a team on a given date and season.
         
         This method is used to retrieve a record for a team on a given date and season. If the date is invalid or the 
-        record could not be found, a default record of 0-0 is returned.
+        record could not be found, a default record of (0, 0) is returned.
         
         Args:
             a_date: (datetime): The date representing the day to get the team's record from.
@@ -239,7 +239,7 @@ class Team():
             a_endDate (datetime): The date representing the end of the date range to consider.
 
         Returns: 
-            A dictionary containing the team's BA, OPS, RPG, strikeout percentage, and homerun percentage during
+            A dictionary containing the team's BA, OPS, RPG, strikeout percentage, and home run percentage during
             the provided date range.
         """
         #Create the team offensive statistics endpoint.
@@ -270,7 +270,7 @@ class Team():
         totalStrikeouts = float(teamStats['strikeOuts'])
         teamStrikeoutPercentage = totalStrikeouts / totalPlateAppearances
         
-        #Extract homerun rate of the team. Since homeruns instantly end a NRFI, a low team homerun rate is desired for NRFI.
+        #Extract home run rate of the team. Since home runs instantly end a NRFI, a low team home run rate is desired for NRFI.
         totalHomeruns = float(teamStats['homeRuns'])
         teamHomerunPercentage = totalHomeruns / totalPlateAppearances
         

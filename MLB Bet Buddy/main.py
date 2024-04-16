@@ -286,3 +286,19 @@ print(p3.CalculateYRFIPercentage(2024, OPENING_DAY_2024, d2))
 print(p4.CalculateYRFIPercentage(2024, OPENING_DAY_2024, d2))
 print()
 '''
+
+'''
+#Testing setters.
+OPENING_DAY_2024 = datetime.strptime('03/20/2024', '%m/%d/%Y')
+h = Hitter(Player.FindPlayerID("Anthony Volpe"))
+print(h.GetOffensiveStatistics(2024, OPENING_DAY_2024, datetime.today()))
+
+h.SetPlayer(Player.FindPlayerID("Aaron Judge"))
+print(h.GetOffensiveStatistics(2024, OPENING_DAY_2024, datetime.today()))
+
+g = Game()
+g.PrintGameInfo()
+
+g.SetNewGame(746656)
+g.PrintGameInfo()
+'''

@@ -12,6 +12,21 @@ class Pitcher(Player):
         
     #Gets the general pitching statistics of a player within a certain date range.
     def GetPitchingStatistics(self, a_season, a_startDate, a_endDate):
+        """Gets general pitching statistics for a player within a date range.
+
+        This method retrieves several basic pitching statistics for a pitcher, and returns them in the form of a 
+        dictionary. If there are any errors with the date range, or the stats could not be found, an empty dictionary 
+        is returned.
+
+        Args:
+            a_season (int): The season to get the pitching statistics for.
+            a_startDate (datetime): The date representing the start of the date range to consider.
+            a_endDate (datetime): The date representing the end of the date range to consider.
+
+        Returns:
+            A dictionary containing the pitcher's innings pitched, wins, losses, ERA, WHIP, strikeouts per 9 innings and
+            home runs per 9 innings.
+        """
         #Create the pitching statistics endpoint for an individual pitcher.
         individualPitchingEndpoint = self.m_endpointObj.GetIndividualPitchingEndpoint(self.m_playerID, a_season, a_startDate, a_endDate)
         
@@ -39,7 +54,7 @@ class Pitcher(Player):
         #Note: ERA = Earned Run Average and WHIP = Walks and Hits per Innings Pitched. The lower these values, the better the pitcher.
         ERA = float(cumulativeStats['era'])       
         WHIP = float(cumulativeStats['whip'])         
-        #Note: The stats below represent the average number strikeouts and homeruns if the pitcher were to pitch a full 9 innings. Higher strikeout rates are better, and lower homerun rates are better.
+        #Note: The stats below represent the average number strikeouts and home runs if the pitcher were to pitch a full 9 innings. Higher strikeout rates are better, and lower home run rates are better.
         strikeoutsPer9Inn = float(cumulativeStats['strikeoutsPer9Inn'])
         homeRunsPer9Inn = float(cumulativeStats['homeRunsPer9'])
         
@@ -53,8 +68,21 @@ class Pitcher(Player):
                  'strikeoutsPer9': strikeoutsPer9Inn,
                  'homeRunsPer9': homeRunsPer9Inn }
     
-    #Determines the pitching statistics against left handed hitters and right handed hitters in a specified season.
+    #Determines the pitching statistics against left-handed hitters and right-handed hitters in a specified season.
     def GetLRPitchingSplits(self, a_season):
+        """Gets the lefty-righty splits for a pitcher.
+        
+        This method retrieves lefty-righty splits for a pitcher. If there are any errors with the date range, 
+        or if any stats are missing for a specific split, that split is omitted from the return dictionary. Sometimes 
+        a player can have multiple splits returned by the MLB API if they were traded to another team mid-season, 
+        but this function ensures that only the season long combined splits are returned.
+        
+        Args:
+            a_season (int): The season to get the pitching splits for.
+
+        Returns: A dictionary containing the batting average against, strikeouts per 9 innings, and home runs per 9 
+                 innings for each split, vs. left-handed hitters and vs. right-handed hitters.
+        """
         #Create the lefty/righty splits endpoint for pitchers.
         LRSplitsEndpoint = self.m_endpointObj.GetLRPitcherSplitsEndpoint(self.m_playerID, a_season)
         
@@ -104,6 +132,22 @@ class Pitcher(Player):
 
     #Calculates the percentage of a pitcher's game where they let up a run in the 1st inning.
     def CalculateYRFIPercentage(self, a_season, a_startDate, a_endDate):
+        """Calculates the percentage of games a pitcher lets up a run in the first inning.
+
+        This method is used to calculate the YRFI percentage for a pitcher. First, all the pitcher's starts within 
+        the provided date range are extracted from the MLB API. Then, a Game object is created for each of their 
+        starts, and the total number of games where the pitcher lets up a run in the first inning is tallied. The 
+        YRFI percentage is calculated by taking this total and dividing it by their total number of starts in the 
+        date range.
+
+        Args:
+            a_season (int): The season to get the YRFI percentage for.
+            a_startDate (datetime): The date representing the start of the date range to consider.
+            a_endDate (datetime): The date representing the end of the date range to consider.
+
+        Returns: A float, representing the percentage of games a pitcher lets up a run in the first inning (between
+                 0 and 1).
+        """
         #Create the pitching game log endpoint.
         pitchingGameLogEndpoint = self.m_endpointObj.GetPitchingGameLogEndpoint(self.m_playerID, a_season, a_startDate, a_endDate)
         
@@ -153,9 +197,3 @@ class Pitcher(Player):
         YRFIRate = YRFICount / totalGamesStarted
 
         return YRFIRate
-        
-
-            
-        
-        
-
