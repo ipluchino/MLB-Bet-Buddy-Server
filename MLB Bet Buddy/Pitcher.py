@@ -71,17 +71,19 @@ class Pitcher(Player):
     #Determines the pitching statistics against left-handed hitters and right-handed hitters in a specified season.
     def GetLRPitchingSplits(self, a_season):
         """Gets the lefty-righty splits for a pitcher.
-        
-        This method retrieves lefty-righty splits for a pitcher. If there are any errors with the date range, 
-        or if any stats are missing for a specific split, that split is omitted from the return dictionary. Sometimes 
-        a player can have multiple splits returned by the MLB API if they were traded to another team mid-season, 
-        but this function ensures that only the season long combined splits are returned.
-        
+
+        This method retrieves lefty-righty splits for a pitcher, meaning their stats against left-handed and 
+        right-handed hitters. If there are any errors with the date range, or if any stats are missing for a specific 
+        split, that split is omitted from the return dictionary. Sometimes a player can have multiple splits returned 
+        by the MLB API if they were traded to another team mid-season, but this method ensures that only the season 
+        long combined splits are returned.
+
         Args:
             a_season (int): The season to get the pitching splits for.
 
-        Returns: A dictionary containing the batting average against, strikeouts per 9 innings, and home runs per 9 
-                 innings for each split, vs. left-handed hitters and vs. right-handed hitters.
+        Returns: 
+            A dictionary containing the batting average against, strikeouts per 9 innings, and home runs per 9
+            innings for each split, vs. left-handed hitters and vs. right-handed hitters.
         """
         #Create the lefty/righty splits endpoint for pitchers.
         LRSplitsEndpoint = self.m_endpointObj.GetLRPitcherSplitsEndpoint(self.m_playerID, a_season)

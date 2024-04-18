@@ -27,8 +27,75 @@ class Hitter(Player):
         super().__init__(a_hitterID) 
         
     #Data gathering functions.
+    #Gets the general offensive statistics of a player within a certain date range.
+    def GetOffensiveStatistics(self, a_season, a_startDate, a_endDate):
+        """Gets the general offensive statistics for a hitter within a date range.
+
+        This method is used to extract offensive statistics for a hitter within a date range from the MLB API. If 
+        there are any errors with the date range, or the stats could not be found, an empty dictionary is returned.
+
+        Args:
+            a_season (int): The season to get the offensive statistics for.
+            a_startDate (datetime): The date representing the start of the date range to consider.
+            a_endDate (datetime): The date representing the end of the date range to consider.
+
+        Returns:
+            A dictionary, representing the offensive statistics of a hitter from within the provided date range. Stats
+            such as the number of hits, batting average, OBP, OPS, and the number of home runs are included.
+        """
+        #Create the offensive statistics endpoint for an individual hitter.
+        individualHittingEndpoint = self.m_endpointObj.GetIndividualHittingEndpoint(self.m_playerID, a_season, a_startDate, a_endDate)
+        
+        #Access the created endpoint and store the data.
+        individualHittingData = self.m_endpointObj.AccessEndpointData(individualHittingEndpoint)    
+
+        #Making sure the player ID being used actually exists and stats were returned by the API.
+        if 'people' not in individualHittingData or 'stats' not in individualHittingData['people'][0]:
+            return {}
+        
+        #Making sure the player has played within the given timeframe.
+        splits = individualHittingData['people'][0]['stats'][0]['splits']    
+        if not splits:
+            return {}
+        
+        #Sometimes a player may play on multiple teams due to in season trades, so there are splits for each individual team. The last split provided is cumulative stats (that's why -1).
+        cumulativeStats = splits[-1]['stat']
+        
+        #Gather all of the offensive statistics.
+        fullName = individualHittingData['people'][0]['fullName']
+        gamesPlayed = int(cumulativeStats['gamesPlayed'])
+        plateAppearances = int(cumulativeStats['plateAppearances'])
+        hits = int(cumulativeStats['hits'])
+        battingAverage = float(cumulativeStats['avg'])
+        OBP = float(cumulativeStats['obp'])
+        OPS = float(cumulativeStats['ops'])
+        homeRuns = int(cumulativeStats['homeRuns'])
+
+        return { 'fullName': fullName,
+                 'gamesPlayed': gamesPlayed,
+                 'plateAppearances': plateAppearances,
+                 'hits': hits,
+                 'battingAverage': battingAverage,
+                 'OBP': OBP,
+                 'OPS': OPS,
+                 'homeRuns': homeRuns }
+    
     #Gets the career offensive statistics off a specific provided pitcher.
     def GetCareerStatsOffPitcher(self, a_pitcherID):
+        """Gets a hitter's career statistics off of a pitcher.
+
+        This method is used to get a hitter's career statistics off of a specific pitcher. If the pitcher could not 
+        be found in the MLB API, an empty dictionary is returned. It is also checked to make sure that the hitter has 
+        faced the pitcher at least once. If they haven't, an empty dictionary is returned since the statistics do not 
+        exist.
+
+        Args:
+            a_pitcherID (int): The ID used by the MLB API to represent the opposing pitcher.
+
+        Returns:
+            A dictionary, representing the hitter's career numbers when facing the provided pitcher. Stats such  as the
+            number of plate appearances, hits, batting average, OBP, OPS, and the number of home runs are included.
+        """
         #Create the endpoint to find the career statistics.
         careerHittingStatisticsEndpoint = self.m_endpointObj.GetCareerHittingNumbersEndpoint(self.m_playerID, a_pitcherID)
         
@@ -69,48 +136,24 @@ class Hitter(Player):
                  'OBP': OBP,
                  'OPS': OPS,
                  'homeRuns': homeRuns }
-        
-    #Gets the general offensive statistics of a player within a certain date range.
-    def GetOffensiveStatistics(self, a_season, a_startDate, a_endDate):
-        #Create the offensive statistics endpoint for an individual hitter.
-        individualHittingEndpoint = self.m_endpointObj.GetIndividualHittingEndpoint(self.m_playerID, a_season, a_startDate, a_endDate)
-        
-        #Access the created endpoint and store the data.
-        individualHittingData = self.m_endpointObj.AccessEndpointData(individualHittingEndpoint)    
-
-        #Making sure the player ID being used actually exists and stats were returned by the API.
-        if 'people' not in individualHittingData or 'stats' not in individualHittingData['people'][0]:
-            return {}
-        
-        #Making sure the player has played within the given timeframe.
-        splits = individualHittingData['people'][0]['stats'][0]['splits']    
-        if not splits:
-            return {}
-        
-        #Sometimes a player may play on multiple teams due to in season trades, so there are splits for each individual team. The last split provided is cumulative stats (that's why -1).
-        cumulativeStats = splits[-1]['stat']
-        
-        #Gather all of the offensive statistics.
-        fullName = individualHittingData['people'][0]['fullName']
-        gamesPlayed = int(cumulativeStats['gamesPlayed'])
-        plateAppearances = int(cumulativeStats['plateAppearances'])
-        hits = int(cumulativeStats['hits'])
-        battingAverage = float(cumulativeStats['avg'])
-        OBP = float(cumulativeStats['obp'])
-        OPS = float(cumulativeStats['ops'])
-        homeRuns = int(cumulativeStats['homeRuns'])
-
-        return { 'fullName': fullName,
-                 'gamesPlayed': gamesPlayed,
-                 'plateAppearances': plateAppearances,
-                 'hits': hits,
-                 'battingAverage': battingAverage,
-                 'OBP': OBP,
-                 'OPS': OPS,
-                 'homeRuns': homeRuns }
     
-    #Determines the offensive statistics against left handed pitchers and right handed pitchers in a specified season.
+    #Determines the offensive statistics against left handed-pitchers and right-handed pitchers in a specified season.
     def GetLRHittingSplits(self, a_season):
+        """Gets the lefty-righty splits for a hitter.
+
+        This method retrieves lefty-righty splits for a hitter, meaning their stats against left-handed and
+        right-handed pitchers. If there are any errors with the date range, or if any stats are missing for a
+        specific split, that split is omitted from the return dictionary. Sometimes a player can have multiple splits
+        returned by the MLB API if they were traded to another team mid-season, but this method ensures that only the
+        season long combined splits are returned.
+
+        Args:
+            a_season (int): The season to get the hitting splits for.
+
+        Returns:
+            A dictionary containing the batting average against, strikeouts per 9 innings, and home runs per 9
+            innings for each split, vs. left-handed hitters and vs. right-handed hitters.
+        """
         #Create the lefty/righty splits endpoint for hitters.
         LRSplitsEndpoint = self.m_endpointObj.GetLRHitterSplitsEndpoint(self.m_playerID, a_season)
         
@@ -154,6 +197,25 @@ class Hitter(Player):
     
     #Finds and returns a hitter's last 10 games offensive statistics, given a starting date to search from.
     def Last10Stats(self, a_season, a_date):
+        """Gets a hitter's offensive statistics in their last 10 games.
+
+        This method is used to get a hitter's offensive statistics considering only their last 10 games. First, 
+        the hitter's entire game log is extracted from the MLB API, starting from the date provided. Then, 
+        starting from a week back, the hitter's stats are extracted. This range is incremented by 1 day and the 
+        process is repeated until the player has a total of at least 10 games played in the range (example: last 7 
+        days --> last 8 days --> last 9 days...). Once the games played requirement has been met, the offensive stats 
+        are extracted and returned (see GetOffensiveStatistics()). If the hitter has not played in 10 games within 3 
+        weeks of the starting date, an empty dictionary is returned as the hitter does not have recent offensive 
+        statistics.
+
+        Args:
+            a_season (int): The season to get the hitter's last 10 games stats from.
+            a_date (datetime): The starting date to get the hitter's last 10 game stats from.
+
+        Returns:
+            A dictionary, representing the offensive statistics of a hitter from their last 10 games. Stats such
+            as the number of hits, batting average, OBP, OPS, and the number of home runs are included.
+        """
         #Will act as the ending date for the date range.
         endDate = a_date
 
@@ -167,13 +229,13 @@ class Hitter(Player):
         while startDate > maximumDate:
             hittingStatistics = self.GetOffensiveStatistics(a_season, startDate, endDate)
             
-            #Make sure hitting statistics were found in the date range to avoid crashihng.
+            #Make sure hitting statistics were found in the date range to avoid crashing.
             if hittingStatistics == {}:
                 startDate -= timedelta(days=1)
                 continue
 
             gamesPlayed = hittingStatistics['gamesPlayed']
-            if gamesPlayed == 10:
+            if gamesPlayed >= 10:
                 #If 10 games played was found, add the date range used to the return dictionary and return it.
                 hittingStatistics['startDateRange'] = startDate.strftime('%m/%d/%Y')
                 hittingStatistics['endDateRange'] = endDate.strftime('%m/%d/%Y')
@@ -188,6 +250,17 @@ class Hitter(Player):
     
     #Classify a batting average into one of five categories and assign its weight (used for creating hitting predictions).
     def ClassifyHitting(self, a_BA):
+        """Classify a batting average into one of five categories and assign its weight.
+
+        This method is used to determine how well a hitter is doing, based on their batting average. One of five
+        categories is determined, and the respective weight for that category is returned from this function.
+
+        Args:
+            a_BA (float): The batting average of the hitter in question.
+
+        Returns:
+            A float, representing a hot/cold factor for a hitter, used for creating hitting bet predictions.
+        """
         #Determine the classification for the hitter based on their batting average.
         if a_BA >= self.ON_FIRE_BA_MINIMUM:
             return 'On Fire', self.ON_FIRE_WEIGHT
@@ -202,6 +275,21 @@ class Hitter(Player):
         
     #Checks to see if a game was played on the provided date, and returns whether or not a hitter achieved certain beting goals during that game.
     def HittingBetReview(self, a_gameDate):
+        """Determines the betting benchmarks a hitter achieved, on a specific day for bet accuracy checking.
+
+        This method first checks to see if the hitter played on the given date. If they have, the number of hits,
+        runs, and RBIs are extracted from the game for the hitter. Then, it is checked if the hitter has achieved at
+        least 1 hit, at least 2 hits, at least 2 hits + runs + RBIs, and at least 3 hits + runs + RBIs. The results
+        are recorded in a dictionary.
+
+        Args:
+            a_gameDate (string): The date of the game being reviewed as a string (ex: 05/15/2024).
+
+        Returns:
+            A dictionary containing several betting benchmarks, and whether the hitter reached them. The
+            benchmarks included are at least 1 hit, at least 2 hits, at least 2 hits + runs + RBIs, and at least 3
+            hits + runs + RBIs. If the player did not play on the given date, an empty dictionary is returned.
+        """
         #Extract the season year from the game date.
         gameDatetimeObj = datetime.strptime(a_gameDate, '%m/%d/%Y')
         season = gameDatetimeObj.year
@@ -254,6 +342,22 @@ class Hitter(Player):
     #Static method to return a list of all the qualified hitters of a season.
     @staticmethod
     def GetAllHitters(a_season):
+        """Gets a list of all qualified hitters for a season.
+
+        This method is used to get all "qualified" hitters for a provided season. A qualified hitter is a hitter that 
+        has at least 3.1 plate appearances per game played. To get all the qualified hitters, this method repeatedly 
+        calls the qualified hitter endpoint with different offsets. This is because the MLB API can only return 50 
+        players at a time, so an offset is used to get the entire list of qualified hitters. Each player is then 
+        appended to a return list.
+
+        Args:
+            a_season (int): The season to get the qualified hitters for.
+
+        Returns:
+            A list of dictionaries where each dictionary represents a qualified hitter. Information such as the
+            player's full name, player ID, team name and ID, games played, and total plate appearances on the season
+            are included.
+        """
         #Create a temporary endpoint object.
         tempEndpointObj = Endpoints()
         
@@ -283,9 +387,9 @@ class Hitter(Player):
                 gamesPlayed = int(hitter['stat']['gamesPlayed'])
                 plateAppearances = int(hitter['stat']['plateAppearances'])
                 
-                #Note: Qualified hitters have 3.1 plate appearances per game played. Also, ensure that the player has played at least 30 games so there are valid statistics.
+                #Note: Qualified hitters have 3.1 plate appearances per game played. Ensure that the hitter has reached that mark.
                 qualifiedPlateAppearances = gamesPlayed * 3.1
-                if gamesPlayed >= 30 and plateAppearances >= qualifiedPlateAppearances:
+                if plateAppearances >= qualifiedPlateAppearances:
                     #If the hitter is qualified and has played a minimum of 30 games, add them to the result list.
                     playerName = hitter['player']['fullName']
                     playerID = hitter['player']['id']

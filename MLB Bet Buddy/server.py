@@ -18,9 +18,9 @@ OPENING_DAY_2024 = datetime.strptime('03/20/2024', '%m/%d/%Y')
 CLOSING_DAY_2023 = datetime.strptime('10/01/2023', '%m/%d/%Y')
 CLOSING_DAY_2024 = datetime.strptime('09/29/2024', '%m/%d/%Y')
 
-CURRENT_OPENING_DAY = OPENING_DAY_2023
-CURRENT_CLOSING_DAY = CLOSING_DAY_2023
-CURRENT_SEASON = 2023
+CURRENT_OPENING_DAY = OPENING_DAY_2024
+CURRENT_CLOSING_DAY = CLOSING_DAY_2024
+CURRENT_SEASON = 2024
 
 #QUART AND SQLALCHEMY SETUP.
 app = Quart(__name__)                                           #Quart server object.
@@ -274,8 +274,8 @@ async def ViewTableSpecificDate(a_tableName, a_dateStr):
 #Route to trigger an update for bet predictions for a new day.
 @app.route('/update', methods=['GET'])
 async def TriggerUpdate():
-    #date = datetime.datetime.now()
-    date = datetime.strptime('08/04/2023','%m/%d/%Y')    
+    date = datetime.now()
+    #date = datetime.strptime('08/04/2023','%m/%d/%Y')    
 
     #Asynchronously create and update the bet predictions for a new day.
     #It is done asynchronously in the background so that the server does not freeze up while the bet predictions are being created.
