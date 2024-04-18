@@ -32,7 +32,7 @@
     <Compile Include="Player.py" />
     <Compile Include="Server.py" />
     <Compile Include="Team.py" />
-    <Compile Include="Testing.py" />
+    <Compile Include="ProjectTest.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
