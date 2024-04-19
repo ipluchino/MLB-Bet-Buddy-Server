@@ -150,7 +150,7 @@ class Team():
         """Sets the instance of the class to represent a new team.
 
         Args:
-            a_teamID (int): The team ID used by the MLB API to represent the team.
+            a_teamID (int): The team ID used by the MLB API to represent the new team.
 
         Returns:
             Nothing.
