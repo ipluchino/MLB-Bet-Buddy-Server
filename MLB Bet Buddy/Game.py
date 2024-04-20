@@ -307,50 +307,67 @@ class Game():
         print('Did the away pitcher, ' + self.m_awayPitcherName + ', let up a run in the first inning?', self.DidPitcherLetUpRunFirstInning(self.m_awayPitcherID), '\n')
 
     #NRFI Functions
-    #Determines whether or not a run was scored in the first run of the inning.
-    def DidYRFIOccur(self):
-        """Determines whether a run was scored in the first inning of the game or not.
+    def ExtractFirstInningScoringPlays(self):
+        """Extracts the plays from the game where a run was scored in the first innings.
 
-        This method is used to determine if a YRFI occurred in the game. First, every play where a run was scored is
-        extracted from the game information. For each scoring play, it is checked what inning of the game the play
-        occured. If the scoring play occurred in the first inning, a YRFI did occur and true is returned. Otherwise,
-        false is returned.
+        This method is used to gather all the plays of the game where a run was scored in the first inning. First,
+        every play from the game as well as the indices of those plays where a run was scored is extracted. For each
+        play, it is checked which inning the run was scored. If it was scored in the first inning, it is added to the
+        return list, otherwise the search is continued for the rest of the scoring plays.
 
         Returns:
-            A boolean, which his true if a run was scored in the first inning of the game, false otherwise.
+            A list, containing individual dictionaries with each dictionary representing a 1st inning play where a run
+            scored. An empty list is returned if no first inning runs were scored in the game.
         """
+        #Gather all the plays from the game, as well as the specific indices of those plays that resulted in a run being scored.
         allPlays = self.GetAllPlays()
         scoringPlays = self.GetScoringPlayIndices()
         
-        #Make sure the play data actually exists before doing any calculations.
+        #Make sure the play data actually exists.
         if not allPlays or not scoringPlays:
-            return False
+            return []
         
-        #Loop through each scoring play that happened in the game.
+        #Loop through each scoring play that occurred in the game.
+        firstInningScoringPlays = []
         for scoringIndex in scoringPlays:
             #Extract the information about that specific play in which a run was scored.
             play = allPlays[scoringIndex]
             
-            #If the scoring play occurred in the first inning, return True. Otherwise, return false.
+            #If the scoring play occurred in the first inning, append it to the result list.
             inning = int(play['about']['inning'])
             if inning == 1:
-                return True
+                firstInningScoringPlays.append(play)
+            #No need to continue searching after the first inning.
             elif inning > 1:
-                return False
+                break
     
-        return False
+        return firstInningScoringPlays
+
+    #Determines whether or not a run was scored in the first run of the inning.
+    def DidYRFIOccur(self):
+        """Determines whether a run was scored in the first inning of the game or not.
+
+        This method is used to determine if a YRFI occurred in the game. First, the plays from the game where a run 
+        was scored in the first inning is extracted (see ExtractFirstInningScoringPlays()). If there is at least one 
+        play from the returned list, a YRFI occurred and true is returned, otherwise false is returned.
+
+        Returns:
+            A boolean, which his true if a run was scored in the first inning of the game, false otherwise.
+        """
+        firstInningScoringPlays = self.ExtractFirstInningScoringPlays()
+        return len(firstInningScoringPlays > 0)
     
     #Determines if a specific team scored in the first inning of a game - used to calculate how often a team scores in the first inning.
     def DidTeamScoreFirstInning(self, a_teamID):
         """Determines whether a specific team has scored in the first inning of the game.
 
-        This method is used to determine if a specific team has scored in the first inning of the game. First,
-        every play where a run was scored is extracted from the game information. For each scoring play,
-        it is checked what inning of the game the play occured. If the scoring play occurred in the first inning,
-        it is determined which half of the inning the play occurred. If the inning is in the top half then the away
-        team scored, otherwise if the inning is in the bottom half the home team scored. The team ID of the scoring
-        team is then compared with the team ID provided to this method. If they match, true is returned. If no
-        scoring play occurred in the first inning for the requested team, false is returned.
+        This method is used to determine if a specific team has scored in the first inning of the game. First, 
+        the plays from the game where a run was scored in the first inning is extracted (see 
+        ExtractFirstInningScoringPlays()). For each of these scoring plays, it is determined which half of the inning 
+        the play occurred. If the inning is in the top half then the away team scored, otherwise if the inning is in 
+        the bottom half the home team scored. The team ID of the scoring team (home or away) is then compared with 
+        the team ID provided to this method. If they match, true is returned. If no scoring play occurred in the 
+        first inning for the requested team, false is returned.
 
         Args:
             a_teamID (int): The ID used by the MLB API to represent a team.
@@ -358,49 +375,37 @@ class Game():
         Returns:
             A boolean, which is true if the provided team scored a run in the first inning of the game, false otherwise.
         """
-        allPlays = self.GetAllPlays()
-        scoringPlays = self.GetScoringPlayIndices()
+        #Extract all the plays that resulted in a run being scored in the first inning, if any exist.
+        firstInningScoringPlays = self.ExtractFirstInningScoringPlays()
         
-        #Make sure the play data actually exists before doing any calculations.
-        if not allPlays or not scoringPlays:
-            return False
-
-        #Loop through each scoring play that happened in the game.
-        for scoringIndex in scoringPlays:
-            #Extract the information about that specific play in which a run was scored.
-            play = allPlays[scoringIndex]
-            
-            #Check to see if a run was scored in the first inning.
-            inning = int(play['about']['inning'])
-            if inning == 1:
-                #Check to see which team scored, and if it matches the team ID that it being searched for.
-                halfInning = play['about']['halfInning']
+        #Loop through each play where a run was scored in the first inning.
+        for scoringPlay in firstInningScoringPlays:
+            #Check to see which team scored, and if it matches the team ID that it being searched for.
+            halfInning = scoringPlay['about']['halfInning']
                 
-                #The run scored was in the top of the first inning, by the away team.
-                if halfInning == 'top':
-                    awayTeamID = self.GetAwayTeamID()
-                    if awayTeamID == a_teamID:
-                        return True
-                #The run scored was in the bottom of the first inning, by the home team.
-                else:
-                    homeTeamID = self.GetHomeTeamID()
-                    if homeTeamID == a_teamID:
-                        return True
-            elif inning > 1:
-                return False
-    
+            #The run scored was in the top of the first inning, by the away team.
+            if halfInning == 'top':
+                awayTeamID = self.GetAwayTeamID()
+                if awayTeamID == a_teamID:
+                    return True
+            #The run scored was in the bottom of the first inning, by the home team.
+            else:
+                homeTeamID = self.GetHomeTeamID()
+                if homeTeamID == a_teamID:
+                    return True
+                
         return False
     
     #Determines if a specific pitcher let up a run in the first inning of a game - used to calculate how often a pitcher lets up a run in the first inning.
     def DidPitcherLetUpRunFirstInning(self, a_pitcherID):
         """Determines whether a specific pitcher  has let up a run in the first inning of the game.
 
-        This method is used to determine if a specific pitcher has let up a run in the first inning of the game.
-        First, every play where a run was scored is extracted from the game information. For each scoring play,
-        it is checked what inning of the game the play occured. If the scoring play occurred in the first inning,
-        the ID of the pitcher who let up the run(s) is extracted. This ID is then compared with the pitcher ID that
-        was provided to this method. If they match, true is returned. If no scoring play occurred in the first inning
-        and the requested pitcher was pitching at the time, false is returned.
+        This method is used to determine if a specific pitcher has let up a run in the first inning of the game. 
+        first, the plays from the game where a run was scored in the first inning is extracted (see 
+        ExtractFirstInningScoringPlays()). For each scoring play, the ID of the pitcher who let up the run(s) is 
+        extracted. This ID is then compared with the pitcher ID that was provided to this method. If they match, 
+        true is returned. If no scoring play occurred in the first inning and the requested pitcher was pitching at 
+        the time, false is returned.
 
         Args:
             a_pitcherID (int): The ID used by the MLB API to represent a pitcher.
@@ -409,25 +414,13 @@ class Game():
             A boolean, which is true if the provided pitcher let up a run in the first inning of the game, false
             otherwise.
         """
-        allPlays = self.GetAllPlays()
-        scoringPlays = self.GetScoringPlayIndices()
+        #Extract all the plays that resulted in a run being scored in the first inning, if any exist.
+        firstInningScoringPlays = self.ExtractFirstInningScoringPlays()
         
-        #Make sure the play data actually exists before doing any calculations.
-        if not allPlays or not scoringPlays:
-            return False
-        
-        #Loop through each scoring play that happened in the game.
-        for scoringIndex in scoringPlays:
-            #Extract the information about that specific play in which a run was scored.
-            play = allPlays[scoringIndex]
+        #Loop through each play where a run was scored in the first inning.
+        for scoringPlay in firstInningScoringPlays:
+            pitcherID = scoringPlay['matchup']['pitcher']['id']
+            if pitcherID == a_pitcherID:
+                return True
             
-            #If the scoring play occurred in the first inning, check to see if the pitcher that let it up matches the pitcher ID being searched for.
-            inning = int(play['about']['inning'])
-            if inning == 1:
-                pitcherID = play['matchup']['pitcher']['id']
-                if pitcherID == a_pitcherID:
-                    return True
-            elif inning > 1:
-                return False
-    
         return False
