@@ -1,6 +1,5 @@
 #Pitcher class. Child to Player class to handle everything regarding a pitcher.
 
-from Endpoints import Endpoints
 from Player import Player
 from Game import Game
 

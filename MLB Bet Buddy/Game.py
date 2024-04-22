@@ -1,7 +1,6 @@
 #Game CLASS. Handles everything regarding an MLB game. Takes a game ID as its constructor, so that it can quickly scan the data for that game.
 
 from Endpoints import Endpoints
-from datetime import datetime
 
 class Game():
     #CONSTRUCTOR - default game is opening day for the Yankees (2023 for now).

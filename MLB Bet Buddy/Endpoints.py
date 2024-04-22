@@ -1,6 +1,5 @@
 #ENDPOINTS CLASS. Contains everything regarding endpoints to the MLB API.
 
-from datetime import datetime
 import requests
 import time
 

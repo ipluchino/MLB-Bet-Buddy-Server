@@ -6,12 +6,13 @@ from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
-import pandas as pd
 from BetPredictor import BetPredictor
 
 #CONSTANTS
+#Names of the valid tables in the database.
 TABLE_NAMES = ['TodaySchedule', 'ArchiveSchedule', 'TodayNRFI', 'ArchiveNRFI', 'TodayHitting', 'ArchiveHitting']
 
+#Important dates and season information.
 OPENING_DAY_2023 = datetime.strptime('03/30/2023', '%m/%d/%Y')
 OPENING_DAY_2024 = datetime.strptime('03/20/2024', '%m/%d/%Y')
 
@@ -176,6 +177,25 @@ class ArchiveHittingTable(HittingBaseModel, Base):
 #Route to view data from any of the tables. Data is returned in a JSON format.
 @app.route('/view/<a_tableName>', methods=['GET'])
 async def ViewTable(a_tableName):
+    """Route used to view data from any of the tables in the database.
+
+    This route is used to view the information from any of the tables that are stored in the database. The desired
+    table is specified in the request. If the table name being requested is not valid, a 404 error is returned and an
+    error message is added into the response JSON. If the table name is valid, a connection is made with the
+    database, and the data from the database is acquired. The data returned from the database is looped through in
+    order to build a list of dictionaries (each dictionary represents a row of the table) so that it can be returned
+    in a JSON format once all rows have been processed.
+
+    Args:
+        a_tableName (string): The name of the table in the database to return the information from.
+
+    Returns:
+        A response containing JSON data representing the information that's stored in the database for the requested
+        table. The JSON contains an error message if an invalid table name is provided.
+
+    Assistance Received:
+        https://stackoverflow.com/questions/37369686/how-can-i-use-a-string-to-to-represent-an-sqlalchemy-object-attribute
+    """
     #First make sure that the table name is valid. If it isn't, return a 404 error.
     if a_tableName not in TABLE_NAMES:
         return jsonify({'error': 'Invalid table name.'}), 404 
@@ -223,6 +243,27 @@ async def ViewTable(a_tableName):
 #Route to view information in the database on a specific date --> Mostly used with the archive tables to view specific past bet predictions.
 @app.route('/view/<a_tableName>/<a_dateStr>', methods=['GET'])
 async def ViewTableSpecificDate(a_tableName, a_dateStr):
+    """Route used to view data from a specific date from any of the tables in the database.
+
+    This route is used to view specific information from a certain date from any of the tables that are stored in the
+    database. The desired table and date of the information returned is specified in the request. If the table name
+    being requested is not valid or the date provided does not follow the required format, a 404/400 error is
+    returned and an error message is added into the response JSON. If the table name is valid, a connection is made
+    with the database, and the data from the database where the dates match is acquired. The data returned from the
+    database is looped through in order to build a list of dictionaries (each dictionary represents a row of the
+    table) so that it can be returned in a JSON format once all rows have been processed.
+
+    Args:
+        a_tableName (string): The name of the table in the database to return the information from.
+        a_dateStr (string): The date to get the schedule or bet predictions from  in the format MM-DD-YYYY.
+
+    Returns:
+        A response containing JSON data representing the information that's stored in the database for the requested
+        table and date. The JSON contains an error message if an invalid table name is provided.
+
+    Assistance Received:
+        https://stackoverflow.com/questions/37369686/how-can-i-use-a-string-to-to-represent-an-sqlalchemy-object-attribute
+    """
     #First make sure that the table name is valid. If it isn't, return a 404 error.
     if a_tableName not in TABLE_NAMES:
         return jsonify({'error': 'Invalid table name.'}), 404 
@@ -274,8 +315,20 @@ async def ViewTableSpecificDate(a_tableName, a_dateStr):
 #Route to trigger an update for bet predictions for a new day.
 @app.route('/update', methods=['GET'])
 async def TriggerUpdate():
+    """Route to trigger an update for the schedule and bet predictions.
+
+    This route is used to trigger an update of the schedule and bet predictions for a new day. The current date that
+    this route is called is generated, and the schedule along with the bet predictions are generated asynchronously
+    so that the server is still responsive while a bet update is ongoing (see UpdateBetPredictions()). Once the
+    schedule and bet predictions are generated they are inserted into their correct tables in the database.
+
+    Returns:
+        A response containing simple json data letting the user know that a bet prediction update was successful.
+
+    Assistance Received:
+        https://superfastpython.com/asyncio-to_thread/
+    """
     date = datetime.now()
-    #date = datetime.strptime('08/04/2023','%m/%d/%Y')    
 
     #Asynchronously create and update the bet predictions for a new day.
     #It is done asynchronously in the background so that the server does not freeze up while the bet predictions are being created.
@@ -285,6 +338,20 @@ async def TriggerUpdate():
 
 #Helper function for the update route. Creates all of the bet prediction dataframes and then stores them in the database.
 def UpdateBetPredictions(a_openingDayDate, a_date, a_season):
+    """Creates the schedule table and bet predictions, and stores them in the database.
+
+    This function is called asynchronously, and utilizes the BetPredictor class to create the schedule, NRFI/YRFI bet
+    predictions, and the hitting bet predictions. Once the schedule and bet predictions are created,
+    they are inserted into the database for storage (see UpdateTableInDatabase()).
+
+    Args:
+        a_openingDayDate (datetime): The date of opening day of the season.
+        a_date (datetime): The date the schedule and bet predictions will be generated for.
+        a_season (int): The season the schedule and bet predictions will be generated for.
+
+    Returns:
+        Nothing.
+    """
     bp = BetPredictor()
     
     #Create all three bet prediction tables.
@@ -302,6 +369,21 @@ def UpdateBetPredictions(a_openingDayDate, a_date, a_season):
     UpdateTableInDatabase(hittingDataFrame, TodayHittingTable, ArchiveHittingTable)    
 
 def UpdateTableInDatabase(a_dataFrame, a_todayTable, a_archiveTable):
+    """Triggers a database update for a table.
+
+    This function is used to update one of the three main "Today" tables, based on information from a provided
+    DataFrame. First, all the data inside the "Today" table is copied over into its respective archive table (see
+    MoveDataToArchive()). Then, the "Today" table is completely cleared (see DeleteData()). Every row of the provided
+    DataFrame is then looped through and inserted into the database inside the "a_todayTable" table.
+
+    Args:
+        a_dataFrame (pandas.DataFrame): A pandas DataFrame containing information to insert into a database table.
+        a_todayTable (string): The name of the table to insert the DataFrame's data into.
+        a_archiveTable (string): The name of the archive table to copy the existing today table data into.
+
+    Returns:
+        Nothing.
+    """
     #First, move the data from the today table to its archive table.
     MoveDataToArchive(a_todayTable, a_archiveTable)
     
@@ -319,7 +401,7 @@ def UpdateTableInDatabase(a_dataFrame, a_todayTable, a_archiveTable):
             columnName = column.name
 
             #Skip the id column, since it is automatically handled by SQLAlchemy.
-            if column.name == 'id':
+            if columnName == 'id':
                 continue
 
             data_dict[ConvertColumnName(column.name)] = row[column.name]
@@ -333,6 +415,14 @@ def UpdateTableInDatabase(a_dataFrame, a_todayTable, a_archiveTable):
 
 #Helper function for the view route, used to get the class definition for a table.
 def GetTableClassDefinition(a_tableName):
+    """Helper function for the view routes of the server, used to get the class definition for a table.
+
+    Args:
+        a_tableName (string): The name of the table to get the class definition for.
+
+    Returns:
+        A "type", representing the class definition for a table used in the database.
+    """
     if a_tableName == 'TodaySchedule':
         return TodayScheduleTable
     elif a_tableName == 'ArchiveSchedule':
@@ -351,6 +441,20 @@ def GetTableClassDefinition(a_tableName):
 
 #Helper function for the view route, used to convert column names into their variable names in the model classes (since class variables cannot contain spaces and other special characters).
 def ConvertColumnName(a_columnName):
+    """Helper function used to convert column names when going from database column names to table class names.
+
+    This helper function is used to convert a column name that's used in the actual database, to the corresponding
+    column name used in the table subclasses (TodaySchedule, ArchiveSchedule, etc.). Spaces are replaced by
+    underscores, and any periods or slashes are removed since these characters cannot be in variable names. An
+    example is conversion of "Game ID" to "Game_ID". This function is used when dealing with column names
+    programmatically.
+
+    Args:
+        a_columnName (string): The name of the column used in the actual database to be converted.
+
+    Returns:
+        A string, representing the converted column name.
+    """
     #Convert spaces to underscores.
     modifiedColumnName = a_columnName.replace(' ', '_')
     
@@ -362,6 +466,22 @@ def ConvertColumnName(a_columnName):
 
 #Moves all of the data in one of the database tables, to another. Used from moving data from a "Today" table to an "Archive" table.
 def MoveDataToArchive(a_sourceTable, a_destinationTable):
+    """Moves data from a source table to a destination table.
+
+    This function is used to copy all the data from a source table into a destination table. A connection is made with
+    the database, and the data from the source table is extracted. Then, each row of the source table is looped
+    through, and each column in each of those rows (besides the id column) is copied into a new row that will be
+    inserted into the destination table. If the column types mismatch between the two tables, an error is displayed
+    and no data is copied over to the destination table. This process continues until all the rows from the source
+    table are successfully copied over to the destination table.
+
+    Args:
+        a_sourceTable (string): The name of the source table.
+        a_destinationTable: The name of the destination table to receive the copied data.
+
+    Returns:
+        Nothing.
+    """
     #Create a session connection to the database.
     session = Session()
     
@@ -394,7 +514,7 @@ def MoveDataToArchive(a_sourceTable, a_destinationTable):
                 print('Error moving data - column mismatch! Could not move the data from the source table to the destination table.')
                 return
             
-        #Add the newly created desination row to the destination table.
+        #Add the newly created destination row to the destination table.
         session.add(destinationRow)
         session.commit()
         
@@ -402,6 +522,17 @@ def MoveDataToArchive(a_sourceTable, a_destinationTable):
     
 #Deletes the contents of a database table.
 def DeleteData(a_table):
+    """Deletes the contents of a database table.
+
+    This function is used to delete the contents of a databased, based on the provided name of the table to be deleted.
+    A connection is created with the database, and a query to clear the table is sent.
+
+    Args:
+        a_table (string): The name of the table to be deleted.
+
+    Returns:
+        Nothing.
+    """
     #Create a session connection to the database.
     session = Session()
 

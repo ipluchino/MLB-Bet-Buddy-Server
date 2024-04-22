@@ -1,6 +1,5 @@
 #Project test file - to test all of the features and individual components of the bet predictor.
 
-from Endpoints import Endpoints
 from datetime import datetime
 from Team import Team
 from Game import Game
@@ -10,7 +9,7 @@ from Pitcher import Pitcher
 from LocalFactors import LocalFactors
 from BetPredictor import BetPredictor
 
-#Constants - will use 2023 for testing purposes.
+#Constants.
 OPENING_DAY = datetime.strptime('03/20/2024', '%m/%d/%Y')
 CLOSING_DAY = datetime.strptime('09/29/2024', '%m/%d/%Y')
 SEASON = 2024
