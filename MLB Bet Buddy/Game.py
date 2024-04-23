@@ -70,7 +70,7 @@ class Game():
 
         #Setting the state of the game - whether the game is final or not (sometimes games can be postponed or cancelled due to rain - this is important for game tracking).
         gameState = gameInformation['status']['detailedState']
-        if gameState != 'Final':
+        if gameState != 'Final' and gameState != 'Completed Early':
             self.m_isFinal = False
         else:
             self.m_isFinal = True
@@ -354,7 +354,7 @@ class Game():
             A boolean, which his true if a run was scored in the first inning of the game, false otherwise.
         """
         firstInningScoringPlays = self.ExtractFirstInningScoringPlays()
-        return len(firstInningScoringPlays > 0)
+        return len(firstInningScoringPlays) > 0
     
     #Determines if a specific team scored in the first inning of a game - used to calculate how often a team scores in the first inning.
     def DidTeamScoreFirstInning(self, a_teamID):

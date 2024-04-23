@@ -2,11 +2,15 @@
 
 from quart import Quart, jsonify
 import asyncio
+from quart.app import P
 from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime
+from datetime import datetime, timedelta
 from BetPredictor import BetPredictor
+from Game import Game
+from Hitter import Hitter
+import pandas as pd
 
 #CONSTANTS
 #Names of the valid tables in the database.
@@ -303,7 +307,6 @@ async def ViewTableSpecificDate(a_tableName, a_dateStr):
             
             #Note: The column name is fixed from spaces to underscores, since the variables in the database model class has underscores, not spaces.
             columnValue = getattr(row, ConvertColumnName(columnName))
-            print(columnValue)
             
             data_row[columnName] = columnValue        
             
@@ -540,9 +543,58 @@ def DeleteData(a_table):
     session.query(a_table).delete()
     session.commit()        
     session.close()
+    
+'''
+#https://stackoverflow.com/questions/17717877/convert-sqlalchemy-query-result-to-a-list-of-dicts
+@app.route('/accuracy', methods=['GET'])
+async def Accuracy():
+    session = Session()
+    
+    date = CURRENT_OPENING_DAY
+    
+    #Initialize the totals for the accuracy check.
+    totalGames = 0
+    totalNRFIWin = 0
+    totalYRFIWin = 0
+    totalHitters = 0
+    totalAtLeast1HitWin = 0
+    totalAtLeast2HitsWin = 0
+    totalAtLeast2HRRWin = 0           
+    totalAtLeast3HRRWin = 0           
+
+    while date < datetime.today():
+        formattedDateString = datetime.strftime(date, '%m/%d/%Y')
+       
+        NRFIYRFIdata = session.query(ArchiveNRFITable).filter(ArchiveNRFITable.Date == formattedDateString).all()
+        Hittingdata = session.query(ArchiveHittingTable).filter(ArchiveHittingTable.Date == formattedDateString).all()     
+        
+        NRFIYRFIDataFrame = pd.DataFrame([row.__dict__ for row in NRFIYRFIdata])
+        hittingDataFrame = pd.DataFrame([row.__dict__ for row in Hittingdata])
+        
+        #Test the accuracy of the top NRFI and YRFI bets.
+        if not NRFIYRFIDataFrame.empty:
+            topNRFIBet = NRFIYRFIDataFrame.head(1)
+            topYRFIBet = NRFIYRFIDataFrame.tail(1)
+        
+            topNRFIGame = Game(int(topNRFIBet['Game_ID']))
+            topYRFIGame = Game(int(topYRFIBet['Game_ID']))
+        
+            if not topNRFIGame.DidYRFIOccur(): totalNRFIWin += 1
+            if topYRFIGame.DidYRFIOccur(): totalYRFIWin += 1
+
+        date += timedelta(days=1)
+        
+    session.close()
+    
+    print(totalNRFIWin)
+    print(totalYRFIWin)
+    
+    return jsonify({'done': 'done'}), 200 
+    
 
 #Make sure that the tables are created if they do not already exist.
 Base.metadata.create_all(engine)
 
 #Start the server.
 app.run(host='Omitted', port='Omitted')
+'''
