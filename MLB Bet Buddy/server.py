@@ -10,7 +10,6 @@ from datetime import datetime, timedelta
 from BetPredictor import BetPredictor
 from Game import Game
 from Hitter import Hitter
-import pandas as pd
 
 #CONSTANTS
 #Names of the valid tables in the database.
@@ -29,6 +28,7 @@ CURRENT_SEASON = 2024
 
 #QUART AND SQLALCHEMY SETUP.
 app = Quart(__name__)                                           #Quart server object.
+app.json.sort_keys = False                                      #Disable automic JSON key sorting.
 Base = declarative_base()                                       #Base model database class from SQLAlchemy.
 engine = create_engine('sqlite:///database.db', echo=True)      #Database engine location.
 Session = sessionmaker(bind=engine)                             #Session to create a connection with the database.
@@ -117,6 +117,9 @@ class NRFIBaseModel():
     Weather_Factor = Column('Weather Factor', Float)
     Overall_NRFI_Score = Column('Overall NRFI Score', Float)
     
+    #Additional column for bet review.
+    Bet_Result = Column('Bet Result', String)
+    
 #Today NRFI/YRFI table.
 class TodayNRFITable(NRFIBaseModel, Base):
     __tablename__ = 'TodayNRFI'
@@ -168,7 +171,14 @@ class HittingBaseModel():
     Wind_Speed = Column('Wind Speed', String)	
     Weather_Factor = Column('Weather Factor', Float)
     Overall_Hitting_Score = Column('Overall Hitting Score', Float)
+    Result_Statline = Column('Result Statline', String)
     
+    #Additional columns for bet review.
+    At_Least_1_Hit_Success = Column('At Least 1 Hit Success', String)
+    At_Least_2_Hit_Success = Column('At Least 2 Hit Success', String)
+    At_Least_2_HRR_Success = Column('At Least 2 HRR Success', String)
+    At_Least_3_HRR_Success = Column('At Least 3 HRR Success', String) 
+
 #Today hitting table.
 class TodayHittingTable(HittingBaseModel, Base):
     __tablename__ = 'TodayHitting'
@@ -339,13 +349,140 @@ async def TriggerUpdate():
 
     return jsonify({'result': 'Bet update successfully completed.'}), 200 
 
+@app.route('/accuracy/<a_topNRFIYRFI>/<a_topHitters>', methods=['GET'])
+async def Accuracy(a_topNRFIYRFI, a_topHitters):
+    """Route used to check the accuracy of the bet predictions previously made.
+
+    This route is used to view information regarding the accuracy of both the NRFI/YRFI bet predicitons and hitting
+    bet predictions that have already been made and stored in the database. Everyday starting from opening day until
+    the current day is looped through and the bet predictions are pulled from the ArchiveNRFITable and
+    ArchiveHittingTable. For both the bet types, the top X bet predictions made on that day are looped through (top X
+    determined from a_topNRFIYRFI and a_topHitters) and the total wins for each bet type are tallied. The accuracy
+    information is retured as a JSON, with the accuracies being represented as percentages.
+
+    Args:
+        a_topNRFIYRFI (int): The number of top NRFI and YRFI bets of each day to consider.
+        a_topHitters (int): The number of top hitting bets of each day to consider.
+
+    Returns:
+        A response containing JSON data containing the accuracy percentages of both the NRFI/YRFI bet predictions and
+        the hitting bet predictions based on the X top bets (where X is provided to this function in the request for
+        each type separately).
+
+    Assistance Received:
+        https://stackoverflow.com/questions/1995615/how-can-i-format-a-decimal-to-always-show-2-decimal-places
+        https://stackoverflow.com/questions/18246827/conditional-expressions-in-python-dictionary-comprehensions
+        https://stackoverflow.com/questions/6402311/python-conditional-assignment-operator
+    """
+    #Make sure the a_topX parameters are valid.
+    try:
+        int(a_topNRFIYRFI)
+        int(a_topHitters)
+    except:
+        return jsonify({'error': 'Invalid format! The topNRFIYRFI and topHitters parameters must be integers!'}), 400
+    
+    #Initialize the totals for the accuracy check.
+    totalNRFIGames = 0
+    totalYRFIGames = 0
+    totalNRFIWin = 0
+    totalYRFIWin = 0
+    totalHitters = 0
+    totalAtLeast1HitWin = 0
+    totalAtLeast2HitsWin = 0
+    totalAtLeast2HRRWin = 0           
+    totalAtLeast3HRRWin = 0
+    
+    session = Session()
+    date = CURRENT_OPENING_DAY
+    #Loop through each day, starting from opening day to the current one.
+    while date < datetime.today():
+        formattedDateString = datetime.strftime(date, '%m/%d/%Y')
+       
+        #Tally the accuracy of the NRFI and YRFI bets from this day.
+        NRFIYRFIData = session.query(ArchiveNRFITable).filter(ArchiveNRFITable.Date == formattedDateString).all()
+        
+        #Make sure there are enough NRFI/YRFI bets for the current day.
+        if len(NRFIYRFIData) > 2 * int(a_topNRFIYRFI):
+            #Extract the top "a_topNRFIYRFI" NRFI and YRFI bets. Note: The best YRFI bets start from the bottom of the table.
+            for index in range(int(a_topNRFIYRFI)):
+                NRFIBet = NRFIYRFIData[index]
+                YRFIBet = NRFIYRFIData[-1 - index]
+                
+                #Check the results of the NRFI and YRFI bet.
+                if NRFIBet.Bet_Result == 'NRFI':
+                    totalNRFIWin += 1
+                
+                if YRFIBet.Bet_Result == 'YRFI':
+                    totalYRFIWin += 1
+                
+                #Increment the total game counters only if the game was not postponed. Postponed games are omitted from accuracy calculations.
+                if NRFIBet != 'Postponed':
+                    totalNRFIGames += 1
+                
+                if YRFIBet != 'Postponed':
+                    totalYRFIGames += 1
+
+           
+        #Tally the accuracy of the hitting bets from this day.
+        hittingData = session.query(ArchiveHittingTable).filter(ArchiveHittingTable.Date == formattedDateString).all() 
+        
+        #Make sure there are enough hitting bets for the current day.
+        if len(hittingData) > int(a_topHitters):
+            #Extract only the top "a_topHitters" hitters from each day.   
+            for index in range(int(a_topHitters)):
+                hittingBet = hittingData[index]
+                
+                #Check the results of the hitting bet thresholds.
+                if hittingBet.At_Least_1_Hit_Success == '1':
+                    totalAtLeast1HitWin += 1
+                    
+                if hittingBet.At_Least_2_Hit_Success == '1':
+                    totalAtLeast2HitsWin += 1
+                    
+                if hittingBet.At_Least_2_HRR_Success == '1':
+                    totalAtLeast2HRRWin += 1
+                    
+                if hittingBet.At_Least_3_HRR_Success == '1':
+                    totalAtLeast3HRRWin += 1
+                    
+                #Increment the total hitter counter only if the game did not get postponed and the hitter actually played in the game.
+                if hittingBet.Result_Statline != 'Postponed' and hittingBet.Result_Statline != 'Did Not Play':
+                    totalHitters += 1
+        
+        #Move on to the next day.
+        date += timedelta(days=1)
+
+    #Compile the accuracy results into a single dictionary. Ensure that there are no divide by zero errors.
+    accuracyResults = { 'NRFI/YRFI': { 'Top NRFI/YRFI Bets Considered For Each Day': int(a_topNRFIYRFI),
+                                       'Total NRFI Games': totalNRFIGames, 
+                                       'Total NRFI Win': totalNRFIWin, 
+                                       'Total YRFI Games': totalYRFIGames,
+                                       'Total YRFI Win': totalYRFIWin,
+                                       'NRFI Win Percentage': f'{totalNRFIWin / totalNRFIGames:.4%}' if totalNRFIGames != 0 else '0.0000%',
+                                       'YRFI Win Percentage': f'{totalYRFIWin / totalYRFIGames:.4%}' if totalYRFIGames != 0 else '0.0000%' },
+                                       
+                        'Hitting': { 'Top Hitting Bets Considered For Each Day': int(a_topHitters),
+                                     'Total Hitters': totalHitters, 
+                                     'Total Over 0.5 Hits': totalAtLeast1HitWin, 
+                                     'Total Over 1.5 Hits': totalAtLeast2HitsWin,  
+                                     'Total Over 1.5 Hits+Runs+RBIs': totalAtLeast2HRRWin,
+                                     'Total Over 2.5 Hits+Runs+RBIs': totalAtLeast3HRRWin, 
+                                     'Over 0.5 Hits Win Percentage': f'{totalAtLeast1HitWin / totalHitters:.4%}' if totalHitters != 0 else '0.0000%',
+                                     'Over 1.5 Hits Win Percentage': f'{totalAtLeast2HitsWin / totalHitters:.4%}' if totalHitters != 0 else '0.0000%',
+                                     'Over 1.5 Hits+Runs+RBIs Win Percentage': f'{totalAtLeast2HRRWin / totalHitters:.4%}' if totalHitters != 0 else '0.0000%',
+                                     'Over 2.5 Hits+Runs+RBIs Win Percentage': f'{totalAtLeast3HRRWin / totalHitters:.4%}' if totalHitters != 0 else '0.0000%', } }
+
+    #Return the results as JSON data.
+    return jsonify(accuracyResults), 200 
+
 #Helper function for the update route. Creates all of the bet prediction dataframes and then stores them in the database.
 def UpdateBetPredictions(a_openingDayDate, a_date, a_season):
-    """Creates the schedule table and bet predictions, and stores them in the database.
+    """Creates the new schedule table and bet predictions, and reviews the old bet predictions.
 
-    This function is called asynchronously, and utilizes the BetPredictor class to create the schedule, NRFI/YRFI bet
-    predictions, and the hitting bet predictions. Once the schedule and bet predictions are created,
-    they are inserted into the database for storage (see UpdateTableInDatabase()).
+    This function is called asynchronously, and utilizes the BetPredictor class to create the new schedule, NRFI/YRFI 
+    bet predictions, and the hitting bet predictions. This function also reviews the previous day's bets for accuracy 
+    testing. Once the schedule and bet predictions are created and the old bet predictions are reviewed, they are 
+    inserted into the database for storage (see UpdateTableInDatabase()).
 
     Args:
         a_openingDayDate (datetime): The date of opening day of the season.
@@ -355,9 +492,12 @@ def UpdateBetPredictions(a_openingDayDate, a_date, a_season):
     Returns:
         Nothing.
     """
-    bp = BetPredictor()
+    #First, review the bet outcomes for accuracy purposes.
+    print('Reviewing the previous bet predictions.')
+    ReviewBets()
     
     #Create all three bet prediction tables.
+    bp = BetPredictor()
     print('Creating Schedule table.')
     scheduleDataFrame = bp.CreateSchedule(a_date, a_season)
     print('Creating NRFI table.')
@@ -386,7 +526,7 @@ def UpdateTableInDatabase(a_dataFrame, a_todayTable, a_archiveTable):
 
     Returns:
         Nothing.
-    """
+    """ 
     #First, move the data from the today table to its archive table.
     MoveDataToArchive(a_todayTable, a_archiveTable)
     
@@ -407,7 +547,11 @@ def UpdateTableInDatabase(a_dataFrame, a_todayTable, a_archiveTable):
             if columnName == 'id':
                 continue
 
-            data_dict[ConvertColumnName(column.name)] = row[column.name]
+            #Attempt to fill the data of the row into a dictionary. Some columns are purposefully left empty (the bet review columns) so fill empty columns with None. 
+            try:
+                data_dict[ConvertColumnName(columnName)] = row[columnName]
+            except:
+                data_dict[ConvertColumnName(columnName)] = None
     
         #Unpack the dictionary because it sends each key/value pair as an argument to the constructor.
         data = a_todayTable(**data_dict)
@@ -543,58 +687,82 @@ def DeleteData(a_table):
     session.query(a_table).delete()
     session.commit()        
     session.close()
-    
-'''
-#https://stackoverflow.com/questions/17717877/convert-sqlalchemy-query-result-to-a-list-of-dicts
-@app.route('/accuracy', methods=['GET'])
-async def Accuracy():
-    session = Session()
-    
-    date = CURRENT_OPENING_DAY
-    
-    #Initialize the totals for the accuracy check.
-    totalGames = 0
-    totalNRFIWin = 0
-    totalYRFIWin = 0
-    totalHitters = 0
-    totalAtLeast1HitWin = 0
-    totalAtLeast2HitsWin = 0
-    totalAtLeast2HRRWin = 0           
-    totalAtLeast3HRRWin = 0           
 
-    while date < datetime.today():
-        formattedDateString = datetime.strftime(date, '%m/%d/%Y')
-       
-        NRFIYRFIdata = session.query(ArchiveNRFITable).filter(ArchiveNRFITable.Date == formattedDateString).all()
-        Hittingdata = session.query(ArchiveHittingTable).filter(ArchiveHittingTable.Date == formattedDateString).all()     
-        
-        NRFIYRFIDataFrame = pd.DataFrame([row.__dict__ for row in NRFIYRFIdata])
-        hittingDataFrame = pd.DataFrame([row.__dict__ for row in Hittingdata])
-        
-        #Test the accuracy of the top NRFI and YRFI bets.
-        if not NRFIYRFIDataFrame.empty:
-            topNRFIBet = NRFIYRFIDataFrame.head(1)
-            topYRFIBet = NRFIYRFIDataFrame.tail(1)
-        
-            topNRFIGame = Game(int(topNRFIBet['Game_ID']))
-            topYRFIGame = Game(int(topYRFIBet['Game_ID']))
-        
-            if not topNRFIGame.DidYRFIOccur(): totalNRFIWin += 1
-            if topYRFIGame.DidYRFIOccur(): totalYRFIWin += 1
+def ReviewBets():
+    """Reviews the latest bet predictions and appends their results to them in the database.
 
-        date += timedelta(days=1)
+    This method goes through all the NRFI/YRFI bet predictions as well as the hitting bet predictions, and updates
+    their results into the database. First, a connection is made with the database and all the current NRFI/YRFI bet
+    predictions are extracted from the TodayNRFI table. Each row in the table is looped through, a Game object is
+    created for each bet prediction game, and the "Bet_Result" column is filled with either NRFI or YRFI. A similar
+    process then occurs for the hitting bet predictions, with a Hitter object being created for each hitter from the
+    hitting bet predictions in the TodayHitting table. For the hitting bet predictions, the hitter's statline and
+    whether they met the following thresholds is input into the database: Over 0.5 hits, Over 1.5 hits, Over 1.5 Hits
+    + Runs + RBIs, and Over 2.5 Hits + Runs + RBIs. If a game is postponed or a hitter does not play in any of the
+    bet predictions, the result columns are filled with "Postponed" or "Did Not Play" respectively.
+
+    Returns:
+        Nothing.
+
+    Assistance Received:
+        https://stackoverflow.com/questions/22134439/updating-specific-row-in-sqlalchemy
+    """
+    #Create a session connection to the database.
+    session = Session()    
+
+    #Review the NRFI and YRFI bets.
+    NRFIYRFIData = session.query(TodayNRFITable).all()
+    
+    #Loop through each bet in the TodayNRFI table.
+    for row in NRFIYRFIData:
+        gameObj = Game(row.Game_ID)
         
-    session.close()
+        #If the game hasn't been completed, it means the game was postponed.
+        if not gameObj.IsGameFinal():
+            row.Bet_Result = 'Postponed'
+        else:
+            if gameObj.DidYRFIOccur():
+                row.Bet_Result = 'YRFI'
+            else:
+                row.Bet_Result = 'NRFI'
+                
+    #Review the hitting bets.
+    hittingData = session.query(TodayHittingTable).all()
     
-    print(totalNRFIWin)
-    print(totalYRFIWin)
-    
-    return jsonify({'done': 'done'}), 200 
-    
+    #Loop through each bet in the TodayHitting table.
+    for row in hittingData:
+        gameObj = Game(row.Game_ID)
+        
+        #If the game hasn't been completed, it means the game was postponed.
+        if not gameObj.IsGameFinal():
+            row.Result_Statline = 'Postponed'
+            row.At_Least_1_Hit_Success = 'Postponed' 
+            row.At_Least_2_Hit_Success = 'Postponed' 
+            row.At_Least_2_HRR_Success = 'Postponed' 
+            row.At_Least_3_HRR_Success = 'Postponed' 
+        else:
+            hitterObj = Hitter(row.Hitter_ID)
+            betReview = hitterObj.HittingBetReview(row.Date)
+            
+            #If an empty dictionary is returned from the HittingBetReview() method, the hitter did not play in the game.
+            if not betReview:
+                row.Result_Statline = 'Did Not Play'
+                row.At_Least_1_Hit_Success = 'Did Not Play' 
+                row.At_Least_2_Hit_Success = 'Did Not Play' 
+                row.At_Least_2_HRR_Success = 'Did Not Play' 
+                row.At_Least_3_HRR_Success = 'Did Not Play' 
+            else:
+                row.Result_Statline = betReview['summary']
+                row.At_Least_1_Hit_Success = betReview['atLeast1Hit']
+                row.At_Least_2_Hit_Success = betReview['atLeast2Hits']
+                row.At_Least_2_HRR_Success = betReview['atLeast2HRR']
+                row.At_Least_3_HRR_Success = betReview['atLeast3HRR']
+
+    session.commit()
+    session.close()   
 
 #Make sure that the tables are created if they do not already exist.
 Base.metadata.create_all(engine)
 
 #Start the server.
 app.run(host='Omitted', port='Omitted')
-'''
