@@ -24,6 +24,17 @@ class Hitter(Player):
     #CONSTRUCTOR - default hitter ID is Aaron Judge from the NYY.
     #Assistance: https://www.geeksforgeeks.org/calling-a-super-class-constructor-in-python/
     def __init__(self, a_hitterID = 592450):
+        """Constructor for the Hitter class.
+
+        This constructor is used to create and initialize and Hitter object. The hitter ID provided to the constructor
+        is set as a member variable. If a hitter ID is not provided, Aaron Judge's player ID is used by default.
+
+        Args:
+            a_hitterID (int): The ID used by the MLB API to represent a hitter.
+            
+        Returns:
+            Nothing.
+        """
         super().__init__(a_hitterID) 
         
     #Data gathering functions.

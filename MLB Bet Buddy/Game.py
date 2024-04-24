@@ -3,8 +3,24 @@
 from Endpoints import Endpoints
 
 class Game():
-    #CONSTRUCTOR - default game is opening day for the Yankees (2023 for now).
-    def __init__(self, a_gameID = 718781):
+    #CONSTRUCTOR - default game is opening day for the Yankees (2024 for now).
+    def __init__(self, a_gameID = 746418):
+        """Constructor for the Game class.
+
+        This constructor is used to create and initialize a Game object. The game ID provided to this constructor is
+        set as a member variable. If a game ID is not provided, the opening day game in 2024 for the Yankees is used
+        by default. Next, the game's endpoint information is set as a member variable (see
+        InitializeGameEndpointInformation()), to minimize the total number of MLB API calls required when extracting
+        information about the game. Finally, the basic information regarding the game is stored as member variables (
+        see InitializeBasicInformation()). This includes the records of the teams, starting pitchers, stadium the
+        game is being played at, and more.
+
+        Args:
+            a_gameID (int): The ID used by the MLB API to represent a game.
+
+        Returns:
+            Nothing.
+        """
         #Endpoint object from the Endpoints class to handle MLB API access.
         self.m_endpointObj = Endpoints()
         

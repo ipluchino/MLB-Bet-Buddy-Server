@@ -7,6 +7,17 @@ class Pitcher(Player):
     #CONSTRUCTOR - default pitcher ID is Gerrit Cole from the NYY.
     #Assistance: https://www.geeksforgeeks.org/calling-a-super-class-constructor-in-python/
     def __init__(self, a_pitcherID = 543037):
+        """Constructor for the Pitcher class.
+
+        This constructor is used to create and initialize and Pitcher object. The pitcher ID provided to the constructor
+        is set as a member variable. If a pitcher ID is not provided, Gerrit Cole's player ID is used by default.
+
+        Args:
+            a_pitcherID (int): The ID used by the MLB API to represent a pitcher.
+            
+        Returns:
+            Nothing.
+        """
         super().__init__(a_pitcherID) 
         
     #Gets the general pitching statistics of a player within a certain date range.

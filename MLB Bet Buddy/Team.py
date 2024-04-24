@@ -41,6 +41,19 @@ class Team():
     
     #CONSTRUCTOR - default team is the NYY.
     def __init__(self, a_teamID = 147):
+        """Constructor for the Team class.
+
+        This constructor is used to create and initialize a Team object based on the provided team ID. First, 
+        the ID is validated to make sure it actually represents an MLB team in the MLB API (see ValidateTeamID()). 
+        The team name is then extracted (see NameFromID()) and set as a member variable. If the team ID is invalid, 
+        or not provided at all, the team ID of the Yankees is used by default.
+
+        Args:
+            a_teamID(int): The ID used by the MLB API to represent a team.
+
+        Returns:
+            Nothing.
+        """
         #Endpoint object from the Endpoints class to handle MLB API access.
         self.m_endpointObj = Endpoints()
         

@@ -58,6 +58,11 @@ class Endpoints():
 
     #CONSTRUCTOR
     def __init__(self):
+        """Constructor for the Endpoints class.
+
+        Returns:
+            Nothing.
+        """
         #Create a session object to increase API lookup speed.
         self.session = requests.Session()
     

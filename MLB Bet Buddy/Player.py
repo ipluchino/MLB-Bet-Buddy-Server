@@ -5,6 +5,17 @@ from Endpoints import Endpoints
 class Player():
     #CONSTRUCTOR - default player ID is Aaron Judge from the NYY.
     def __init__(self, a_playerID = 592450):
+        """Constructor for the Player class.
+
+        This constructor is used to create and initialize a Player object. The player ID provided to the constructor
+        is set as a member variable. If a player ID is not provided, Aaron Judge's player ID is used by default.
+
+        Args:
+            a_playerID (int): The ID used by the MLB API to represent a player.
+
+        Returns:
+            Nothing.
+        """
         #Endpoint object from the Endpoints class to handle MLB API access.
         self.m_endpointObj = Endpoints()
         

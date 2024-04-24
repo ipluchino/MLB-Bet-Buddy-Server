@@ -61,6 +61,11 @@ class LocalFactors():
     
     #CONSTRUCTOR
     def __init__(self):
+        """Constructor for the LocalFactors class.
+
+        Returns:
+            Nothing.
+        """
         #Endpoint object from the Endpoints class to handle MLB API access.
         self.m_endpointObj = Endpoints()
 
