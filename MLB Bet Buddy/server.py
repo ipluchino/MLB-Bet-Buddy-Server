@@ -26,6 +26,10 @@ CURRENT_OPENING_DAY = OPENING_DAY_2024
 CURRENT_CLOSING_DAY = CLOSING_DAY_2024
 CURRENT_SEASON = 2024
 
+#Accuracy checking thresholds.
+MINIMUM_NRFIYRFI_BETS = 7
+MINIMUM_HITTING_BETS = 40
+
 #QUART AND SQLALCHEMY SETUP.
 app = Quart(__name__)                                           #Quart server object.
 app.json.sort_keys = False                                      #Disable automic JSON key sorting.
@@ -402,7 +406,7 @@ async def Accuracy(a_topNRFIYRFI, a_topHitters):
         NRFIYRFIData = session.query(ArchiveNRFITable).filter(ArchiveNRFITable.Date == formattedDateString).all()
         
         #Make sure there are enough NRFI/YRFI bets for the current day.
-        if len(NRFIYRFIData) > 2 * int(a_topNRFIYRFI):
+        if len(NRFIYRFIData) > 2 * int(a_topNRFIYRFI) and len(NRFIYRFIData) >= MINIMUM_NRFIYRFI_BETS:
             #Extract the top "a_topNRFIYRFI" NRFI and YRFI bets. Note: The best YRFI bets start from the bottom of the table.
             for index in range(int(a_topNRFIYRFI)):
                 NRFIBet = NRFIYRFIData[index]
@@ -427,7 +431,7 @@ async def Accuracy(a_topNRFIYRFI, a_topHitters):
         hittingData = session.query(ArchiveHittingTable).filter(ArchiveHittingTable.Date == formattedDateString).all() 
         
         #Make sure there are enough hitting bets for the current day.
-        if len(hittingData) > int(a_topHitters):
+        if len(hittingData) > int(a_topHitters) and len(hittingData) >= MINIMUM_HITTING_BETS:
             #Extract only the top "a_topHitters" hitters from each day.   
             for index in range(int(a_topHitters)):
                 hittingBet = hittingData[index]
