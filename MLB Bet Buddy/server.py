@@ -175,9 +175,9 @@ class HittingBaseModel():
     Wind_Speed = Column('Wind Speed', String)	
     Weather_Factor = Column('Weather Factor', Float)
     Overall_Hitting_Score = Column('Overall Hitting Score', Float)
-    Result_Statline = Column('Result Statline', String)
     
     #Additional columns for bet review.
+    Result_Statline = Column('Result Statline', String)
     At_Least_1_Hit_Success = Column('At Least 1 Hit Success', String)
     At_Least_2_Hit_Success = Column('At Least 2 Hit Success', String)
     At_Least_2_HRR_Success = Column('At Least 2 HRR Success', String)
