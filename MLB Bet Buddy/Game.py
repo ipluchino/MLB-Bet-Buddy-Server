@@ -86,7 +86,7 @@ class Game():
 
         #Setting the state of the game - whether the game is final or not (sometimes games can be postponed or cancelled due to rain - this is important for game tracking).
         gameState = gameInformation['status']['detailedState']
-        if gameState != 'Final' and gameState != 'Completed Early':
+        if gameState != 'Final' and 'Completed Early' not in gameState:
             self.m_isFinal = False
         else:
             self.m_isFinal = True
