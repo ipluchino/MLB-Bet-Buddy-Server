@@ -1,4 +1,9 @@
-#PLAYER CLASS. A general parent class to represent an MLB player.
+#********************************************************************************************************************************
+# Author: Ian Pluchino                                                                                                          *
+# Class: Player class                                                                                                           *
+# Description: A base class to represent an MLB player. Parent to the Pitcher and Hitter classes.                               *
+# Date: 5/2/24                                                                                                                  *
+#********************************************************************************************************************************
 
 from Endpoints import Endpoints
 

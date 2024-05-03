@@ -1,4 +1,9 @@
-#ENDPOINTS CLASS. Contains everything regarding endpoints to the MLB API.
+#********************************************************************************************************************************
+# Author: Ian Pluchino                                                                                                          *
+# Class: Endpoints class                                                                                                        *
+# Description: Handles everything regarding the I/O with the endpoints for the MLB and Weather APIs.                            *
+# Date: 5/2/24                                                                                                                  *
+#********************************************************************************************************************************
 
 import requests
 import time

@@ -1,4 +1,9 @@
-#HITTER CLASS. Child to Player class to handle everything regarding a hitter.
+#********************************************************************************************************************************
+# Author: Ian Pluchino                                                                                                          *
+# Class: Hitter class                                                                                                           *
+# Description: Handles everything regarding an MLB hitter. Child to the Player class.                                           *
+# Date: 5/2/24                                                                                                                  *
+#********************************************************************************************************************************
 
 from Endpoints import Endpoints
 from Player import Player

@@ -1,4 +1,9 @@
-#TEAM CLASS. Handles everything regarding an MLB team.
+#********************************************************************************************************************************
+# Author: Ian Pluchino                                                                                                          *
+# Class: Team class                                                                                                             *
+# Description: Handles everything regarding an MLB team.                                                                        *
+# Date: 5/2/24                                                                                                                  *
+#********************************************************************************************************************************
 
 from Endpoints import Endpoints
 from Game import Game

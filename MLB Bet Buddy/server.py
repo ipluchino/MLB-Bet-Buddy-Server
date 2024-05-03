@@ -1,4 +1,9 @@
-#SERVER file. Handles everything related to the server and database access.
+#********************************************************************************************************************************
+# Author: Ian Pluchino                                                                                                          *
+# File: Server file                                                                                                             *
+# Description: Main startup file for the server, containing the server routes and database setup.                               *
+# Date: 5/2/24                                                                                                                  *
+#********************************************************************************************************************************
 
 from quart import Quart, jsonify
 import asyncio

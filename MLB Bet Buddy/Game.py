@@ -1,5 +1,9 @@
-#Game CLASS. Handles everything regarding an MLB game. Takes a game ID as its constructor, so that it can quickly scan the data for that game.
-
+#********************************************************************************************************************************
+# Author: Ian Pluchino                                                                                                          *
+# Class: Game class                                                                                                             *
+# Description: Handles everything regarding an MLB game.                                                                        *
+# Date: 5/2/24                                                                                                                  *
+#********************************************************************************************************************************
 from Endpoints import Endpoints
 
 class Game():

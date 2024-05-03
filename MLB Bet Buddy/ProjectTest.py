@@ -1,4 +1,9 @@
-#Project test file - to test all of the features and individual components of the bet predictor.
+#********************************************************************************************************************************
+# Author: Ian Pluchino                                                                                                          *
+# File: ProjectTest file                                                                                                        *
+# Description: Tests all the components of the project.                                                                         *
+# Date: 5/2/24                                                                                                                  *
+#********************************************************************************************************************************
 
 from datetime import datetime
 from Team import Team

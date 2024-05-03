@@ -302,3 +302,19 @@ g.PrintGameInfo()
 g.SetNewGame(746656)
 g.PrintGameInfo()
 '''
+
+bp = BetPredictor()
+x = bp.AccuracyTestNRFIYRFI(1)
+y = bp.AccuracyTestHitting(2)
+
+print()
+print()
+
+for key, value in x.items():
+    print(f"{key} : {value}")
+    
+print()
+print()
+
+for key, value in y.items():
+    print(f"{key} : {value}")

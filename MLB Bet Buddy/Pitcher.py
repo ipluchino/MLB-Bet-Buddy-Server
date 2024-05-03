@@ -1,4 +1,9 @@
-#Pitcher class. Child to Player class to handle everything regarding a pitcher.
+#********************************************************************************************************************************
+# Author: Ian Pluchino                                                                                                          *
+# Class: Pitcher class                                                                                                          *
+# Description: Handles everything regarding an MLB pitcher. Child to the Player class.                                          *
+# Date: 5/2/24                                                                                                                  *
+#********************************************************************************************************************************
 
 from Player import Player
 from Game import Game

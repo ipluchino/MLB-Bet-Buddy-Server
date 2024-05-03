@@ -1,5 +1,9 @@
-#LOCALFACTORS CLASS. Handles everything regarding local factors of the bet predictions - including ballpark factors and weather.
-
+#********************************************************************************************************************************
+# Author: Ian Pluchino                                                                                                          *
+# Class: LocalFactors class                                                                                                     *
+# Description: Handles everything regarding the local factors of the bet predictions, including ballpark factors and weather.   *
+# Date: 5/2/24                                                                                                                  *
+#********************************************************************************************************************************
 from Endpoints import Endpoints
 from datetime import datetime, timedelta
 
