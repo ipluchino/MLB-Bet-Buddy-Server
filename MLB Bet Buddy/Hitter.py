@@ -275,7 +275,8 @@ class Hitter(Player):
             a_BA (float): The batting average of the hitter in question.
 
         Returns:
-            A float, representing a hot/cold factor for a hitter, used for creating hitting bet predictions.
+            A tuple, containing a string representing the hot/cold description and a float representing the 
+            hot/cold factor for a hitter which is used for creating hitting bet predictions.
         """
         #Determine the classification for the hitter based on their batting average.
         if a_BA >= self.ON_FIRE_BA_MINIMUM:
