@@ -178,19 +178,19 @@ class Team():
             self.m_teamID = a_teamID
             self.m_teamName = self.NameFromID(a_teamID)
 
-    #Gets the record information for a team and returns it as a tuple in the format (wins, losses). Example: (33, 22).
+    #Gets the record information for a team and returns it as a string in the format "wins-losses". Example: "33-22".
     def GetRecord(self, a_date, a_season):
         """Gets the record for a team on a given date and season.
         
         This method is used to retrieve a record for a team on a given date and season. If the date is invalid or the 
-        record could not be found, a default record of (0, 0) is returned.
+        record could not be found, a default record of "0-0" is returned.
         
         Args:
             a_date: (datetime): The date representing the day to get the team's record from.
             a_season (int): The season to get the team's record from.
 
         Returns:
-            A tuple, representing the record of the team. Format: (wins, losses).
+            A string, representing the team's record. Format: "wins-losses".
         """
         #Create the standings endpoint.
         standingsEndpoint = self.m_endpointObj.GetStandingsEndpoint(a_date, a_season)
