@@ -9,7 +9,7 @@ import requests
 import time
 
 class Endpoints():
-    #All API endpoint links that will be used in the project. Variable portions of the URL are within curly brackets {}. 
+    #All API endpoint links that will be used in the project. Variable portions of the URL are within curly braces {}. 
     #Base endpoint of the API.
     BASE_URL = 'https://statsapi.mlb.com/api/'
     
@@ -34,13 +34,13 @@ class Endpoints():
     #Endpoint to get a team's game log in a specified date range.
     TEAM_GAME_LOG_URL='https://statsapi.mlb.com/api/v1/schedule?&sportId=1&teamId={team_id}&startDate={start_date}&endDate={end_date}&season={season}'
     
-    #Endpoint to get current MLB standings.
+    #Endpoint to get MLB standings.
     STANDINGS_URL = 'https://statsapi.mlb.com/api/v1/standings?standingsTypes=regularSeason&leagueId=103,104&date={date}&season={season}'
 
-    #Endpoint to gather the game log of a hitter.
+    #Endpoint to get the game log of a hitter.
     HITTING_GAME_LOG_URL = 'https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=gameLog&group=hitting&season={season}&startDate={start_date}'
 
-    #Endpoint to gather the game log of a pitcher.
+    #Endpoint to get the game log of a pitcher.
     PITCHING_GAME_LOG_URL = 'https://statsapi.mlb.com/api/v1/people/{player_id}/stats?stats=gameLog&group=pitching&season={season}&startDate={start_date}&endDate={end_date}'
     
     #Endpoint to get a hitter's career numbers off of a specific pitcher.
@@ -55,7 +55,7 @@ class Endpoints():
     #Endpoint to get the lefty/righty splits for a pitcher.
     LEFTY_RIGHTY_SPLITS_PITCHER_URL = 'https://statsapi.mlb.com/api/v1/people/{player_id}?hydrate=stats(group=[pitching],type=[statSplits],sitCodes=[vr,vl],season={season})'
     
-    #Endpoint to get the hourly weather of a city. Note: Uses Weather API not MLB API.
+    #Endpoint to get the hourly forecast for a city. Note: Weather API is used, not MLB API.
     WEATHER_URL = 'https://api.weatherapi.com/v1/forecast.json?key={API_key}&q={city}' 
     
     #Endpoint to get a list of all hitters in a specified season.
@@ -90,7 +90,7 @@ class Endpoints():
             response = self.session.get(a_URL)
             data = response.json()
             return data
-        #Occassionaly there is a rare error by the MLB API. It is fixed by simply waiting a short time, then trying again.
+        #Occasionally the data may be missing or the API may not respond. It is fixed by simply waiting a short time, then trying again.
         except Exception as e:
             time.sleep(10)
             return self.AccessEndpoint(a_URL)
@@ -188,7 +188,7 @@ class Endpoints():
         
         Args:
             a_startDate (datetime): The date representing the start of the schedules to be returned.
-            a_endDate (datetime): The date representing the end of the schedule to be returned.
+            a_endDate (datetime): The date representing the end of the schedules to be returned.
 
         Returns:
             A string representing the URL endpoint required to retrieve a single or multiple schedules. 
@@ -223,6 +223,21 @@ class Endpoints():
         """
         return self.STANDINGS_URL.format(date=self.FormatDate(a_date), season=a_season)
     
+    #Gets the endpoint URL to analyze the game log for a specific hitter.
+    def GetHittingGameLogEndpoint(self, a_playerID, a_season, a_startDate):
+        """Gets the endpoint URL to analyze the game log for a specific hitter.
+
+        Args:
+            a_playerID (int): The player ID used by the MLB API to represent the hitter. 
+            a_season (int): The season to get the game log from.
+            a_startDate (datetime): The date representing the start of game log.
+
+        Returns:
+            A string representing the URL endpoint required to retrieve a hitter's game log.
+        """
+        #Format the dates into the correct format before creating the endpoint.
+        return self.HITTING_GAME_LOG_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate))
+    
     #Gets the endpoint URL to analyze the game log for a specific pitcher.
     def GetPitchingGameLogEndpoint(self, a_playerID, a_season, a_startDate, a_endDate):
         """Gets the endpoint URL to analyze the game log for a specific pitcher.
@@ -238,21 +253,6 @@ class Endpoints():
         """
         #Format the dates into the correct format before creating the endpoint.
         return self.PITCHING_GAME_LOG_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
-    
-    #Gets the endpoint URL to analyze the game log for a specific hitter.
-    def GetHittingGameLogEndpoint(self, a_playerID, a_season, a_startDate):
-        """Gets the endpoint URL to analyze the game log for a specific hitter.
-
-        Args:
-            a_playerID (int): The player ID used by the MLB API to represent the hitter. 
-            a_season (int): The season to get the game log from.
-            a_startDate (datetime): The date representing the start of game log.
-
-        Returns:
-            A string representing the URL endpoint required to retrieve a hitter's game log.
-        """
-        #Format the dates into the correct format before creating the endpoint.
-        return self.HITTING_GAME_LOG_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate))
 
     #Gets the endpoint URL to analyze a hitter's career numbers off of a specific pitcher.
     def GetCareerHittingNumbersEndpoint(self, a_hitterID, a_pitcherID):
@@ -307,14 +307,14 @@ class Endpoints():
     
     #Gets the endpoint URL to look up the weather at a specific city and time.
     def GetWeatherEndpoint(self, a_APIKey, a_city):
-        """Gets the endpoint URL to look up the weather at a specific city and time.
+        """Gets the endpoint URL to look up get the hourly forecast of a city.
         
         Args:
-            a_APIKey (string): The API key used to access the Weather API. API link:  
-            a_city (string): The city to get the weather at.
+            a_APIKey (string): The API key used to access the Weather API.
+            a_city (string): The city to get the weather forecast for.
 
         Returns:
-            A string representing the URL endpoint required to retrieve the weather.
+            A string representing the URL endpoint required to retrieve the weather forecast.
         """
         return self.WEATHER_URL.format(API_key=a_APIKey, city=a_city)
     
@@ -322,7 +322,7 @@ class Endpoints():
     def GetAllHittersEndpoint(self, a_season, a_offset):
         """Gets the endpoint URL to get a full list of qualified hitters for a specific season.
 
-        An offset is required to this method because the data returned from the created endpoint can only return a maximum of 50 
+        An offset is required to this method because the data returned from the MLB API can only contain a maximum of 50 
         qualified players at a time, and there will almost always be more than 50 qualified hitters in any season.
         
         Args:
