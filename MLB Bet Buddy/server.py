@@ -244,7 +244,6 @@ async def ViewTable(a_tableName):
         data_row = {}
         
         #Loop through each column of each row.
-        #Assistance: https://stackoverflow.com/questions/37369686/how-can-i-use-a-string-to-to-represent-an-sqlalchemy-object-attribute
         for column in tableColumns:
             #Extract information about the individual column, and append it to the row's data. 
             columnName = column.name
