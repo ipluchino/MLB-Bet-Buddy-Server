@@ -9,7 +9,7 @@ from Player import Player
 from Game import Game
 
 class Pitcher(Player):
-    #CONSTRUCTOR - default pitcher ID is Gerrit Cole from the NYY.
+    #CONSTRUCTOR
     def __init__(self, a_pitcherID = 543037):
         """Constructor for the Pitcher class.
 
@@ -24,7 +24,7 @@ class Pitcher(Player):
         """
         super().__init__(a_pitcherID) 
         
-    #Gets the general pitching statistics of a player within a certain date range.
+    #UTILITY METHODS
     def GetPitchingStatistics(self, a_season, a_startDate, a_endDate):
         """Gets general pitching statistics for a player within a date range.
 
@@ -47,7 +47,7 @@ class Pitcher(Player):
         #Access the created endpoint and store the data.
         individualPitchingData = self.m_endpointObj.AccessEndpointData(individualPitchingEndpoint)
 
-        #Making sure the player ID being used actually exists and stats were returned by the API.
+        #Making sure the player ID being used exists and stats were returned by the API.
         if 'people' not in individualPitchingData or 'stats' not in individualPitchingData['people'][0]:
             return {}
         
@@ -56,7 +56,8 @@ class Pitcher(Player):
         if not splits:
             return {}
 
-        #Sometimes a player may play on multiple teams due to in season trades, so there are splits for each individual team. The last split provided is cumulative stats (that's why -1).
+        #Sometimes a player may play on multiple teams due to in season trades, so there are splits for each individual team. The last split 
+        #provided is cumulative stats (that's why -1 is used as the index).
         cumulativeStats = splits[-1]['stat']
         
         #Gather all of the necessary pitching statistics.
@@ -68,7 +69,8 @@ class Pitcher(Player):
         #Note: ERA = Earned Run Average and WHIP = Walks and Hits per Innings Pitched. The lower these values, the better the pitcher.
         ERA = float(cumulativeStats['era'])       
         WHIP = float(cumulativeStats['whip'])         
-        #Note: The stats below represent the average number strikeouts and home runs if the pitcher were to pitch a full 9 innings. Higher strikeout rates are better, and lower home run rates are better.
+        #Note: The stats below represent the average number strikeouts and home runs if the pitcher were to pitch a full 9 innings. Higher 
+        #strikeout rates are better, and lower home run rates are better.
         strikeoutsPer9Inn = float(cumulativeStats['strikeoutsPer9Inn'])
         homeRunsPer9Inn = float(cumulativeStats['homeRunsPer9'])
         
@@ -82,7 +84,6 @@ class Pitcher(Player):
                  'strikeoutsPer9': strikeoutsPer9Inn,
                  'homeRunsPer9': homeRunsPer9Inn }
     
-    #Determines the pitching statistics against left-handed hitters and right-handed hitters in a specified season.
     def GetLRPitchingSplits(self, a_season):
         """Gets the lefty-righty splits for a pitcher.
 
@@ -105,7 +106,7 @@ class Pitcher(Player):
         #Access the created endpoint and store the data.
         LRSplitsData = self.m_endpointObj.AccessEndpointData(LRSplitsEndpoint)
         
-        #Make sure the player ID provided is valid and could be found. 0 is returned to indicate the player could not be found.
+        #Make sure the player ID provided is valid and can be found. 0 is returned to indicate the player could not be found.
         if 'people' not in LRSplitsData:
             return {}
         
@@ -141,17 +142,16 @@ class Pitcher(Player):
                                              'homeRunsPer9': homeRunsPer9Inn }
                               }
             
-            #Adding the individual split to the final result dictionary.
+            #Adding the individual split to the result dictionary.
             resultDictionary.update(splitDictionary)
         
         return resultDictionary
 
-    #Calculates the percentage of a pitcher's game where they let up a run in the 1st inning.
     def CalculateYRFIPercentage(self, a_season, a_startDate, a_endDate):
         """Calculates the percentage of games a pitcher lets up a run in the first inning.
 
         This method is used to calculate the YRFI percentage for a pitcher. First, all the pitcher's starts within 
-        the provided date range are extracted from the MLB API. Then, a Game object is created for each of their 
+        the provided date range is extracted from the MLB API. Then, a Game object is created for each of their 
         starts, and the total number of games where the pitcher lets up a run in the first inning is tallied. The 
         YRFI percentage is calculated by taking this total and dividing it by their total number of starts in the 
         date range.
@@ -184,7 +184,7 @@ class Pitcher(Player):
         
         #Loop through each game the pitcher has started within the date range.
         for game in gameLog:
-            #Ensure the pitcher actually started the game (and didn't appear as a relief pitcher since some pitchers start games and are bullpen pitchers as well).
+            #Ensure the pitcher started the game (and didn't appear as a relief pitcher since some pitchers start games and are bullpen pitchers as well).
             if int(game['stat']['gamesStarted']) == 0:
                 continue
             else:
@@ -198,12 +198,9 @@ class Pitcher(Player):
             if not gameObj.IsGameFinal():
                 continue
             
-            #Determine if the pitcher let up a run in the 1st inning for that game.
+            #Determine if the pitcher lets up a run in the 1st inning for that game.
             if gameObj.DidPitcherLetUpRunFirstInning(self.m_playerID):
-            #    print('Yes', gameObj.GetGameDate())
                 YRFICount += 1
-            #else:
-            #    print('No', gameObj.GetGameDate())
 
         #The YRFI rate represents the percentage of games a pitcher let up a run in the 1st inning in their starts. Lower YRFI rates are better for NRFI.
         #Make sure a game has been played to avoid division by 0 error.
