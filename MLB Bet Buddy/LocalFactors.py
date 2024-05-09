@@ -9,11 +9,11 @@ from datetime import datetime, timedelta
 
 class LocalFactors():
     #CONSTANTS
-    #API key for the Weather API
+    #API key for the Weather API.
     WEATHER_API_KEY = 'Example Weather API Key'
     
     #All MLB stadiums and their corresponding information about them.
-    #NOTE: Ballpark factors based on data from 2021-2023.
+    #Note: Ballpark factors based on data from 2021-2023.
     BALLPARK_INFORMATION = {
         'Coors Field': { 'homeTeam': 'Colorado Rockies', 'ballparkFactor': 112, 'city': 'Denver', 'hasRoof': False },
         'Fenway Park': { 'homeTeam': 'Boston Red Sox', 'ballparkFactor': 108, 'city': 'Boston', 'hasRoof': False },
@@ -73,9 +73,9 @@ class LocalFactors():
         #Endpoint object from the Endpoints class to handle MLB API access.
         self.m_endpointObj = Endpoints()
 
-    #Gets the ballpark factor for a stadium, if it exists.
+    #UTILITY METHODS
     def GetBallparkFactor(self, a_stadiumName):
-        """Gets the ballpark factor for a stadium, if it exists.
+        """Gets the ballpark factor for a stadium if it exists.
         
         Args:
             a_stadiumName (string): A string representing the stadium name.
@@ -88,9 +88,8 @@ class LocalFactors():
         else:
             return 'Unknown'
         
-    #Gets the home team for a stadium, if it exists.
     def GetHomeTeamForStadium(self, a_stadiumName):
-        """Gets the home team for a stadium, if it exists.
+        """Gets the home team for a stadium if it exists.
         Args:
             a_stadiumName (string): A string representing the stadium name.
 
@@ -102,9 +101,8 @@ class LocalFactors():
         else:
             return 'Unknown'
         
-    #Gets the city that a stadium resides in, if it exists.
     def GetCityForStadium(self, a_stadiumName):
-        """Gets the city for a stadium, if it exists.
+        """Gets the city for a stadium if it exists.
         Args:
             a_stadiumName (string): A string representing the stadium name.
 
@@ -116,7 +114,6 @@ class LocalFactors():
         else:
             return 'Unknown'
         
-    #Determines whether or not a stadium has a roof or not - useful since weather does not impact stadiums that have roofs.
     def HasRoof(self, a_stadiumName):
         """Checks if a stadium has a roof.
         
@@ -131,7 +128,6 @@ class LocalFactors():
         else:
             return 'Unknown'
 
-    #Gets the weather at a stadium given a stadium name and a time.
     def GetWeather(self, a_stadiumName, a_timeOfGame):
         """Gets the weather at a stadium, at a specified time.
 
@@ -154,7 +150,7 @@ class LocalFactors():
         
         stadiumCity = self.GetCityForStadium(a_stadiumName)
         
-        #Create the endpoint for the Weather API and access it's data.
+        #Create the endpoint for the Weather API and access its data.
         weatherEndpoint = self.m_endpointObj.GetWeatherEndpoint(self.WEATHER_API_KEY, stadiumCity)
         weatherData = self.m_endpointObj.AccessEndpointData(weatherEndpoint)
         
@@ -179,10 +175,8 @@ class LocalFactors():
                  'weatherCode': weatherCode,
                  'windSpeed': windSpeed }
         
-    #Helper function to convert a time to its closest 24 hour time hour. Example: 7:07 PM --> 15.
-    #Assistance: https://stackoverflow.com/questions/67686033/adding-hours-and-days-to-the-python-datetime
     def ConvertTime(self, a_timeToConvert):
-        """Helper method to convert a time to its closest 24 hour time hour.
+        """Helper method to convert a time to its closest 24-hour time hour.
 
         Args:
             a_timeToConvert (string): The time to be converted into its 24-hour time hour. Example: "7:07 PM".
@@ -202,7 +196,6 @@ class LocalFactors():
 
         return timeObj.hour
     
-    #Determines the weather impact factor based on the weather classification code.
     def CalculateWeatherFactor(self, a_weatherCode, a_stadium):
         """Calculates the weather impact factor.
         
@@ -211,7 +204,7 @@ class LocalFactors():
         not be a weather impact.
         
         Args:
-            a_weatherCode (int): The code representing the type of weather occurring at the stadium 
+            a_weatherCode (int): The code representing the type of weather occurring at the stadium.
             a_stadium (string): A string representing the stadium name.
 
         Returns:
