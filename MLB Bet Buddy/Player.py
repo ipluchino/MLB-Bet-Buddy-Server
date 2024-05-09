@@ -8,7 +8,7 @@
 from Endpoints import Endpoints
 
 class Player():
-    #CONSTRUCTOR - default player ID is Aaron Judge from the NYY.
+    #CONSTRUCTOR
     def __init__(self, a_playerID = 592450):
         """Constructor for the Player class.
 
@@ -24,11 +24,10 @@ class Player():
         #Endpoint object from the Endpoints class to handle MLB API access.
         self.m_endpointObj = Endpoints()
         
-        #Passed plyaer ID that represents a single MLB player.
+        #Passed player ID that represents a single MLB player.
         self.m_playerID = a_playerID
         
-    #Getters
-    #Gets the player ID of the player this class is representing.
+    #GETTERS
     def GetPlayerID(self):
         """Gets the player ID of the player this class is representing.
         Returns:
@@ -36,9 +35,9 @@ class Player():
         """
         return self.m_playerID
 
-    #Setters
+    #SETTERS
     def SetPlayer(self, a_playerID):
-        """Sets the instance of the the class to a new player.
+        """Sets the instance of the class to a new player.
         
         Args:
             a_playerID (int): The player ID used by the MLB API to represent the player.
@@ -48,7 +47,7 @@ class Player():
         """
         self.m_playerID = a_playerID
 
-    #Gets the hand information for a player (bat hand and pitch hand).
+    #UTILITY METHODS
     def GetHandInformation(self):
         """Gets the hand information for a player.
 
@@ -76,8 +75,6 @@ class Player():
                  'batHand': batHand,
                  'pitchHand': pitchHand }
     
-    #Static function to get the ID of a player from their name alone.
-    #Assistance Received: https://www.digitalocean.com/community/tutorials/python-static-method#using-staticmethod
     @staticmethod
     def FindPlayerID(a_playerFullName):
         """Searches for a player ID based on a player's full name.
