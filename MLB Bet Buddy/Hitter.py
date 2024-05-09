@@ -27,7 +27,6 @@ class Hitter(Player):
     ICE_COLD_WEIGHT = 'Omitted'
 
     #CONSTRUCTOR - default hitter ID is Aaron Judge from the NYY.
-    #Assistance: https://www.geeksforgeeks.org/calling-a-super-class-constructor-in-python/
     def __init__(self, a_hitterID = 592450):
         """Constructor for the Hitter class.
 
