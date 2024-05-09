@@ -7,7 +7,6 @@
 
 from quart import Quart, jsonify
 import asyncio
-from quart.app import P
 from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -42,7 +41,7 @@ Base = declarative_base()                                       #Base model data
 engine = create_engine('sqlite:///database.db', echo=True)      #Database engine location.
 Session = sessionmaker(bind=engine)                             #Session to create a connection with the database.
 
-#DATABASE TABLE MODELS. Note: There will be two tables for each kind of table, an active "today" table and an archive table. Both tables of each type will use the same column structure.
+#DATABASE TABLE MODELS. Note: There will be two tables for each kind of table, an active "today" table and an archive table. 
 #Base table model for a schedule of MLB games.
 class ScheduleBaseModel():
     id = Column('id', Integer, primary_key=True)
@@ -341,7 +340,7 @@ async def TriggerUpdate():
     This route is used to trigger an update of the schedule and bet predictions for a new day. The current date that
     this route is called is generated, and the schedule along with the bet predictions are generated asynchronously
     so that the server is still responsive while a bet update is ongoing (see UpdateBetPredictions()). Once the
-    schedule and bet predictions are generated they are inserted into their correct tables in the database.
+    schedule and bet predictions are generated, they are inserted into their correct tables in the database.
 
     Returns:
         A response containing simple json data letting the user know that a bet prediction update was successful.
@@ -361,12 +360,12 @@ async def TriggerUpdate():
 async def Accuracy(a_topNRFIYRFI, a_topHitters):
     """Route used to check the accuracy of the bet predictions previously made.
 
-    This route is used to view information regarding the accuracy of both the NRFI/YRFI bet predicitons and hitting
+    This route is used to view information regarding the accuracy of both the NRFI/YRFI bet predictions and hitting
     bet predictions that have already been made and stored in the database. Everyday starting from opening day until
     the current day is looped through and the bet predictions are pulled from the ArchiveNRFITable and
     ArchiveHittingTable. For both the bet types, the top X bet predictions made on that day are looped through (top X
     determined from a_topNRFIYRFI and a_topHitters) and the total wins for each bet type are tallied. The accuracy
-    information is retured as a JSON, with the accuracies being represented as percentages.
+    information is returned as a JSON, with the accuracies being represented as percentages.
 
     Args:
         a_topNRFIYRFI (int): The number of top NRFI and YRFI bets of each day to consider.
@@ -619,7 +618,7 @@ def ConvertColumnName(a_columnName):
     
     return modifiedColumnName
 
-#Moves all of the data in one of the database tables, to another. Used from moving data from a "Today" table to an "Archive" table.
+#Moves all of the data in one of the database tables, to another. Used for moving data from a "Today" table to an "Archive" table.
 def MoveDataToArchive(a_sourceTable, a_destinationTable):
     """Moves data from a source table to a destination table.
 

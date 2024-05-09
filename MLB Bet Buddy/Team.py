@@ -10,6 +10,7 @@ from Game import Game
 from datetime import datetime
 
 class Team():
+    #CONSTANTS
     #All MLB teams and their respective IDs associated with the MLB API.
     MLB_TEAM_IDS = [
         { 'id': 109, 'name': 'Arizona Diamondbacks' },
@@ -44,7 +45,7 @@ class Team():
         { 'id': 120, 'name': 'Washington Nationals' }
     ]
     
-    #CONSTRUCTOR - default team is the NYY.
+    #CONSTRUCTOR
     def __init__(self, a_teamID = 147):
         """Constructor for the Team class.
 
@@ -71,16 +72,17 @@ class Team():
             self.m_teamID = 147
             self.m_teamName = 'New York Yankees'
             
-    #Creates a Team object from the name of the MLB team, instead of its ID.
+    #CONSTRUCTION METHODS
     @staticmethod
     def CreateFromName(a_teamName):
-        """Creates and returns a Team object from the name of the MLB team
+        """Creates and returns a Team object from the name of the MLB team.
         
         Args:
             a_teamName (string): The name of the team that the Team object will represent. 
 
-        Returns: A Team object representing the team provided from the name. The Yankees is the default team if the 
-        name is invalid.
+        Returns: 
+            A Team object representing the team provided from the name. The Yankees is the default team if the 
+            name is invalid.
         """
         teamObj = Team()
         
@@ -91,8 +93,40 @@ class Team():
         teamObj.SetTeam(teamID)
         
         return teamObj
+    
+    #GETTERS
+    def GetTeamID(self):
+        """Gets the team's ID.
+        
+        Returns:
+            An integer, representing the team's ID.
+        """
+        return self.m_teamID
 
-    #Validates that a provided ID is legitimate.
+    def GetTeamName(self):
+        """Gets the team's name.
+        
+        Returns:
+            A string, representing the team's name.
+        """
+        return self.m_teamName
+    
+    #SETTERS
+    def SetTeam(self, a_teamID):
+        """Sets the instance of the class to represent a new team.
+
+        Args:
+            a_teamID (int): The team ID used by the MLB API to represent the new team.
+
+        Returns:
+            Nothing.
+        """
+        #Make sure that the team ID is valid in terms of the MLB API. If the team ID is not valid, nothing needs to be changed.
+        if self.ValidateTeamID(a_teamID):
+            self.m_teamID = a_teamID
+            self.m_teamName = self.NameFromID(a_teamID)
+
+    #UTILITY METHODS
     def ValidateTeamID(self, a_teamID):
         """Validates that a team ID provided is legitimate.
 
@@ -107,10 +141,9 @@ class Team():
             if team['id'] == a_teamID:
                 return True
             
-        #If all of the teams are checked and the ID hasn't been found, it is not valid.
+        #If all the teams are checked and the ID hasn't been found, it is not valid.
         return False
 
-    #Gets the name of a team given its ID.
     def NameFromID(self, a_teamID):
         """Gets the name of a team given its ID.
         
@@ -128,7 +161,6 @@ class Team():
         #Otherwise, the ID is not valid, and there is no associated name.
         return 'Unknown'
     
-    #Gets the ID of a team given its name.
     def IDFromName(self, a_teamName):
         """Gets the ID of a team given its name.
 
@@ -136,7 +168,7 @@ class Team():
             a_teamName (string): The name of the team.
 
         Returns:
-            An integer, representing the team's ID. "Unknown" is returned if the team name is invalid.
+            An integer, representing the team's ID. "Unknown" is returned if the team's name is invalid.
         """
         #Loop through each team and check if the name matches one from in the list.
         for team in self.MLB_TEAM_IDS:
@@ -145,40 +177,7 @@ class Team():
             
         #Otherwise, the name is not valid, and there is no associated ID.
         return 'Unknown'
-
-    #Getters
-    def GetTeamID(self):
-        """Gets the team's ID.
-        
-        Returns:
-            An integer, representing the team's ID.
-        """
-        return self.m_teamID
-
-    def GetTeamName(self):
-        """Gets the team's name.
-        
-        Returns:
-            A string, representing the team's name.
-        """
-        return self.m_teamName
-    
-    #Setters
-    def SetTeam(self, a_teamID):
-        """Sets the instance of the class to represent a new team.
-
-        Args:
-            a_teamID (int): The team ID used by the MLB API to represent the new team.
-
-        Returns:
-            Nothing.
-        """
-        #Make sure that the team ID is valid in terms of the MLB API. If the team ID is not valid, nothing needs to be changed.
-        if self.ValidateTeamID(a_teamID):
-            self.m_teamID = a_teamID
-            self.m_teamName = self.NameFromID(a_teamID)
-
-    #Gets the record information for a team and returns it as a string in the format "wins-losses". Example: "33-22".
+            
     def GetRecord(self, a_date, a_season):
         """Gets the record for a team on a given date and season.
         
@@ -209,13 +208,12 @@ class Team():
         record = self.FindRecord(standingsData)
         return record
         
-    #Sifts through record data to find the correct record.
     def FindRecord(self, a_recordData):
         """Sifts through record data for a team to find the correct record.
         
         This method is used to find the correct record for the team an instance of this class represents. The entire 
-        standings is passed to this function, and in total there are 2 leagues each with 3 divisions. Each of these 
-        divisions is checked until the team ID of the correct team is found, and the record is returned.
+        standings are passed to this function, and in total there are 2 leagues each with 3 divisions. Each of these 
+        divisions are checked until the team ID of the correct team is found, and the record is returned.
 
         Args:
             a_recordData (dict): A dictionary containing standings information.
@@ -299,7 +297,6 @@ class Team():
                  'strikeoutPercentage': teamStrikeoutPercentage,
                  'homerunPercentage': teamHomerunPercentage }
     
-    #Calculates the percentage that an individual team scores a run in the 1st inning of their games.
     def CalculateYRFIPercentage(self, a_season, a_startDate, a_endDate):
         """Calculates the percentage that an individual team scores a run in the 1st inning.
         
@@ -350,7 +347,6 @@ class Team():
 
         return YRFIRate
     
-    #Helper function to extract a list of all game IDs from a list of games returned by the MLB API.
     def ExtractGameIDs(self, a_gameList):
         """Extracts game IDs from a list of game dictionaries.
 
@@ -395,7 +391,7 @@ class Team():
                 if gameStatus != 'Final' and gameStatus != 'Completed Early':
                     continue
                 
-                #Also skip games that started, but were paused and resumed on a later date to avoid duplicates.
+                #Also skip games that started but were paused and resumed at a later date to avoid duplicates.
                 if 'resumeDate' in game:
                     continue
                 
