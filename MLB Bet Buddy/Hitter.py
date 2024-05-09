@@ -26,7 +26,7 @@ class Hitter(Player):
     COOL_WEIGHT = 'Omitted'
     ICE_COLD_WEIGHT = 'Omitted'
 
-    #CONSTRUCTOR - default hitter ID is Aaron Judge from the NYY.
+    #CONSTRUCTOR
     def __init__(self, a_hitterID = 592450):
         """Constructor for the Hitter class.
 
@@ -41,8 +41,7 @@ class Hitter(Player):
         """
         super().__init__(a_hitterID) 
         
-    #Data gathering functions.
-    #Gets the general offensive statistics of a player within a certain date range.
+    #UTILITY METHODS
     def GetOffensiveStatistics(self, a_season, a_startDate, a_endDate):
         """Gets the general offensive statistics for a hitter within a date range.
 
@@ -64,7 +63,7 @@ class Hitter(Player):
         #Access the created endpoint and store the data.
         individualHittingData = self.m_endpointObj.AccessEndpointData(individualHittingEndpoint)    
 
-        #Making sure the player ID being used actually exists and stats were returned by the API.
+        #Making sure the player ID being used exists and stats were returned by the API.
         if 'people' not in individualHittingData or 'stats' not in individualHittingData['people'][0]:
             return {}
         
@@ -73,7 +72,8 @@ class Hitter(Player):
         if not splits:
             return {}
         
-        #Sometimes a player may play on multiple teams due to in season trades, so there are splits for each individual team. The last split provided is cumulative stats (that's why -1).
+        #Sometimes a player may play on multiple teams due to in season trades, so there are splits for each individual team. The last split provided is 
+        #cumulative stats (that's why -1).
         cumulativeStats = splits[-1]['stat']
         
         #Gather all of the offensive statistics.
@@ -95,11 +95,10 @@ class Hitter(Player):
                  'OPS': OPS,
                  'homeRuns': homeRuns }
     
-    #Gets the career offensive statistics off a specific provided pitcher.
     def GetCareerStatsOffPitcher(self, a_pitcherID):
-        """Gets a hitter's career statistics off of a pitcher.
+        """Gets a hitter's career statistics off a pitcher.
 
-        This method is used to get a hitter's career statistics off of a specific pitcher. If the pitcher could not 
+        This method is used to get a hitter's career statistics off a specific pitcher. If the pitcher could not 
         be found in the MLB API, an empty dictionary is returned. It is also checked to make sure that the hitter has 
         faced the pitcher at least once. If they haven't, an empty dictionary is returned since the statistics do not 
         exist.
@@ -108,7 +107,7 @@ class Hitter(Player):
             a_pitcherID (int): The ID used by the MLB API to represent the opposing pitcher.
 
         Returns:
-            A dictionary, representing the hitter's career numbers when facing the provided pitcher. Stats such  as the
+            A dictionary, representing the hitter's career numbers when facing the provided pitcher. Stats such as the
             number of plate appearances, hits, batting average, OBP, OPS, and the number of home runs are included.
         """
         #Create the endpoint to find the career statistics.
@@ -117,17 +116,18 @@ class Hitter(Player):
         #Access the created endpoint and store the data.
         careerHittingStatistics = self.m_endpointObj.AccessEndpointData(careerHittingStatisticsEndpoint)
         
-        #Make sure the hitter ID provided is valid and could be found. 0 is returned to indicate no career stats could be found.
+        #Make sure the hitter ID provided is valid and can be found. 0 is returned to indicate no career stats could be found.
         if 'people' not in careerHittingStatistics:
             return {}
         
-        #Also make sure that the pitcher ID provided is valid and the hitter has career statistics against them. 0 is returned to indicate no career stats could be found.
+        #Also make sure that the pitcher ID provided is valid and the hitter has career statistics against them. 0 is returned to indicate no career 
+        #stats could be found.
         splits = careerHittingStatistics['people'][0]['stats'][0]['splits']
         if not splits:
             #Either the pitcher ID is invalid, or the hitter has never faced the pitcher so there will be no statistics returned from the MLB API.
             return {}
         
-        #If both the hitter and pitcher exists, extract the career hitting statistics the hitter has against the pitcher.
+        #If both the hitter and pitcher exist, extract the career hitting statistics the hitter has against the pitcher.
         stats = splits[0]
         hitterFullName = stats['batter']['fullName']
         pitcherFullName = stats['pitcher']['fullName']
@@ -141,7 +141,7 @@ class Hitter(Player):
         OPS = float(stats['stat']['ops'])
         homeRuns = int(stats['stat']['homeRuns'])
         
-        #Stats are returned as a dictionary containing all of the information.
+        #Stats are returned as a dictionary containing all the information.
         return { 'hitterName': hitterFullName,
                  'pitcherName': pitcherFullName,
                  'gamesPlayed': gamesPlayed,
@@ -152,7 +152,6 @@ class Hitter(Player):
                  'OPS': OPS,
                  'homeRuns': homeRuns }
     
-    #Determines the offensive statistics against left handed-pitchers and right-handed pitchers in a specified season.
     def GetLRHittingSplits(self, a_season):
         """Gets the lefty-righty splits for a hitter.
 
@@ -175,11 +174,13 @@ class Hitter(Player):
         #Access the created endpoint and store the data.
         LRSplitsData = self.m_endpointObj.AccessEndpointData(LRSplitsEndpoint)
         
-        #Make sure the player ID provided is valid and could be found. 0 is returned to indicate the player could not be found, and therefore it was not possible to find the lefty/righty splits.
+        #Make sure the player ID provided is valid and can be found. 0 is returned to indicate the player could not be found, and therefore it was not 
+        #possible to find the lefty/righty splits.
         if 'people' not in LRSplitsData:
             return {}
         
-        #Important note: Not every player may have faced both types of pitchers yet at specific points in the provided season, or they may not have played at all in the provided season.
+        #Important note: Not every player may have faced both types of pitchers yet at specific points in the provided season, or they may not have played 
+        #at all in the provided season.
         splits = LRSplitsData['people'][0]['stats'][0]['splits']
         
         #Loop through the possible splits. There can be 0, 1, or 2 depending on the player and season.
@@ -209,8 +210,7 @@ class Hitter(Player):
             resultDictionary.update(splitDictionary)
              
         return resultDictionary
-    
-    #Finds and returns a hitter's last 10 games offensive statistics, given a starting date to search from.
+
     def Last10Stats(self, a_season, a_date):
         """Gets a hitter's offensive statistics in their last 10 games.
 
@@ -234,7 +234,8 @@ class Hitter(Player):
         #Will act as the ending date for the date range.
         endDate = a_date
 
-        #The starting date of the search will be a week away from the end just in case of double headers (which are rare, but occur when two games are played on the same day).
+        #The starting date of the search will be a week away from the end just in case of double headers (which are rare but occur when two games are 
+        #played on the same day).
         startDate = a_date - timedelta(days=7)
 
         #If the player has not played 10 games in the last 3 weeks from the date, the data isn't recent enough and shouldn't be used.
@@ -260,15 +261,15 @@ class Hitter(Player):
             #Expand the range of dates to keep searching for the player's last 10 games.
             startDate -= timedelta(days=1)
             
-        #If the maximum date range was reached and the player hasn't played 10 games, return an empty dictionary to represent there was not enough data from the starting date.
+        #If the maximum date range was reached and the player hasn't played 10 games, return an empty dictionary to represent there was not enough 
+        #data from the starting date.
         return {}
     
-    #Classify a batting average into one of five categories and assign its weight (used for creating hitting predictions).
     def ClassifyHitting(self, a_BA):
         """Classify a batting average into one of five categories and assign its weight.
 
         This method is used to determine how well a hitter is doing, based on their batting average. One of five
-        categories is determined, and the respective weight for that category is returned from this function.
+        categories are determined, and the respective weight for that category is returned from this function.
 
         Args:
             a_BA (float): The batting average of the hitter in question.
@@ -289,7 +290,6 @@ class Hitter(Player):
         else:
             return 'Ice Cold', self.ICE_COLD_WEIGHT
         
-    #Checks to see if a game was played on the provided date, and returns whether or not a hitter achieved certain beting goals during that game.
     def HittingBetReview(self, a_gameDate):
         """Determines the betting benchmarks a hitter achieved, on a specific day for bet accuracy checking.
 
@@ -325,7 +325,7 @@ class Hitter(Player):
         #Check the date of the closest game.
         firstGameDate = datetime.strptime(firstGame['date'], '%Y-%m-%d').strftime('%m/%d/%Y')
         
-        #If the dates do not match with what is provided to this function, then the player did not play that day (the player may have had an off-day).
+        #If the dates do not match with what is provided to this function, then the player did not play that day (the player may have had an off day).
         if firstGameDate != a_gameDate:
             return {}
         
@@ -343,7 +343,7 @@ class Hitter(Player):
         atLeast2HHR = HitsPlusRunsPlusRBIs >= 2
         atLeast3HHR = HitsPlusRunsPlusRBIs >= 3
         
-        #Compile all results into a single dictionary, and return it.
+        #Compile all results into a single dictionary and return it.
         betReviewDictionary = { 'summary': summary,
                                 'hits': hits,
                                 'runsScored': runsScored,
@@ -355,7 +355,6 @@ class Hitter(Player):
 
         return betReviewDictionary        
 
-    #Static method to return a list of all the qualified hitters of a season.
     @staticmethod
     def GetAllHitters(a_season):
         """Gets a list of all qualified hitters for a season.
@@ -382,7 +381,8 @@ class Hitter(Player):
         allHittersData = tempEndpointObj.AccessEndpointData(allHittersEndpoint)
         
         #Obtain the total number of players that need to be recorded. 
-        #Note: Only 50 players are returned from the API at a time, and those 50 determined by an offset. The number of API calls is found by taking the total number of players and dividing by 50.
+        #Note: Only 50 players are returned from the API at a time, and those 50 are determined by an offset. The number of API calls is found by taking 
+        #the total number of players and dividing by 50.
         totalPlayers = allHittersData['stats'][0]['totalSplits']
         totalAPICalls = math.ceil(totalPlayers/50)
         
