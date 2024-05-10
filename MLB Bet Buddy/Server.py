@@ -251,7 +251,7 @@ async def ViewTable(a_tableName):
             if columnName == 'id':
                 continue
             
-            #Note: The column name is fixed from spaces to underscores, since the variables in the database model class has underscores, not spaces.
+            #Note: The column name is fixed from spaces to underscores, since the variables in the database model class have underscores, not spaces.
             columnValue = getattr(row, ConvertColumnName(columnName))
             
             data_row[columnName] = columnValue        
@@ -271,12 +271,12 @@ async def ViewTableSpecificDate(a_tableName, a_dateStr):
     being requested is not valid or the date provided does not follow the required format, a 404/400 error is
     returned and an error message is added into the response JSON. If the table name is valid, a connection is made
     with the database, and the data from the database where the dates match is acquired. The data returned from the
-    database is looped through in order to build a list of dictionaries (each dictionary represents a row of the
+    database is looped through to build a list of dictionaries (each dictionary represents a row of the
     table) so that it can be returned in a JSON format once all rows have been processed.
 
     Args:
         a_tableName (string): The name of the table in the database to return the information from.
-        a_dateStr (string): The date to get the schedule or bet predictions from  in the format MM-DD-YYYY.
+        a_dateStr (string): The date to get the schedule or bet predictions from in the format MM-DD-YYYY.
 
     Returns:
         A response containing JSON data representing the information that's stored in the database for the requested
@@ -315,14 +315,14 @@ async def ViewTableSpecificDate(a_tableName, a_dateStr):
         
         #Loop through each column of each row. 
         for column in tableColumns:
-            #Extract information about the individual column, and append it to the row's data. 
+            #Extract information about the individual column and append it to the row's data. 
             columnName = column.name
             
             #Skip the id column.
             if columnName == 'id':
                 continue
             
-            #Note: The column name is fixed from spaces to underscores, since the variables in the database model class has underscores, not spaces.
+            #Note: The column name is fixed from spaces to underscores, since the variables in the database model class have underscores, not spaces.
             columnValue = getattr(row, ConvertColumnName(columnName))
             
             data_row[columnName] = columnValue        
@@ -361,8 +361,8 @@ async def Accuracy(a_topNRFIYRFI, a_topHitters):
     """Route used to check the accuracy of the bet predictions previously made.
 
     This route is used to view information regarding the accuracy of both the NRFI/YRFI bet predictions and hitting
-    bet predictions that have already been made and stored in the database. Everyday starting from opening day until
-    the current day is looped through and the bet predictions are pulled from the ArchiveNRFITable and
+    bet predictions that have already been made and stored in the database. Every day starting from opening day until
+    the current day is looped through and, the bet predictions are pulled from the ArchiveNRFITable and
     ArchiveHittingTable. For both the bet types, the top X bet predictions made on that day are looped through (top X
     determined from a_topNRFIYRFI and a_topHitters) and the total wins for each bet type are tallied. The accuracy
     information is returned as a JSON, with the accuracies being represented as percentages.
@@ -452,7 +452,7 @@ async def Accuracy(a_topNRFIYRFI, a_topHitters):
                 if hittingBet.At_Least_3_HRR_Success == '1':
                     totalAtLeast3HRRWin += 1
                     
-                #Increment the total hitter counter only if the game did not get postponed and the hitter actually played in the game.
+                #Increment the total hitter counter only if the game did not get postponed and the hitter played in the game.
                 if hittingBet.Result_Statline != 'Postponed' and hittingBet.Result_Statline != 'Did Not Play':
                     totalHitters += 1
         
@@ -482,7 +482,7 @@ async def Accuracy(a_topNRFIYRFI, a_topHitters):
     #Return the results as JSON data.
     return jsonify(accuracyResults), 200 
 
-#Helper function for the update route. Creates all of the bet prediction dataframes and then stores them in the database.
+#Helper function for the update route. Creates all the bet prediction DataFrames and then stores them in the database.
 def UpdateBetPredictions(a_openingDayDate, a_date, a_season):
     """Creates the new schedule table and bet predictions, and reviews the old bet predictions.
 
@@ -543,7 +543,7 @@ def UpdateTableInDatabase(a_dataFrame, a_todayTable, a_archiveTable):
     #Then, insert the newly created data into the today table.
     session = Session()
     
-    #Loop through each row of the provided dataframe.
+    #Loop through each row of the provided DataFrame.
     for index, row in a_dataFrame.iterrows():
         data_dict = {}
         #Loop through each column of each row, and create a dictionary representing its data.
@@ -554,7 +554,7 @@ def UpdateTableInDatabase(a_dataFrame, a_todayTable, a_archiveTable):
             if columnName == 'id':
                 continue
 
-            #Attempt to fill the data of the row into a dictionary. Some columns are purposefully left empty (the bet review columns) so fill 
+            #Attempt to fill the data of the row into a dictionary. Some columns are purposefully left empty (the bet review columns) so fill
             #empty columns with None. 
             try:
                 data_dict[ConvertColumnName(columnName)] = row[columnName]
@@ -666,7 +666,6 @@ def MoveDataToArchive(a_sourceTable, a_destinationTable):
                 columnValue = getattr(sourceRow, ConvertColumnName(sourceColumnName))
                 setattr(destinationRow, ConvertColumnName(sourceColumnName), columnValue)
             except Exception as error:
-                print(error)
                 print('Error moving data - column mismatch! Could not move the data from the source table to the destination table.')
                 return
             
@@ -680,7 +679,7 @@ def MoveDataToArchive(a_sourceTable, a_destinationTable):
 def DeleteData(a_table):
     """Deletes the contents of a database table.
 
-    This function is used to delete the contents of a databased, based on the provided name of the table to be deleted.
+    This function is used to delete the contents of a database, based on the provided name of the table to be deleted.
     A connection is created with the database, and a query to clear the table is sent.
 
     Args:
