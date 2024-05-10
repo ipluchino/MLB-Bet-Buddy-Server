@@ -51,7 +51,8 @@ class LocalFactors():
     NO_WEATHER_IMPACT_WEIGHT = 'Omitted'
 
     #Represents the weather description codes and their associated impacts.
-    LOW_WEATHER_IMPACT_CODES = [1030, 1063, 1066, 1069, 1072, 1087, 1150, 1153, 1168, 11'Omitted', 1183, 1198, 1204, 1210, 1240, 1249, 1252, 1255, 1261, 1273, 1279, 1282]
+    LOW_WEATHER_IMPACT_CODES = [1030, 1063, 1066, 1069, 1072, 1087, 1150, 1153, 1168, 11'Omitted', 1183, 1198, 1204, 1210, 1240, 1249, 1252, 1255, 1261, 
+                                1273, 1279, 1282]
     
     MODERATE_WEATHER_IMPACT_CODES = [1171, 1186, 1189, 1201, 1207, 1216, 1219, 1237, 1243, 1258, 1264, 1276]
     
@@ -154,7 +155,8 @@ class LocalFactors():
         weatherEndpoint = self.m_endpointObj.GetWeatherEndpoint(self.WEATHER_API_KEY, stadiumCity)
         weatherData = self.m_endpointObj.AccessEndpointData(weatherEndpoint)
         
-        #Extract the hourly forecast data from the data returned from the Weather API. Note: The hourly forecast is split into 24 individual hours based on a 24-hour clock.
+        #Extract the hourly forecast data from the data returned from the Weather API. Note: The hourly forecast is split into 24 individual hours based on a 
+        #24-hour clock.
         forecast = weatherData['forecast']['forecastday'][0]['hour']
         
         #Obtain the weather data for the hour closest to the start of the game. 

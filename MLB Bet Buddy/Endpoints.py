@@ -156,7 +156,8 @@ class Endpoints():
             A string representing the URL endpoint required to retrieve the hitting statistics.
         """
         #Format the dates into the correct format before creating the endpoint.
-        return self.INDIVIDUAL_HITTING_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
+        return self.INDIVIDUAL_HITTING_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate), 
+                                                  end_date=self.FormatDate(a_endDate))
 
     def GetIndividualPitchingEndpoint(self, a_playerID, a_season, a_startDate, a_endDate):
         """Gets the endpoint URL to analyze individual pitching statistics.
@@ -171,7 +172,8 @@ class Endpoints():
             A string representing the URL endpoint required to retrieve the pitching statistics.
         """
         #Format the dates into the correct format before creating the endpoint.
-        return self.INDIVIDUAL_PITCHING_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
+        return self.INDIVIDUAL_PITCHING_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate), 
+                                                   end_date=self.FormatDate(a_endDate))
     
     def GetTodayScheduleEndpoint(self, a_startDate, a_endDate):
         """Gets the endpoint URL to analyze the schedule for a given day(s).
@@ -241,7 +243,8 @@ class Endpoints():
             A string representing the URL endpoint required to retrieve a pitcher's game log.
         """
         #Format the dates into the correct format before creating the endpoint.
-        return self.PITCHING_GAME_LOG_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
+        return self.PITCHING_GAME_LOG_URL.format(player_id=a_playerID, season=a_season, start_date=self.FormatDate(a_startDate), 
+                                                 end_date=self.FormatDate(a_endDate))
 
     def GetCareerHittingNumbersEndpoint(self, a_hitterID, a_pitcherID):
         """Gets the endpoint URL to analyze a hitter's career numbers off a specific pitcher.

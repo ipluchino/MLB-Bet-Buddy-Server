@@ -554,7 +554,8 @@ def UpdateTableInDatabase(a_dataFrame, a_todayTable, a_archiveTable):
             if columnName == 'id':
                 continue
 
-            #Attempt to fill the data of the row into a dictionary. Some columns are purposefully left empty (the bet review columns) so fill empty columns with None. 
+            #Attempt to fill the data of the row into a dictionary. Some columns are purposefully left empty (the bet review columns) so fill 
+            #empty columns with None. 
             try:
                 data_dict[ConvertColumnName(columnName)] = row[columnName]
             except:
@@ -593,7 +594,8 @@ def GetTableClassDefinition(a_tableName):
     else:
         return None    
 
-#Helper function for the view route, used to convert column names into their variable names in the model classes (since class variables cannot contain spaces and other special characters).
+#Helper function for the view route, used to convert column names into their variable names in the model classes (since class variables cannot contain 
+#spaces and other special characters).
 def ConvertColumnName(a_columnName):
     """Helper function used to convert column names when going from database column names to table class names.
 

@@ -381,7 +381,7 @@ class Hitter(Player):
         allHittersData = tempEndpointObj.AccessEndpointData(allHittersEndpoint)
         
         #Obtain the total number of players that need to be recorded. 
-        #Note: Only 50 players are returned from the API at a time, and those 50 are determined by an offset. The number of API calls is found by taking 
+        #Note: Only 50 players are returned from the API at a time, and those 50 are determined by an offset. The number of API calls is found by taking
         #the total number of players and dividing by 50.
         totalPlayers = allHittersData['stats'][0]['totalSplits']
         totalAPICalls = math.ceil(totalPlayers/50)

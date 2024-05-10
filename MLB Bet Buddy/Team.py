@@ -378,9 +378,11 @@ class Team():
                 
                 #Special case - opening day for 2024 technically started early with the Dodgers and Padres in Korea.
                 if gameDateObj.year == 2024:
-                    #If the team being analyzed is either of those special teams, include the two special games in their YRFI calculation, and skip the other spring training games.
+                    #If the team being analyzed is either of those special teams, include the two special games in their YRFI calculation, 
+                    #and skip the other spring training games.
                     if self.m_teamID == 119 or self.m_teamID == 135:
-                        if gameDateObj < datetime.strptime('03/20/2024', '%m/%d/%Y') or (gameDateObj > datetime.strptime('03/21/2024', '%m/%d/%Y') and gameDateObj < datetime.strptime('03/28/2024', '%m/%d/%Y')):
+                        if gameDateObj < datetime.strptime('03/20/2024', '%m/%d/%Y') or (gameDateObj > datetime.strptime('03/21/2024', '%m/%d/%Y') 
+                                                                                         and gameDateObj < datetime.strptime('03/28/2024', '%m/%d/%Y')):
                             continue
                     #Every other team did not play - so ignore spring training games for them (which happen before March 28th, 2024).
                     else:
