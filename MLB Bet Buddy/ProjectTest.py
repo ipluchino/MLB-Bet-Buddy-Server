@@ -14,7 +14,7 @@ from Pitcher import Pitcher
 from LocalFactors import LocalFactors
 from BetPredictor import BetPredictor
 
-#Constants.
+#CONSTANTS
 OPENING_DAY = datetime.strptime('03/20/2024', '%m/%d/%Y')
 CLOSING_DAY = datetime.strptime('09/29/2024', '%m/%d/%Y')
 SEASON = 2024
