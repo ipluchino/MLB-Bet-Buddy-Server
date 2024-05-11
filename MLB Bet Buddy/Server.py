@@ -289,13 +289,13 @@ async def ViewTableSpecificDate(a_tableName, a_dateStr):
     if a_tableName not in TABLE_NAMES:
         return jsonify({'error': 'Invalid table name.'}), 404 
     
-    #Next, make sure the request has the date in a valid format. The format expected is: MM-DD-YYYY. Example: 05/15/2023
+    #Next, make sure the request has the date in a valid format. The format expected is: MM-DD-YYYY. Example: 05-15-2024
     try:
         #If it is valid, make sure to convert it into the correct format. Dates are stored in the database in the format MM/DD/YYYY
         dateTimeObj = datetime.strptime(a_dateStr, '%m-%d-%Y')
         formattedDateString = datetime.strftime(dateTimeObj, '%m/%d/%Y')
     except:
-        return jsonify({'error': 'Invalid Date Format. Please use the format MM-DD-YYYY. Example: 05/15/2023'}), 400
+        return jsonify({'error': 'Invalid Date Format. Please use the format MM-DD-YYYY. Example: 05-15-2024'}), 400
     
     #If the date is in the correct format, query the database for records with that date.
     tableClassDefinition = GetTableClassDefinition(a_tableName)
