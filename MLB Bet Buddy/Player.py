@@ -99,7 +99,8 @@ class Player():
        
         peopleFound = IDLookupData['people']
                 
-        #Make sure that the player being searched for could be found before extracting the name. Return 0 if the player ID could not be successfully found.
+        #Make sure that the player being searched for could be found before extracting the name. Return 0 if the 
+        #player ID could not be successfully found.
         if not peopleFound:
             return 0
         

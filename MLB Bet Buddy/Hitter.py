@@ -1,7 +1,7 @@
 #********************************************************************************************************************************
 # Author: Ian Pluchino                                                                                                          *
 # Class: Hitter class                                                                                                           *
-# Description: Handles everything regarding an MLB hitter. Child to the Player class.                                           *
+# Description: Handles everything regarding an MLB hitter. Child of the Player class.                                           *
 # Date: 5/2/24                                                                                                                  *
 #********************************************************************************************************************************
 
@@ -82,8 +82,8 @@ class Hitter(Player):
         plateAppearances = int(cumulativeStats['plateAppearances'])
         hits = int(cumulativeStats['hits'])
         battingAverage = float(cumulativeStats['avg'])
-        OBP = float(cumulativeStats['obp'])
-        OPS = float(cumulativeStats['ops'])
+        obp = float(cumulativeStats['obp'])
+        ops = float(cumulativeStats['ops'])
         homeRuns = int(cumulativeStats['homeRuns'])
 
         return { 'fullName': fullName,
@@ -91,8 +91,8 @@ class Hitter(Player):
                  'plateAppearances': plateAppearances,
                  'hits': hits,
                  'battingAverage': battingAverage,
-                 'OBP': OBP,
-                 'OPS': OPS,
+                 'OBP': obp,
+                 'OPS': ops,
                  'homeRuns': homeRuns }
     
     def GetCareerStatsOffPitcher(self, a_pitcherID):
@@ -137,8 +137,8 @@ class Hitter(Player):
         plateAppearances = int(stats['stat']['plateAppearances'])
         hits = int(stats['stat']['hits'])
         battingAverage = float(stats['stat']['avg'])
-        OBP = float(stats['stat']['obp'])
-        OPS = float(stats['stat']['ops'])
+        obp = float(stats['stat']['obp'])
+        ops = float(stats['stat']['ops'])
         homeRuns = int(stats['stat']['homeRuns'])
         
         #Stats are returned as a dictionary containing all the information.
@@ -148,8 +148,8 @@ class Hitter(Player):
                  'plateAppearances': plateAppearances,
                  'hits': hits,
                  'battingAverage': battingAverage,
-                 'OBP': OBP,
-                 'OPS': OPS,
+                 'OBP': obp,
+                 'OPS': ops,
                  'homeRuns': homeRuns }
     
     def GetLRHittingSplits(self, a_season):
@@ -169,22 +169,22 @@ class Hitter(Player):
             innings for each split, vs. left-handed hitters and vs. right-handed hitters.
         """
         #Create the lefty/righty splits endpoint for hitters.
-        LRSplitsEndpoint = self.m_endpointObj.GetLRHitterSplitsEndpoint(self.m_playerID, a_season)
+        lrSplitsEndpoint = self.m_endpointObj.GetLRHitterSplitsEndpoint(self.m_playerID, a_season)
         
         #Access the created endpoint and store the data.
-        LRSplitsData = self.m_endpointObj.AccessEndpointData(LRSplitsEndpoint)
+        lrSplitsData = self.m_endpointObj.AccessEndpointData(lrSplitsEndpoint)
         
-        #Make sure the player ID provided is valid and can be found. 0 is returned to indicate the player could not be found, and therefore it was not 
-        #possible to find the lefty/righty splits.
-        if 'people' not in LRSplitsData:
+        #Make sure the player ID provided is valid and can be found. 0 is returned to indicate the player could not be found, and 
+        #therefore it was not possible to find the lefty/righty splits.
+        if 'people' not in lrSplitsData:
             return {}
         
-        #Important note: Not every player may have faced both types of pitchers yet at specific points in the provided season, or they may not have played 
-        #at all in the provided season.
-        splits = LRSplitsData['people'][0]['stats'][0]['splits']
+        #Important note: Not every player may have faced both types of pitchers yet at specific points in the provided season, or 
+        #they may not have played at all in the provided season.
+        splits = lrSplitsData['people'][0]['stats'][0]['splits']
         
         #Loop through the possible splits. There can be 0, 1, or 2 depending on the player and season.
-        resultDictionary = {'fullName': LRSplitsData['people'][0]['fullName']}
+        resultDictionary = {'fullName': lrSplitsData['people'][0]['fullName']}
         for index in range(len(splits)):
             splitName = splits[index]['split']['description']
             
@@ -193,16 +193,16 @@ class Hitter(Player):
             plateAppearances = int(splitStats['plateAppearances'])
             hits = int(splitStats['hits'])
             battingAverage = float(splitStats['avg'])
-            OBP = float(splitStats['obp'])
-            OPS = float(splitStats['ops'])
+            obp = float(splitStats['obp'])
+            ops = float(splitStats['ops'])
             homeRuns = float(splitStats['homeRuns'])
             
             #Building a dictionary for the individual split.
             splitDictionary = { splitName: { 'plateAppearances': plateAppearances,
                                              'hits': hits,
                                              'battingAverage': battingAverage,
-                                             'OBP': OBP,
-                                             'OPS': OPS,
+                                             'OBP': obp,
+                                             'OPS': ops,
                                              'homeRuns': homeRuns }
                               }
             
@@ -234,8 +234,8 @@ class Hitter(Player):
         #Will act as the ending date for the date range.
         endDate = a_date
 
-        #The starting date of the search will be a week away from the end just in case of double headers (which are rare but occur when two games are 
-        #played on the same day).
+        #The starting date of the search will be a week away from the end just in case of double headers, which are rare 
+        #but occur when two games are played on the same day.
         startDate = a_date - timedelta(days=7)
 
         #If the player has not played 10 games in the last 3 weeks from the date, the data isn't recent enough and shouldn't be used.
@@ -261,8 +261,8 @@ class Hitter(Player):
             #Expand the range of dates to keep searching for the player's last 10 games.
             startDate -= timedelta(days=1)
             
-        #If the maximum date range was reached and the player hasn't played 10 games, return an empty dictionary to represent there was not enough 
-        #data from the starting date.
+        #If the maximum date range was reached and the player hasn't played 10 games, return an empty dictionary to represent 
+        #there was not enough data from the starting date.
         return {}
     
     def ClassifyHitting(self, a_BA):
@@ -334,20 +334,20 @@ class Hitter(Player):
         summary = stats['summary']
         hits = int(stats['hits'])
         runsScored = int(stats['runs'])
-        RBIs = int(stats['rbi'])
-        HitsPlusRunsPlusRBIs = hits + runsScored + RBIs
+        rbi = int(stats['rbi'])
+        hitsPlusRunsPlusRBIs = hits + runsScored + rbi
         
         #Check to see if the hitter accomplished certain bet goals on that day. Note: HRR = Hits, Runs, and RBIs combined.
         atLeast1Hit = hits >= 1
         atLeast2Hits = hits >= 2
-        atLeast2HHR = HitsPlusRunsPlusRBIs >= 2
-        atLeast3HHR = HitsPlusRunsPlusRBIs >= 3
+        atLeast2HHR = hitsPlusRunsPlusRBIs >= 2
+        atLeast3HHR = hitsPlusRunsPlusRBIs >= 3
         
         #Compile all results into a single dictionary and return it.
         betReviewDictionary = { 'summary': summary,
                                 'hits': hits,
                                 'runsScored': runsScored,
-                                'RBIs': RBIs,
+                                'RBIs': rbi,
                                 'atLeast1Hit': atLeast1Hit,
                                 'atLeast2Hits': atLeast2Hits,
                                 'atLeast2HRR': atLeast2HHR,
@@ -359,7 +359,7 @@ class Hitter(Player):
     def GetAllHitters(a_season):
         """Gets a list of all qualified hitters for a season.
 
-        This method is used to get all "qualified" hitters for a provided season. A qualified hitter is a hitter that 
+        This method is used to get all qualified hitters for a provided season. A qualified hitter is a hitter that 
         has at least 3.1 plate appearances per game played. To get all the qualified hitters, this method repeatedly 
         calls the qualified hitter endpoint with different offsets. This is because the MLB API can only return 50 
         players at a time, so an offset is used to get the entire list of qualified hitters. Each player is then 
@@ -381,15 +381,15 @@ class Hitter(Player):
         allHittersData = tempEndpointObj.AccessEndpointData(allHittersEndpoint)
         
         #Obtain the total number of players that need to be recorded. 
-        #Note: Only 50 players are returned from the API at a time, and those 50 are determined by an offset. The number of API calls is found by taking
-        #the total number of players and dividing by 50.
+        #Note: Only 50 players are returned from the API at a time, and those 50 are determined by an offset. The number of 
+        #API calls is found by taking the total number of players and dividing by 50.
         totalPlayers = allHittersData['stats'][0]['totalSplits']
         totalAPICalls = math.ceil(totalPlayers/50)
         
         #Continue calling the API until all qualified players have been collected.
         hittersList = []
-        for APICallNumber in range(totalAPICalls):
-            currentOffset = APICallNumber * 50
+        for apiCallNumber in range(totalAPICalls):
+            currentOffset = apiCallNumber * 50
             
             #For each offset, create a new endpoint and access the data from that endpoint.
             currentHittersEndpoint = tempEndpointObj.GetAllHittersEndpoint(a_season, currentOffset)

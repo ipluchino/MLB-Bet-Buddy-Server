@@ -1,7 +1,7 @@
 #********************************************************************************************************************************
 # Author: Ian Pluchino                                                                                                          *
 # Class: Pitcher class                                                                                                          *
-# Description: Handles everything regarding an MLB pitcher. Child to the Player class.                                          *
+# Description: Handles everything regarding an MLB pitcher. Child of the Player class.                                          *
 # Date: 5/2/24                                                                                                                  *
 #********************************************************************************************************************************
 
@@ -67,8 +67,8 @@ class Pitcher(Player):
         wins = int(cumulativeStats['wins'])
         losses = int(cumulativeStats['losses'])
         #Note: ERA = Earned Run Average and WHIP = Walks and Hits per Innings Pitched. The lower these values, the better the pitcher.
-        ERA = float(cumulativeStats['era'])       
-        WHIP = float(cumulativeStats['whip'])         
+        era = float(cumulativeStats['era'])       
+        whip = float(cumulativeStats['whip'])         
         #Note: The stats below represent the average number strikeouts and home runs if the pitcher were to pitch a full 9 innings. Higher 
         #strikeout rates are better, and lower home run rates are better.
         strikeoutsPer9Inn = float(cumulativeStats['strikeoutsPer9Inn'])
@@ -79,8 +79,8 @@ class Pitcher(Player):
                  'inningsPitched': inningsPitched,
                  'wins': wins,
                  'losses': losses,
-                 'ERA': ERA,
-                 'WHIP': WHIP,
+                 'ERA': era,
+                 'WHIP': whip,
                  'strikeoutsPer9': strikeoutsPer9Inn,
                  'homeRunsPer9': homeRunsPer9Inn }
     
@@ -101,20 +101,20 @@ class Pitcher(Player):
             innings for each split, vs. left-handed hitters and vs. right-handed hitters.
         """
         #Create the lefty/righty splits endpoint for pitchers.
-        LRSplitsEndpoint = self.m_endpointObj.GetLRPitcherSplitsEndpoint(self.m_playerID, a_season)
+        lrSplitsEndpoint = self.m_endpointObj.GetLRPitcherSplitsEndpoint(self.m_playerID, a_season)
         
         #Access the created endpoint and store the data.
-        LRSplitsData = self.m_endpointObj.AccessEndpointData(LRSplitsEndpoint)
+        lrSplitsData = self.m_endpointObj.AccessEndpointData(lrSplitsEndpoint)
         
         #Make sure the player ID provided is valid and can be found. 0 is returned to indicate the player could not be found.
-        if 'people' not in LRSplitsData:
+        if 'people' not in lrSplitsData:
             return {}
         
         #Extract the split data.
-        splits = LRSplitsData['people'][0]['stats'][0]['splits']
+        splits = lrSplitsData['people'][0]['stats'][0]['splits']
         
         #Loop through the possible splits. There can be 0, 1, or 2 depending on the player and season but practically all pitchers will have 2.
-        resultDictionary = {'fullName': LRSplitsData['people'][0]['fullName']}
+        resultDictionary = {'fullName': lrSplitsData['people'][0]['fullName']}
         for index in range(len(splits)):
             splitName = splits[index]['split']['description']
             
@@ -180,11 +180,11 @@ class Pitcher(Player):
             return 0
         
         totalGamesStarted = 0
-        YRFICount = 0
+        yrfiCount = 0
         
         #Loop through each game the pitcher has started within the date range.
         for game in gameLog:
-            #Ensure the pitcher started the game (and didn't appear as a relief pitcher since some pitchers start games and are bullpen pitchers as well).
+            #Ensure the pitcher started the game (and didn't appear as a relief pitcher).
             if int(game['stat']['gamesStarted']) == 0:
                 continue
             else:
@@ -200,13 +200,14 @@ class Pitcher(Player):
             
             #Determine if the pitcher lets up a run in the 1st inning for that game.
             if gameObj.DidPitcherLetUpRunFirstInning(self.m_playerID):
-                YRFICount += 1
-
-        #The YRFI rate represents the percentage of games a pitcher let up a run in the 1st inning in their starts. Lower YRFI rates are better for NRFI.
+                yrfiCount += 1
+        
         #Make sure a game has been played to avoid division by 0 error.
         if totalGamesStarted == 0:
             return 0
         
-        YRFIRate = YRFICount / totalGamesStarted
+        #The YRFI rate represents the percentage of games a pitcher let up a run in the 1st inning in their starts. 
+        #Lower YRFI rates are better for NRFI, while higher YRFI rates are better for YRFI.
+        yrfiRate = yrfiCount / totalGamesStarted
 
-        return YRFIRate
+        return yrfiRate

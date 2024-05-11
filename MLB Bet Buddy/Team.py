@@ -151,7 +151,7 @@ class Team():
             a_teamID (int): The team ID used by the MLB API to represent the team.
 
         Returns:
-            A string, representing the team's name. "Unknown" is returned if the team name is invalid.
+            A string, representing the team's name. Unknown is returned if the team name is invalid.
         """
         #Loop through each team and check if the ID matches one of the teams in the list. If it does, extract its name.
         for team in self.MLB_TEAM_IDS:
@@ -168,7 +168,7 @@ class Team():
             a_teamName (string): The name of the team.
 
         Returns:
-            An integer, representing the team's ID. "Unknown" is returned if the team's name is invalid.
+            An integer, representing the team's ID. Unknown is returned if the team's name is invalid.
         """
         #Loop through each team and check if the name matches one from in the list.
         for team in self.MLB_TEAM_IDS:
@@ -189,7 +189,7 @@ class Team():
             a_season (int): The season to get the team's record from.
 
         Returns:
-            A string, representing the team's record. Format: "wins-losses".
+            A string, representing the team's record. Format: wins-losses.
         """
         #Create the standings endpoint.
         standingsEndpoint = self.m_endpointObj.GetStandingsEndpoint(a_date, a_season)
@@ -264,7 +264,8 @@ class Team():
         #Access the created endpoint and store the data.
         teamOffenseData = self.m_endpointObj.AccessEndpointData(teamOffenseEndpoint)
         
-        #If the splits containing the statistics could not be found (such as the user entered an incorrect date or season) simply return an empty dictionary.
+        #If the splits containing the statistics could not be found (such as the user entered an incorrect date or season) 
+        #simply return an empty dictionary.
         if not 'stats' in teamOffenseData or not teamOffenseData['stats'][0]['splits']:
             return {}
         
@@ -329,23 +330,23 @@ class Team():
 
         #Loop through each of the valid games within the date range.
         gameCount = len(gameIDs)
-        YRFICount = 0
+        yrfiCount = 0
         for game in gameIDs:
             gameID = game['gameID']
             gameObj = Game(gameID)
             
             #If a run was scored in the 1st inning of the game by the team, increment the YRFI count.
             if gameObj.DidTeamScoreFirstInning(self.m_teamID):
-                YRFICount += 1
+                yrfiCount += 1
 
         #The YRFI rate represents the percentage of games a team scores in the 1st inning of their games. Lower YRFI rates are better for NRFI. 
         #Make sure a game has been played to avoid division by 0 error.
         if gameCount == 0:
             return 0
 
-        YRFIRate = YRFICount / gameCount            
+        yrfiRate = yrfiCount / gameCount            
 
-        return YRFIRate
+        return yrfiRate
     
     def ExtractGameIDs(self, a_gameList):
         """Extracts game IDs from a list of game dictionaries.
@@ -378,11 +379,14 @@ class Team():
                 
                 #Special case - opening day for 2024 technically started early with the Dodgers and Padres in Korea.
                 if gameDateObj.year == 2024:
-                    #If the team being analyzed is either of those special teams, include the two special games in their YRFI calculation, 
-                    #and skip the other spring training games.
+                    #If the team being analyzed is either of those special teams, additional processing is required.
                     if self.m_teamID == 119 or self.m_teamID == 135:
-                        if gameDateObj < datetime.strptime('03/20/2024', '%m/%d/%Y') or (gameDateObj > datetime.strptime('03/21/2024', '%m/%d/%Y') 
-                                                                                         and gameDateObj < datetime.strptime('03/28/2024', '%m/%d/%Y')):
+                        #Skipping earlier spring training games.
+                        if gameDateObj < datetime.strptime('03/20/2024', '%m/%d/%Y'):
+                            continue
+                        
+                        #Skipping spring training games after the special series but before the official opening day.
+                        if gameDateObj > datetime.strptime('03/21/2024', '%m/%d/%Y') and gameDateObj < datetime.strptime('03/28/2024', '%m/%d/%Y'):
                             continue
                     #Every other team did not play - so ignore spring training games for them (which happen before March 28th, 2024).
                     else:

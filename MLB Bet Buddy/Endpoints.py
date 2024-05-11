@@ -10,9 +10,6 @@ import time
 
 class Endpoints():
     #All API endpoint links that will be used in the project. Variable portions of the URL are within curly braces {}. 
-    #Base endpoint of the API.
-    BASE_URL = 'https://statsapi.mlb.com/api/'
-    
     #Endpoint to analyze an individual game. Note: v1.1 is used for live game data.
     GAME_ANALYSIS_URL = 'https://statsapi.mlb.com/api/v1.1/game/{game_id}/feed/live'
     
@@ -130,7 +127,8 @@ class Endpoints():
             A string representing the URL endpoint required to retrieve the team's offensive statistics.
         """
         #Format the dates into the correct format before creating the endpoint.
-        return self.TEAM_OFFENSE_URL.format(team_id=a_teamID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
+        return self.TEAM_OFFENSE_URL.format(team_id=a_teamID, season=a_season, start_date=self.FormatDate(a_startDate), 
+                                            end_date=self.FormatDate(a_endDate))
     
     def GetGeneralPlayerInfoEndpoint(self, a_playerID):
         """Gets the endpoint URL to get basic player information.
@@ -202,7 +200,8 @@ class Endpoints():
         Returns:
             A string representing the URL endpoint required to retrieve a team's game log.
         """
-        return self.TEAM_GAME_LOG_URL.format(team_id=a_teamID, season=a_season, start_date=self.FormatDate(a_startDate), end_date=self.FormatDate(a_endDate))
+        return self.TEAM_GAME_LOG_URL.format(team_id=a_teamID, season=a_season, start_date=self.FormatDate(a_startDate),
+                                             end_date=self.FormatDate(a_endDate))
         
     def GetStandingsEndpoint(self, a_date, a_season):
         """Gets the endpoint URL to analyze the standings on a specific date (used for obtaining team records).

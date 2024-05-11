@@ -35,15 +35,25 @@ MINIMUM_NRFIYRFI_BETS = 7
 MINIMUM_HITTING_BETS = 40
 
 #QUART AND SQLALCHEMY SETUP.
-app = Quart(__name__)                                           #Quart server object.
-app.json.sort_keys = False                                      #Disable automic JSON key sorting.
-Base = declarative_base()                                       #Base model database class from SQLAlchemy.
-engine = create_engine('sqlite:///database.db', echo=True)      #Database engine location.
-Session = sessionmaker(bind=engine)                             #Session to create a connection with the database.
+#Quart server object.
+app = Quart(__name__)                                           
 
-#DATABASE TABLE MODELS. Note: There will be two tables for each kind of table, an active "today" table and an archive table. 
+#Disable automic JSON key sorting.
+app.json.sort_keys = False                                      
+
+#Base model database class from SQLAlchemy.
+Base = declarative_base()                                       
+
+#Database engine location.
+engine = create_engine('sqlite:///database.db', echo=True)      #Database engine location.
+
+#Session to create a connection with the database.
+Session = sessionmaker(bind=engine)
+
+#DATABASE TABLE MODELS. Note: There will be two tables for each kind of table, an active Today table and an Archive table. 
 #Base table model for a schedule of MLB games.
 class ScheduleBaseModel():
+    #Note: Each variable matches the case of how the column is in the database.
     id = Column('id', Integer, primary_key=True)
     Game_ID = Column('Game ID', Integer)
     Date = Column('Date', String)
@@ -76,6 +86,7 @@ class ArchiveScheduleTable(ScheduleBaseModel, Base):
 
 #Base table model for the NRFI/YRFI bet predictions. Only need a single table for both types of bets.
 class NRFIBaseModel():
+    #Note: Each variable matches the case of how the column is in the database.
     id = Column('id', Integer, primary_key=True)
     Game_ID = Column('Game ID', Integer)	
     Date = Column('Date', String)
@@ -138,6 +149,7 @@ class ArchiveNRFITable(NRFIBaseModel, Base):
 
 #Base table model for the hitting bet predictions.    
 class HittingBaseModel():
+    #Note: Each variable matches the case of how the column is in the database.
     id = Column('id', Integer, primary_key=True)
     Game_ID = Column('Game ID', Integer)	
     Date = Column('Date', String)
@@ -251,7 +263,8 @@ async def ViewTable(a_tableName):
             if columnName == 'id':
                 continue
             
-            #Note: The column name is fixed from spaces to underscores, since the variables in the database model class have underscores, not spaces.
+            #Note: The column name is fixed from spaces to underscores, since the variables in the database model class 
+            #have underscores, not spaces.
             columnValue = getattr(row, ConvertColumnName(columnName))
             
             data_row[columnName] = columnValue        
@@ -322,7 +335,8 @@ async def ViewTableSpecificDate(a_tableName, a_dateStr):
             if columnName == 'id':
                 continue
             
-            #Note: The column name is fixed from spaces to underscores, since the variables in the database model class have underscores, not spaces.
+            #Note: The column name is fixed from spaces to underscores, since the variables in the database model class
+            #have underscores, not spaces.
             columnValue = getattr(row, ConvertColumnName(columnName))
             
             data_row[columnName] = columnValue        
@@ -406,27 +420,27 @@ async def Accuracy(a_topNRFIYRFI, a_topHitters):
         formattedDateString = datetime.strftime(date, '%m/%d/%Y')
        
         #Tally the accuracy of the NRFI and YRFI bets from this day.
-        NRFIYRFIData = session.query(ArchiveNRFITable).filter(ArchiveNRFITable.Date == formattedDateString).all()
+        nrfiyrfiData = session.query(ArchiveNRFITable).filter(ArchiveNRFITable.Date == formattedDateString).all()
         
         #Make sure there are enough NRFI/YRFI bets for the current day.
-        if len(NRFIYRFIData) > 2 * int(a_topNRFIYRFI) and len(NRFIYRFIData) >= MINIMUM_NRFIYRFI_BETS:
+        if len(nrfiyrfiData) > 2 * int(a_topNRFIYRFI) and len(nrfiyrfiData) >= MINIMUM_NRFIYRFI_BETS:
             #Extract the top "a_topNRFIYRFI" NRFI and YRFI bets. Note: The best YRFI bets start from the bottom of the table.
             for index in range(int(a_topNRFIYRFI)):
-                NRFIBet = NRFIYRFIData[index]
-                YRFIBet = NRFIYRFIData[-1 - index]
+                nrfiBet = nrfiyrfiData[index]
+                yrfiBet = nrfiyrfiData[-1 - index]
                 
                 #Check the results of the NRFI and YRFI bet.
-                if NRFIBet.Bet_Result == 'NRFI':
+                if nrfiBet.Bet_Result == 'NRFI':
                     totalNRFIWin += 1
                 
-                if YRFIBet.Bet_Result == 'YRFI':
+                if yrfiBet.Bet_Result == 'YRFI':
                     totalYRFIWin += 1
                 
                 #Increment the total game counters only if the game was not postponed. Postponed games are omitted from accuracy calculations.
-                if NRFIBet != 'Postponed':
+                if nrfiBet != 'Postponed':
                     totalNRFIGames += 1
                 
-                if YRFIBet != 'Postponed':
+                if yrfiBet != 'Postponed':
                     totalYRFIGames += 1
 
            
@@ -521,9 +535,9 @@ def UpdateBetPredictions(a_openingDayDate, a_date, a_season):
 def UpdateTableInDatabase(a_dataFrame, a_todayTable, a_archiveTable):
     """Triggers a database update for a table.
 
-    This function is used to update one of the three main "Today" tables, based on information from a provided
-    DataFrame. First, all the data inside the "Today" table is copied over into its respective archive table (see
-    MoveDataToArchive()). Then, the "Today" table is completely cleared (see DeleteData()). Every row of the provided
+    This function is used to update one of the three main Today tables, based on information from a provided
+    DataFrame. First, all the data inside the Today table is copied over into its respective archive table (see
+    MoveDataToArchive()). Then, the Today table is completely cleared (see DeleteData()). Every row of the provided
     DataFrame is then looped through and inserted into the database inside the "a_todayTable" table.
 
     Args:
@@ -576,7 +590,7 @@ def GetTableClassDefinition(a_tableName):
         a_tableName (string): The name of the table to get the class definition for.
 
     Returns:
-        A "type", representing the class definition for a table used in the database.
+        A type, representing the class definition for a table used in the database.
     """
     if a_tableName == 'TodaySchedule':
         return TodayScheduleTable
@@ -594,15 +608,15 @@ def GetTableClassDefinition(a_tableName):
     else:
         return None    
 
-#Helper function for the view route, used to convert column names into their variable names in the model classes (since class variables cannot contain 
-#spaces and other special characters).
+#Helper function for the view route, used to convert column names into their variable names in the model classes 
+#since class variables cannot contain spaces and other special characters).
 def ConvertColumnName(a_columnName):
     """Helper function used to convert column names when going from database column names to table class names.
 
     This helper function is used to convert a column name that's used in the actual database, to the corresponding
     column name used in the table subclasses (TodaySchedule, ArchiveSchedule, etc.). Spaces are replaced by
     underscores, and any periods or slashes are removed since these characters cannot be in variable names. An
-    example is conversion of "Game ID" to "Game_ID". This function is used when dealing with column names
+    example is conversion of Game ID to Game_ID. This function is used when dealing with column names
     programmatically.
 
     Args:
@@ -620,7 +634,7 @@ def ConvertColumnName(a_columnName):
     
     return modifiedColumnName
 
-#Moves all of the data in one of the database tables, to another. Used for moving data from a "Today" table to an "Archive" table.
+#Moves all of the data in one of the database tables, to another. Used for moving data from a Today table to an Archive table.
 def MoveDataToArchive(a_sourceTable, a_destinationTable):
     """Moves data from a source table to a destination table.
 
@@ -702,12 +716,12 @@ def ReviewBets():
     This method goes through all the NRFI/YRFI bet predictions as well as the hitting bet predictions, and updates
     their results into the database. First, a connection is made with the database and all the current NRFI/YRFI bet
     predictions are extracted from the TodayNRFI table. Each row in the table is looped through, a Game object is
-    created for each bet prediction game, and the "Bet_Result" column is filled with either NRFI or YRFI. A similar
+    created for each bet prediction game, and the Bet_Result column is filled with either NRFI or YRFI. A similar
     process then occurs for the hitting bet predictions, with a Hitter object being created for each hitter from the
     hitting bet predictions in the TodayHitting table. For the hitting bet predictions, the hitter's statline and
     whether they met the following thresholds is input into the database: Over 0.5 hits, Over 1.5 hits, Over 1.5 Hits
     + Runs + RBIs, and Over 2.5 Hits + Runs + RBIs. If a game is postponed or a hitter does not play in any of the
-    bet predictions, the result columns are filled with "Postponed" or "Did Not Play" respectively.
+    bet predictions, the result columns are filled with Postponed or Did Not Play respectively.
 
     Returns:
         Nothing.
@@ -719,10 +733,10 @@ def ReviewBets():
     session = Session()    
 
     #Review the NRFI and YRFI bets.
-    NRFIYRFIData = session.query(TodayNRFITable).all()
+    nrfiyrfiData = session.query(TodayNRFITable).all()
     
     #Loop through each bet in the TodayNRFI table.
-    for row in NRFIYRFIData:
+    for row in nrfiyrfiData:
         gameObj = Game(row.Game_ID)
         
         #If the game hasn't been completed, it means the game was postponed.

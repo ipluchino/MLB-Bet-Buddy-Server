@@ -15,8 +15,8 @@ class Game():
         set as a member variable. If a game ID is not provided, the opening day game in 2024 for the Yankees is used
         by default. Next, the game's endpoint information is set as a member variable (see
         InitializeGameEndpointInformation()), to minimize the total number of MLB API calls required when extracting
-        information about the game. Finally, the basic information regarding the game is stored as member variables (
-        see InitializeBasicInformation()). This includes the records of the teams, starting pitchers, stadium the
+        information about the game. Finally, the basic information regarding the game is stored as member variables 
+        (see InitializeBasicInformation()). This includes the records of the teams, starting pitchers, stadium the
         game is being played at, and more.
 
         Args:
@@ -87,8 +87,8 @@ class Game():
         self.m_time = gameInformation['datetime']['time'] + ' ' + gameInformation['datetime']['ampm']
         self.m_dateTimeString = gameInformation['datetime']['dateTime']
 
-        #Setting the state of the game - whether the game is final or not (sometimes games can be postponed or cancelled due to rain - this is important for 
-        #game tracking).
+        #Setting the state of the game - whether the game is final or not (sometimes games can be postponed or cancelled due to 
+        #rain - this is important for game tracking).
         gameState = gameInformation['status']['detailedState']
         if gameState != 'Final' and 'Completed Early' not in gameState:
             self.m_isFinal = False

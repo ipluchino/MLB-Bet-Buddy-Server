@@ -52,17 +52,23 @@ print('Marcus Stroman\'s YRFI percentage through', DATE_STRING, 'is', pitcher.Ca
 
 #Testing the Hitter class.
 print('TESTING THE HITTER CLASS')
-hitter = Hitter(Player.FindPlayerID('Mike Trout'))
-print('Mike Trout\'s offensive statistics through', DATE_STRING, 'are:', hitter.GetOffensiveStatistics(SEASON, OPENING_DAY, DATE), '\n')
+hitter = Hitter(Player.FindPlayerID('Andrew McCutchen'))
+print('Andrew McCutchen\'s offensive statistics through', DATE_STRING, 'are:', hitter.GetOffensiveStatistics(SEASON, OPENING_DAY, DATE), '\n')
 
 careerStats = hitter.GetCareerStatsOffPitcher(pitcher.GetPlayerID())
-print('Mike Trout\'s career stats against Marcus Stroman are:', careerStats, '\n')
-print('Mike Trout is \"', hitter.ClassifyHitting(careerStats['battingAverage'])[0], '\" based on his career stats against Marcus Stroman.', '\n')
+print('Andrew McCutchen\'s career stats against Marcus Stroman are:', careerStats, '\n')
+if not careerStats:
+    print('Andrew McCutchen does not have career statistics against Marcus Stroman.', '\n')
+else:
+    print('Andrew McCutchen is \"', hitter.ClassifyHitting(careerStats['battingAverage'])[0], '\" based on his career stats against Marcus Stroman.', '\n')
 
-L10Stats = hitter.Last10Stats(SEASON, DATE)
-print('Mike Trout\'s last 10 games stats starting from', DATE_STRING, 'are:', L10Stats, '\n')
-print('Mike Trout is \"', hitter.ClassifyHitting(L10Stats['battingAverage'])[0], '\" based on his last 10 games stats starting from', DATE_STRING + '.', '\n')
-print('Mike Trout\'s lefty/righty splits for the', SEASON, 'season are:', hitter.GetLRHittingSplits(SEASON), '\n')
+last10Stats = hitter.Last10Stats(SEASON, DATE)
+print('Andrew McCutchen\'s last 10 games stats starting from', DATE_STRING, 'are:', last10Stats, '\n')
+if not last10Stats:
+    print('Andrew McCutchen does not have recent last 10 games stats starting from', DATE_STRING + '.', '\n')
+else:
+    print('Andrew McCutchen is \"', hitter.ClassifyHitting(last10Stats['battingAverage'])[0], '\" based on his last 10 games stats starting from', DATE_STRING + '.', '\n')
+print('Andrew McCutchen\'s lefty/righty splits for the', SEASON, 'season are:', hitter.GetLRHittingSplits(SEASON), '\n')
 
 qualifiedHitters = Hitter.GetAllHitters(SEASON)
 print('In total, there are', len(qualifiedHitters), 'qualified hitters in the', SEASON, 'season.', '\n')
