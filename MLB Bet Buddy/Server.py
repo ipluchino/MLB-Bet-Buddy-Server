@@ -45,7 +45,7 @@ app.json.sort_keys = False
 Base = declarative_base()                                       
 
 #Database engine location.
-engine = create_engine('sqlite:///database.db', echo=True)      #Database engine location.
+engine = create_engine('sqlite:///database.db', echo=True)
 
 #Session to create a connection with the database.
 Session = sessionmaker(bind=engine)
