@@ -437,10 +437,10 @@ async def Accuracy(a_topNRFIYRFI, a_topHitters):
                     totalYRFIWin += 1
                 
                 #Increment the total game counters only if the game was not postponed. Postponed games are omitted from accuracy calculations.
-                if nrfiBet != 'Postponed':
+                if nrfiBet.Bet_Result != 'Postponed':
                     totalNRFIGames += 1
                 
-                if yrfiBet != 'Postponed':
+                if yrfiBet.Bet_Result != 'Postponed':
                     totalYRFIGames += 1
 
            
