@@ -51,7 +51,7 @@ class LocalFactors():
     NO_WEATHER_IMPACT_WEIGHT = 'Omitted'
 
     #Represents the weather description codes and their associated impacts.
-    LOW_WEATHER_IMPACT_CODES = [1030, 1063, 1066, 1069, 1072, 1087, 1150, 1153, 1168, 11'Omitted', 1183, 1198, 1204, 1210, 1240, 1249, 
+    LOW_WEATHER_IMPACT_CODES = [1030, 1063, 1066, 1069, 1072, 1087, 1150, 1153, 1168, 1180, 1183, 1198, 1204, 1210, 1240, 1249, 
                                 1252, 1255, 1261, 1273, 1279, 1282]
     
     MODERATE_WEATHER_IMPACT_CODES = [1171, 1186, 1189, 1201, 1207, 1216, 1219, 1237, 1243, 1258, 1264, 1276]
