@@ -89,8 +89,9 @@ class Endpoints():
             return data
         #Occasionally the data may be missing or the API may not respond. It is fixed by simply waiting a short time, then trying again.
         except Exception as e:
+            print(e, '\n\n', a_URL)
             time.sleep(10)
-            return self.AccessEndpoint(a_URL)
+            return self.AccessEndpointData(a_URL)
             
     def FormatDate(self, a_dateObj):
         """Converts a datetime object into the correct string format.
