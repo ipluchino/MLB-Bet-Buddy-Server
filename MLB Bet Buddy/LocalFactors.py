@@ -157,11 +157,22 @@ class LocalFactors():
         
         #Extract the hourly forecast data from the data returned from the Weather API. Note: The hourly forecast is split 
         #into 24 individual hours based on a 24-hour clock.
-        forecast = weatherData['forecast']['forecastday'][0]['hour']
+        forecast = {}
+        try:
+            forecast = weatherData['forecast']['forecastday'][0]['hour']
+        except:
+            #Sometimes the weather API's overall forecast is down (rarely), so skip the weather for this stadium if that's the case.
+            return 'Unknown'
         
         #Obtain the weather data for the hour closest to the start of the game. 
         index = self.ConvertTime(a_timeOfGame)
-        hourlyForecast = forecast[index]
+        
+        hourlyForecast = {}
+        try:
+            hourlyForecast = forecast[index]
+        except:
+            #Sometimes the weather API's hourly forecast is down (rarely), so skip the weather for this stadium if that's the case.
+            return 'Unknown'
         
         cityName = weatherData['location']['name']
         region = weatherData['location']['region']
