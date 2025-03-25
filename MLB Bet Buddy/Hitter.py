@@ -129,8 +129,8 @@ class Hitter(Player):
         
         #If both the hitter and pitcher exist, extract the career hitting statistics the hitter has against the pitcher.
         stats = splits[0]
-        hitterFullName = stats['batter']['fullName']
-        pitcherFullName = stats['pitcher']['fullName']
+        hitterFullName = Player.FindPlayerNameFromID(self.m_playerID)
+        pitcherFullName = Player.FindPlayerNameFromID(a_pitcherID)
         
         #Gather the offensive statistics and return them. Note: OBP stands for on base percentage, OPS stands for on base plus slugging.
         gamesPlayed = int(stats['stat']['gamesPlayed'])
