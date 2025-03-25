@@ -106,3 +106,32 @@ class Player():
         
         #Always opt to return the first of the people found in case there are multiple people found (extremely rare).
         return peopleFound[0]['id']
+    
+    @staticmethod
+    def FindPlayerNameFromID(a_playerID):
+        """Searches for a player's full name based on a player's ID.
+
+        This method is used to obtain a player's full name based on their player ID used by the MLB API.
+        
+
+        Args:
+            a_playerID (int): The player ID used by the MLB API to represent the player.
+
+        Returns:
+            A string, representing the player's full name.
+        """
+        
+        #Create a temporary endpoint object.
+        tempEndpointObj = Endpoints()
+        
+        #Create the endpoint to get general player information and access the endpoint.
+        generalInfoEndpoint = tempEndpointObj.GetGeneralPlayerInfoEndpoint(a_playerID)
+        generalInfoData = tempEndpointObj.AccessEndpointData(generalInfoEndpoint)
+        
+        #Make sure the player ID provided is valid and could be found. 
+        if 'people' not in generalInfoData:
+            return "Player Not Found"
+        
+        #Extract the player's full name and return it.
+        fullName = generalInfoData['people'][0]['fullName']
+        return fullName
