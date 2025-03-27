@@ -392,7 +392,23 @@ class Team():
                     else:
                         if gameDateObj < datetime.strptime('03/28/2024', '%m/%d/%Y'):
                             continue
+
+                #Special case - opening day for 2025 technically started early with the Dodgers and Cubs in Japan.
+                if gameDateObj.year == 2025:
+                    #If the team being analyzed is either of those special teams, additional processing is required.
+                    if self.m_teamID == 119 or self.m_teamID == 112:
+                        #Skipping earlier spring training games.
+                        if gameDateObj < datetime.strptime('03/18/2025', '%m/%d/%Y'):
+                            continue
                         
+                        #Skipping spring training games after the special series but before the official opening day.
+                        if gameDateObj > datetime.strptime('03/19/2025', '%m/%d/%Y') and gameDateObj < datetime.strptime('03/27/2025', '%m/%d/%Y'):
+                            continue
+                    #Every other team did not play - so ignore spring training games for them (which happen before March 27th, 2025).
+                    else:
+                        if gameDateObj < datetime.strptime('03/27/2025', '%m/%d/%Y'):
+                            continue
+          
                 #Append the game to the result list only if the game has been completed (ignore any games that were postponed before they started).
                 if gameStatus != 'Final' and gameStatus != 'Completed Early':
                     continue
