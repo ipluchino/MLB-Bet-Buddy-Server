@@ -22,13 +22,15 @@ TABLE_NAMES = ['TodaySchedule', 'ArchiveSchedule', 'TodayNRFI', 'ArchiveNRFI', '
 #Important dates and season information.
 OPENING_DAY_2023 = datetime.strptime('03/30/2023', '%m/%d/%Y')
 OPENING_DAY_2024 = datetime.strptime('03/20/2024', '%m/%d/%Y')
+OPENING_DAY_2025 = datetime.strptime('03/18/2025', '%m/%d/%Y')
 
 CLOSING_DAY_2023 = datetime.strptime('10/01/2023', '%m/%d/%Y')
 CLOSING_DAY_2024 = datetime.strptime('09/29/2024', '%m/%d/%Y')
+CLOSING_DAY_2025 = datetime.strptime('09/28/2025', '%m/%d/%Y')
 
-CURRENT_OPENING_DAY = OPENING_DAY_2024
-CURRENT_CLOSING_DAY = CLOSING_DAY_2024
-CURRENT_SEASON = 2024
+CURRENT_OPENING_DAY = OPENING_DAY_2025
+CURRENT_CLOSING_DAY = CLOSING_DAY_2025
+CURRENT_SEASON = 2025
 
 #Accuracy checking thresholds.
 MINIMUM_NRFIYRFI_BETS = 7
